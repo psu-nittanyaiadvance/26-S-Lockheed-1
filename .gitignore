@@ -1,3 +1,4 @@
+
 .clangd
 compile_commands.json
 
@@ -120,3 +121,6 @@ venv.bak/
 *build
 compile_commands.json
 *.dump
+=======
+.DS_Store
+>>>>>>> a59c1d6 (added gitignore)
