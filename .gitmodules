@@ -1,0 +1,3 @@
+[submodule "watersplatting"]
+	path = watersplatting
+	url = https://github.com/water-splatting/water-splatting.git
