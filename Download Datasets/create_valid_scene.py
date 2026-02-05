@@ -1,5 +1,4 @@
 from pathlib import Path
-from pytube import YouTube
 import shutil
 import pycolmap
 from download_seaThruNerf import split_scene
@@ -109,11 +108,6 @@ def colmap_to_llff(scene_folder):
     np.save(scene_folder / "poses_bounds.npy", poses_bounds)
     print(f"  ✓ Saved poses_bounds.npy with shape {poses_bounds.shape}")
 
-
-
-
-
-convert_images_to_scene("/Users/kasraghadimi/Desktop/Penn State/Nittany AI/watersplatting_data/SeathruNeRF_dataset/Curasao/images_wb", "example_dataset", "Carusao2")
         
     
 
