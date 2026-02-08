@@ -29,7 +29,7 @@ def convert_images_to_scene(IMAGE_FOLDER_PATH, dataset_name, scene_name):
     frame_count = 0
     for item in Path(IMAGE_FOLDER_PATH).iterdir(): #save abs image file path strings to list
         frame_count += 1
-        if item.is_file() and (frame_count % 5 == 0):
+        if item.is_file() and (frame_count % 1 == 0):
             file_path = item.resolve()
             file_paths += [file_path]
 
@@ -116,7 +116,6 @@ def colmap_to_llff(scene_folder):
     print(f"  ✓ Saved poses_bounds.npy with shape {poses_bounds.shape}")
 
         
-convert_images_to_scene("/data/Lockheed1-Spring26/watersplatting_data/Sunboat_03-09-2023/2023-09-03-07-58-37/camera", "sunboat_dataset", "sunboat1")
 
     
 
