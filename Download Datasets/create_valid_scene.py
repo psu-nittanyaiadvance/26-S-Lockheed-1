@@ -26,8 +26,10 @@ def convert_images_to_scene(IMAGE_FOLDER_PATH, dataset_name, scene_name):
 
     file_paths = []
     
+    frame_count = 0
     for item in Path(IMAGE_FOLDER_PATH).iterdir(): #save abs image file path strings to list
-        if item.is_file():
+        frame_count += 1
+        if item.is_file() and (frame_count % 5 == 0):
             file_path = item.resolve()
             file_paths += [file_path]
 
@@ -44,11 +46,17 @@ def convert_images_to_scene(IMAGE_FOLDER_PATH, dataset_name, scene_name):
         
         # 3. Sparse reconstruction (this is all you need!)
         print("  3. Sparse reconstruction...")
-        maps = pycolmap.incremental_mapping(database_path, SCENE_IMAGES, SCENE_SPARSE)
-        
-        if not maps or len(maps) == 0:
-            print("  WARNING: Sparse reconstruction failed!")
-            return False
+        mapper_options = pycolmap.IncrementalMapperOptions()
+        mapper_options.min_num_reg_images = 10  # Try to keep going even if few images match
+        mapper_options.init_min_num_inliers = 50 # Slightly more lenient initialization
+
+        # Use them in the call
+        maps = pycolmap.incremental_mapping(
+            database_path, 
+            SCENE_IMAGES, 
+            SCENE_SPARSE, 
+            options=mapper_options
+        )
         
         # 4. colmap to llff
         print("  4. Converting to LLFF format...")
@@ -60,7 +68,6 @@ def convert_images_to_scene(IMAGE_FOLDER_PATH, dataset_name, scene_name):
         print(f"  ✗ Error during reconstruction: {e}\n")
         return False
         
-    split_scene(str(SCENE_FOLDER))
     return True
 
 
@@ -109,7 +116,7 @@ def colmap_to_llff(scene_folder):
     print(f"  ✓ Saved poses_bounds.npy with shape {poses_bounds.shape}")
 
         
-    
+convert_images_to_scene("/data/Lockheed1-Spring26/watersplatting_data/Sunboat_03-09-2023/2023-09-03-07-58-37/camera", "sunboat_dataset", "sunboat1")
 
     
 
