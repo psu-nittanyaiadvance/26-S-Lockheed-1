@@ -29,7 +29,9 @@ def convert_images_to_scene(IMAGE_FOLDER_PATH, dataset_name, scene_name):
     frame_count = 0
     for item in Path(IMAGE_FOLDER_PATH).iterdir(): #save abs image file path strings to list
         frame_count += 1
-        if item.is_file() and (frame_count % 1 == 0):
+        if item.is_file() and (frame_count % 10 == 0):
+            print(f"Frame: {frame_count}, File: {str(item)}")
+            
             file_path = item.resolve()
             file_paths += [file_path]
 
@@ -44,19 +46,29 @@ def convert_images_to_scene(IMAGE_FOLDER_PATH, dataset_name, scene_name):
         print("  2. Matching features...")
         pycolmap.match_exhaustive(database_path)
         
-        # 3. Sparse reconstruction (this is all you need!)
+        # 3. Sparse reconstruction 
         print("  3. Sparse reconstruction...")
         mapper_options = pycolmap.IncrementalMapperOptions()
-        mapper_options.min_num_reg_images = 10  # Try to keep going even if few images match
-        mapper_options.init_min_num_inliers = 50 # Slightly more lenient initialization
+        mapper_options.init_min_num_inliers = 50  # More lenient initialization
+        mapper_options.init_min_tri_angle = 2.0
+        mapper_options.abs_pose_min_num_inliers = 10
+        mapper_options.max_reg_trials = 5
 
-        # Use them in the call
+        # Wrap in pipeline options
+        pipeline_options = pycolmap.IncrementalPipelineOptions()
+        pipeline_options.mapper = mapper_options
+
         maps = pycolmap.incremental_mapping(
-            database_path, 
-            SCENE_IMAGES, 
-            SCENE_SPARSE, 
-            options=mapper_options
+            str(database_path), 
+            str(SCENE_IMAGES), 
+            str(SCENE_SPARSE),
+            options=pipeline_options  # ← Use pipeline_options not mapper_options
         )
+
+        if len(maps) == 0:
+            print("  ✗ No models created")
+        else:
+            print(f"  ✓ Created {len(maps)} model(s)")
         
         # 4. colmap to llff
         print("  4. Converting to LLFF format...")
