@@ -1,0 +1,38 @@
+# Core dependencies for underwater object detection pipeline
+# Deep Learning & Computer Vision
+torch>=2.0.0
+torchvision>=0.15.0
+transformers>=4.30.0
+ultralytics>=8.0.0
+
+# Image Processing
+Pillow>=10.0.0
+opencv-python>=4.8.0
+numpy>=1.24.0
+scipy>=1.10.0
+
+# Archive handling
+py7zr>=0.20.0
+
+# Utilities
+tqdm>=4.65.0
+requests>=2.31.0
+
+# Jupyter/Notebook support
+jupyter>=1.0.0
+ipykernel>=6.25.0
+
+# Visualization
+matplotlib>=3.7.0
+
+# Dataset sources (optional - install as needed)
+# Uncomment the ones you need:
+
+# For HuggingFace datasets (currently active)
+datasets>=2.14.0
+
+# For Kaggle datasets
+# kaggle>=1.5.16
+
+# For Roboflow datasets
+# roboflow>=1.1.0
