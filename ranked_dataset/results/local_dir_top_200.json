@@ -1,0 +1,4066 @@
+[
+  {
+    "rank": 1,
+    "path": "/Users/leolu/Desktop/seathru/08-03-2022/2022-03-08_15-28-24rec3/camera/c5443s18.jpg",
+    "combined_score": 0.7239960710088884,
+    "clip_score": 0.571244273866926,
+    "yolo_score": 0.8847340643405914,
+    "num_detections": 3,
+    "num_interesting": 3,
+    "clip_components": {
+      "clip_positive": 0.6472533941268921,
+      "clip_negative": 0.3812214732170105
+    },
+    "cv_components": {
+      "entropy": 0.8785257771976992,
+      "laplacian_var": 0.03203916549682617,
+      "saturation_penalty": 1.0,
+      "edge_density": 0.1386574074074074
+    },
+    "yolo_detections": [
+      {
+        "class": "person",
+        "confidence": 0.7081285715103149,
+        "bbox": [
+          463.9251708984375,
+          219.64993286132812,
+          512.3946533203125,
+          324.09619140625
+        ]
+      },
+      {
+        "class": "person",
+        "confidence": 0.6261764764785767,
+        "bbox": [
+          404.9046936035156,
+          193.2361602783203,
+          467.40631103515625,
+          330.4813232421875
+        ]
+      },
+      {
+        "class": "person",
+        "confidence": 0.43516308069229126,
+        "bbox": [
+          261.5940856933594,
+          249.6119384765625,
+          302.7774963378906,
+          328.40338134765625
+        ]
+      }
+    ]
+  },
+  {
+    "rank": 2,
+    "path": "/Users/leolu/Desktop/seathru/07-03-2022/2022-03-07_13-58-31rec0/camera/c1067s285.jpg",
+    "combined_score": 0.36938518652629815,
+    "clip_score": 0.5683337109429496,
+    "yolo_score": 0.19222351908683777,
+    "num_detections": 1,
+    "num_interesting": 1,
+    "clip_components": {
+      "clip_positive": 0.6469506025314331,
+      "clip_negative": 0.3717914819717407
+    },
+    "cv_components": {
+      "entropy": 0.7518604044559807,
+      "laplacian_var": 0.004536151885986328,
+      "saturation_penalty": 1.0,
+      "edge_density": 0.0
+    },
+    "yolo_detections": [
+      {
+        "class": "frisbee",
+        "confidence": 0.38444703817367554,
+        "bbox": [
+          80.90544891357422,
+          327.87042236328125,
+          289.0218200683594,
+          440.3971862792969
+        ]
+      }
+    ]
+  },
+  {
+    "rank": 3,
+    "path": "/Users/leolu/Desktop/seathru/07-03-2022/2022-03-07_13-58-31rec0/camera/c1066s285.jpg",
+    "combined_score": 0.33713956134684075,
+    "clip_score": 0.5654226796967643,
+    "yolo_score": 0.1301651895046234,
+    "num_detections": 1,
+    "num_interesting": 1,
+    "clip_components": {
+      "clip_positive": 0.6439586281776428,
+      "clip_negative": 0.36908280849456787
+    },
+    "cv_components": {
+      "entropy": 0.7487535051082156,
+      "laplacian_var": 0.0045201778411865234,
+      "saturation_penalty": 1.0,
+      "edge_density": 0.0
+    },
+    "yolo_detections": [
+      {
+        "class": "frisbee",
+        "confidence": 0.2603303790092468,
+        "bbox": [
+          84.5710678100586,
+          323.1740417480469,
+          315.50531005859375,
+          442.2922058105469
+        ]
+      }
+    ]
+  },
+  {
+    "rank": 4,
+    "path": "/Users/leolu/Desktop/seathru/07-03-2022/2022-03-07_13-58-31rec0/camera/c1095s289.jpg",
+    "combined_score": 0.3208936010486496,
+    "clip_score": 0.5652212415422713,
+    "yolo_score": 0.09983358532190323,
+    "num_detections": 1,
+    "num_interesting": 0,
+    "clip_components": {
+      "clip_positive": 0.6453375816345215,
+      "clip_negative": 0.3649303913116455
+    },
+    "cv_components": {
+      "entropy": 0.6883152811069871,
+      "laplacian_var": 0.004983425140380859,
+      "saturation_penalty": 1.0,
+      "edge_density": 0.0
+    },
+    "yolo_detections": [
+      {
+        "class": "cake",
+        "confidence": 0.3993343412876129,
+        "bbox": [
+          0.7302474975585938,
+          127.36602783203125,
+          477.68768310546875,
+          471.60089111328125
+        ]
+      }
+    ]
+  },
+  {
+    "rank": 5,
+    "path": "/Users/leolu/Desktop/seathru/07-03-2022/2022-03-07_13-58-31rec0/camera/c123s42.jpg",
+    "combined_score": 0.2744985422880316,
+    "clip_score": 0.5722820247922625,
+    "yolo_score": 0.0,
+    "num_detections": 0,
+    "num_interesting": 0,
+    "clip_components": {
+      "clip_positive": 0.6504422426223755,
+      "clip_negative": 0.37688148021698
+    },
+    "cv_components": {
+      "entropy": 0.7316985553809982,
+      "laplacian_var": 0.0034453868865966797,
+      "saturation_penalty": 1.0,
+      "edge_density": 0.0
+    },
+    "yolo_detections": []
+  },
+  {
+    "rank": 6,
+    "path": "/Users/leolu/Desktop/seathru/07-03-2022/2022-03-07_13-58-31rec0/camera/c1063s283.jpg",
+    "combined_score": 0.2744697930319388,
+    "clip_score": 0.5718421765736171,
+    "yolo_score": 0.0,
+    "num_detections": 0,
+    "num_interesting": 0,
+    "clip_components": {
+      "clip_positive": 0.6533284187316895,
+      "clip_negative": 0.3681265711784363
+    },
+    "cv_components": {
+      "entropy": 0.7395202545804258,
+      "laplacian_var": 0.004455089569091797,
+      "saturation_penalty": 1.0,
+      "edge_density": 0.0
+    },
+    "yolo_detections": []
+  },
+  {
+    "rank": 7,
+    "path": "/Users/leolu/Desktop/seathru/07-03-2022/2022-03-07_13-58-31rec0/camera/c1461s355.jpg",
+    "combined_score": 0.27434340716652184,
+    "clip_score": 0.5700264743396214,
+    "yolo_score": 0.0,
+    "num_detections": 0,
+    "num_interesting": 0,
+    "clip_components": {
+      "clip_positive": 0.6488930583000183,
+      "clip_negative": 0.37286001443862915
+    },
+    "cv_components": {
+      "entropy": 0.7743036243544934,
+      "laplacian_var": 0.005665421485900879,
+      "saturation_penalty": 1.0,
+      "edge_density": 0.0
+    },
+    "yolo_detections": []
+  },
+  {
+    "rank": 8,
+    "path": "/Users/leolu/Desktop/seathru/07-03-2022/2022-03-07_13-58-31rec0/camera/c125s44.jpg",
+    "combined_score": 0.27434153068400646,
+    "clip_score": 0.572660940034049,
+    "yolo_score": 0.0,
+    "num_detections": 0,
+    "num_interesting": 0,
+    "clip_components": {
+      "clip_positive": 0.6529783010482788,
+      "clip_negative": 0.3718675374984741
+    },
+    "cv_components": {
+      "entropy": 0.7131523028748842,
+      "laplacian_var": 0.0034769773483276367,
+      "saturation_penalty": 1.0,
+      "edge_density": 0.0
+    },
+    "yolo_detections": []
+  },
+  {
+    "rank": 9,
+    "path": "/Users/leolu/Desktop/seathru/07-03-2022/2022-03-07_13-58-31rec0/camera/c1419s353.jpg",
+    "combined_score": 0.2741720912526337,
+    "clip_score": 0.572169806276049,
+    "yolo_score": 0.0,
+    "num_detections": 0,
+    "num_interesting": 0,
+    "clip_components": {
+      "clip_positive": 0.6538546681404114,
+      "clip_negative": 0.3679576516151428
+    },
+    "cv_components": {
+      "entropy": 0.7138261485883264,
+      "laplacian_var": 0.004423975944519043,
+      "saturation_penalty": 1.0,
+      "edge_density": 0.0
+    },
+    "yolo_detections": []
+  },
+  {
+    "rank": 10,
+    "path": "/Users/leolu/Desktop/seathru/07-03-2022/2022-03-07_13-58-31rec0/camera/c1420s353.jpg",
+    "combined_score": 0.2741001043841803,
+    "clip_score": 0.5720160518373762,
+    "yolo_score": 0.0,
+    "num_detections": 0,
+    "num_interesting": 0,
+    "clip_components": {
+      "clip_positive": 0.6538060903549194,
+      "clip_negative": 0.36754095554351807
+    },
+    "cv_components": {
+      "entropy": 0.7133143449501856,
+      "laplacian_var": 0.004306674003601074,
+      "saturation_penalty": 1.0,
+      "edge_density": 0.0
+    },
+    "yolo_detections": []
+  },
+  {
+    "rank": 11,
+    "path": "/Users/leolu/Desktop/seathru/07-03-2022/2022-03-07_13-58-31rec0/camera/c115s37.jpg",
+    "combined_score": 0.2740766831762503,
+    "clip_score": 0.5699412907872882,
+    "yolo_score": 0.0,
+    "num_detections": 0,
+    "num_interesting": 0,
+    "clip_components": {
+      "clip_positive": 0.6490803360939026,
+      "clip_negative": 0.37209367752075195
+    },
+    "cv_components": {
+      "entropy": 0.762869800574754,
+      "laplacian_var": 0.0031402111053466797,
+      "saturation_penalty": 1.0,
+      "edge_density": 0.0
+    },
+    "yolo_detections": []
+  },
+  {
+    "rank": 12,
+    "path": "/Users/leolu/Desktop/seathru/07-03-2022/2022-03-07_13-58-31rec0/camera/c122s42.jpg",
+    "combined_score": 0.27405632907886746,
+    "clip_score": 0.5711164729935783,
+    "yolo_score": 0.0,
+    "num_detections": 0,
+    "num_interesting": 0,
+    "clip_components": {
+      "clip_positive": 0.6498343348503113,
+      "clip_negative": 0.3743218183517456
+    },
+    "cv_components": {
+      "entropy": 0.733190981249814,
+      "laplacian_var": 0.003393411636352539,
+      "saturation_penalty": 1.0,
+      "edge_density": 0.0
+    },
+    "yolo_detections": []
+  },
+  {
+    "rank": 13,
+    "path": "/Users/leolu/Desktop/seathru/07-03-2022/2022-03-07_13-58-31rec0/camera/c111s35.jpg",
+    "combined_score": 0.27398495198511563,
+    "clip_score": 0.5700752479689463,
+    "yolo_score": 0.0,
+    "num_detections": 0,
+    "num_interesting": 0,
+    "clip_components": {
+      "clip_positive": 0.6491077542304993,
+      "clip_negative": 0.3724939823150635
+    },
+    "cv_components": {
+      "entropy": 0.7550749479501893,
+      "laplacian_var": 0.0022162199020385742,
+      "saturation_penalty": 1.0,
+      "edge_density": 0.0
+    },
+    "yolo_detections": []
+  },
+  {
+    "rank": 14,
+    "path": "/Users/leolu/Desktop/seathru/07-03-2022/2022-03-07_13-58-31rec0/camera/c112s36.jpg",
+    "combined_score": 0.2739813592374216,
+    "clip_score": 0.5698765942028591,
+    "yolo_score": 0.0,
+    "num_detections": 0,
+    "num_interesting": 0,
+    "clip_components": {
+      "clip_positive": 0.6483973860740662,
+      "clip_negative": 0.3735746145248413
+    },
+    "cv_components": {
+      "entropy": 0.759080379672758,
+      "laplacian_var": 0.002762913703918457,
+      "saturation_penalty": 1.0,
+      "edge_density": 0.0
+    },
+    "yolo_detections": []
+  },
+  {
+    "rank": 15,
+    "path": "/Users/leolu/Desktop/seathru/07-03-2022/2022-03-07_13-58-31rec0/camera/c101s29.jpg",
+    "combined_score": 0.273973551818116,
+    "clip_score": 0.5708051664488656,
+    "yolo_score": 0.0,
+    "num_detections": 0,
+    "num_interesting": 0,
+    "clip_components": {
+      "clip_positive": 0.6507286429405212,
+      "clip_negative": 0.37099647521972656
+    },
+    "cv_components": {
+      "entropy": 0.7365094252883083,
+      "laplacian_var": 0.0025796890258789062,
+      "saturation_penalty": 1.0,
+      "edge_density": 0.0
+    },
+    "yolo_detections": []
+  },
+  {
+    "rank": 16,
+    "path": "/Users/leolu/Desktop/seathru/07-03-2022/2022-03-07_13-58-31rec0/camera/c114s37.jpg",
+    "combined_score": 0.2738217414463498,
+    "clip_score": 0.5693193929536002,
+    "yolo_score": 0.0,
+    "num_detections": 0,
+    "num_interesting": 0,
+    "clip_components": {
+      "clip_positive": 0.6483790278434753,
+      "clip_negative": 0.37167030572891235
+    },
+    "cv_components": {
+      "entropy": 0.7625834833848151,
+      "laplacian_var": 0.003055572509765625,
+      "saturation_penalty": 1.0,
+      "edge_density": 0.0
+    },
+    "yolo_detections": []
+  },
+  {
+    "rank": 17,
+    "path": "/Users/leolu/Desktop/seathru/07-03-2022/2022-03-07_13-58-31rec0/camera/c121s42.jpg",
+    "combined_score": 0.27380458391543094,
+    "clip_score": 0.570316425391606,
+    "yolo_score": 0.0,
+    "num_detections": 0,
+    "num_interesting": 0,
+    "clip_components": {
+      "clip_positive": 0.6486280560493469,
+      "clip_negative": 0.3745373487472534
+    },
+    "cv_components": {
+      "entropy": 0.7373277066308309,
+      "laplacian_var": 0.003353118896484375,
+      "saturation_penalty": 1.0,
+      "edge_density": 0.0
+    },
+    "yolo_detections": []
+  },
+  {
+    "rank": 18,
+    "path": "/Users/leolu/Desktop/seathru/07-03-2022/2022-03-07_13-58-31rec0/camera/c1418s352.jpg",
+    "combined_score": 0.2737424276721346,
+    "clip_score": 0.571047672203609,
+    "yolo_score": 0.0,
+    "num_detections": 0,
+    "num_interesting": 0,
+    "clip_components": {
+      "clip_positive": 0.6543505787849426,
+      "clip_negative": 0.36279040575027466
+    },
+    "cv_components": {
+      "entropy": 0.7148513088593058,
+      "laplacian_var": 0.00455021858215332,
+      "saturation_penalty": 1.0,
+      "edge_density": 0.0
+    },
+    "yolo_detections": []
+  },
+  {
+    "rank": 19,
+    "path": "/Users/leolu/Desktop/seathru/07-03-2022/2022-03-07_13-58-31rec0/camera/c113s36.jpg",
+    "combined_score": 0.27373681398901717,
+    "clip_score": 0.5692093627793449,
+    "yolo_score": 0.0,
+    "num_detections": 0,
+    "num_interesting": 0,
+    "clip_components": {
+      "clip_positive": 0.6478573679924011,
+      "clip_negative": 0.3725893497467041
+    },
+    "cv_components": {
+      "entropy": 0.7602371597897687,
+      "laplacian_var": 0.0029469728469848633,
+      "saturation_penalty": 1.0,
+      "edge_density": 0.0
+    },
+    "yolo_detections": []
+  },
+  {
+    "rank": 20,
+    "path": "/Users/leolu/Desktop/seathru/07-03-2022/2022-03-07_13-58-31rec0/camera/c1224s315.jpg",
+    "combined_score": 0.27366976285331945,
+    "clip_score": 0.571061738899776,
+    "yolo_score": 0.0,
+    "num_detections": 0,
+    "num_interesting": 0,
+    "clip_components": {
+      "clip_positive": 0.6508339047431946,
+      "clip_negative": 0.37163132429122925
+    },
+    "cv_components": {
+      "entropy": 0.6957902396255395,
+      "laplacian_var": 0.006818890571594238,
+      "saturation_penalty": 1.0,
+      "edge_density": 0.006047453703703704
+    },
+    "yolo_detections": []
+  },
+  {
+    "rank": 21,
+    "path": "/Users/leolu/Desktop/seathru/07-03-2022/2022-03-07_13-58-31rec0/camera/c1414s350.jpg",
+    "combined_score": 0.27364389674905526,
+    "clip_score": 0.5707897543907166,
+    "yolo_score": 0.0,
+    "num_detections": 0,
+    "num_interesting": 0,
+    "clip_components": {
+      "clip_positive": 0.6520083546638489,
+      "clip_negative": 0.36774325370788574
+    },
+    "cv_components": {
+      "entropy": 0.7147649389765177,
+      "laplacian_var": 0.004914760589599609,
+      "saturation_penalty": 1.0,
+      "edge_density": 0.0
+    },
+    "yolo_detections": []
+  },
+  {
+    "rank": 22,
+    "path": "/Users/leolu/Desktop/seathru/07-03-2022/2022-03-07_13-58-31rec0/camera/c1417s352.jpg",
+    "combined_score": 0.27363738266902055,
+    "clip_score": 0.5707722050803049,
+    "yolo_score": 0.0,
+    "num_detections": 0,
+    "num_interesting": 0,
+    "clip_components": {
+      "clip_positive": 0.652219295501709,
+      "clip_negative": 0.36715447902679443
+    },
+    "cv_components": {
+      "entropy": 0.7150495510389274,
+      "laplacian_var": 0.004660487174987793,
+      "saturation_penalty": 1.0,
+      "edge_density": 0.0
+    },
+    "yolo_detections": []
+  },
+  {
+    "rank": 23,
+    "path": "/Users/leolu/Desktop/seathru/07-03-2022/2022-03-07_13-58-31rec0/camera/c1223s314.jpg",
+    "combined_score": 0.2735718202426845,
+    "clip_score": 0.5708498273577008,
+    "yolo_score": 0.0,
+    "num_detections": 0,
+    "num_interesting": 0,
+    "clip_components": {
+      "clip_positive": 0.6518223285675049,
+      "clip_negative": 0.3684185743331909
+    },
+    "cv_components": {
+      "entropy": 0.6955929573496782,
+      "laplacian_var": 0.007093548774719238,
+      "saturation_penalty": 1.0,
+      "edge_density": 0.005613425925925925
+    },
+    "yolo_detections": []
+  },
+  {
+    "rank": 24,
+    "path": "/Users/leolu/Desktop/seathru/07-03-2022/2022-03-07_13-58-31rec0/camera/c1201s309.jpg",
+    "combined_score": 0.27338493924723367,
+    "clip_score": 0.5703992332730975,
+    "yolo_score": 0.0,
+    "num_detections": 0,
+    "num_interesting": 0,
+    "clip_components": {
+      "clip_positive": 0.648966908454895,
+      "clip_negative": 0.3739800453186035
+    },
+    "cv_components": {
+      "entropy": 0.7060576147566713,
+      "laplacian_var": 0.006299734115600586,
+      "saturation_penalty": 1.0,
+      "edge_density": 0.0005787037037037037
+    },
+    "yolo_detections": []
+  },
+  {
+    "rank": 25,
+    "path": "/Users/leolu/Desktop/seathru/07-03-2022/2022-03-07_13-58-31rec0/camera/c1219s312.jpg",
+    "combined_score": 0.27336308221796585,
+    "clip_score": 0.5705016255378723,
+    "yolo_score": 0.0,
+    "num_detections": 0,
+    "num_interesting": 0,
+    "clip_components": {
+      "clip_positive": 0.6491190791130066,
+      "clip_negative": 0.3739579916000366
+    },
+    "cv_components": {
+      "entropy": 0.6976978196268772,
+      "laplacian_var": 0.0075920820236206055,
+      "saturation_penalty": 1.0,
+      "edge_density": 0.0022280092592592594
+    },
+    "yolo_detections": []
+  },
+  {
+    "rank": 26,
+    "path": "/Users/leolu/Desktop/seathru/07-03-2022/2022-03-07_13-58-31rec0/camera/c100s28.jpg",
+    "combined_score": 0.27335941891025306,
+    "clip_score": 0.5694429533822196,
+    "yolo_score": 0.0,
+    "num_detections": 0,
+    "num_interesting": 0,
+    "clip_components": {
+      "clip_positive": 0.6484549045562744,
+      "clip_negative": 0.3719130754470825
+    },
+    "cv_components": {
+      "entropy": 0.7323562333460885,
+      "laplacian_var": 0.0025780200958251953,
+      "saturation_penalty": 1.0,
+      "edge_density": 0.0
+    },
+    "yolo_detections": []
+  },
+  {
+    "rank": 27,
+    "path": "/Users/leolu/Desktop/seathru/07-03-2022/2022-03-07_13-58-31rec0/camera/c102s29.jpg",
+    "combined_score": 0.2733363316602404,
+    "clip_score": 0.5691967606544496,
+    "yolo_score": 0.0,
+    "num_detections": 0,
+    "num_interesting": 0,
+    "clip_components": {
+      "clip_positive": 0.6488820910453796,
+      "clip_negative": 0.369983434677124
+    },
+    "cv_components": {
+      "entropy": 0.7368430265599155,
+      "laplacian_var": 0.002614617347717285,
+      "saturation_penalty": 1.0,
+      "edge_density": 0.0
+    },
+    "yolo_detections": []
+  },
+  {
+    "rank": 28,
+    "path": "/Users/leolu/Desktop/seathru/07-03-2022/2022-03-07_13-58-31rec0/camera/c1411s349.jpg",
+    "combined_score": 0.2733330204499762,
+    "clip_score": 0.5698540466172355,
+    "yolo_score": 0.0,
+    "num_detections": 0,
+    "num_interesting": 0,
+    "clip_components": {
+      "clip_positive": 0.6506754755973816,
+      "clip_negative": 0.3678004741668701
+    },
+    "cv_components": {
+      "entropy": 0.7183911297074408,
+      "laplacian_var": 0.005092978477478027,
+      "saturation_penalty": 1.0,
+      "edge_density": 0.0
+    },
+    "yolo_detections": []
+  },
+  {
+    "rank": 29,
+    "path": "/Users/leolu/Desktop/seathru/07-03-2022/2022-03-07_13-58-31rec0/camera/c105s30.jpg",
+    "combined_score": 0.2733310208786655,
+    "clip_score": 0.5693932175636292,
+    "yolo_score": 0.0,
+    "num_detections": 0,
+    "num_interesting": 0,
+    "clip_components": {
+      "clip_positive": 0.64813631772995,
+      "clip_negative": 0.37253546714782715
+    },
+    "cv_components": {
+      "entropy": 0.7319984797783409,
+      "laplacian_var": 0.002425551414489746,
+      "saturation_penalty": 1.0,
+      "edge_density": 0.0
+    },
+    "yolo_detections": []
+  },
+  {
+    "rank": 30,
+    "path": "/Users/leolu/Desktop/seathru/07-03-2022/2022-03-07_13-58-31rec0/camera/c1402s344.jpg",
+    "combined_score": 0.2733272694023315,
+    "clip_score": 0.5699823413576399,
+    "yolo_score": 0.0,
+    "num_detections": 0,
+    "num_interesting": 0,
+    "clip_components": {
+      "clip_positive": 0.6498366594314575,
+      "clip_negative": 0.3703465461730957
+    },
+    "cv_components": {
+      "entropy": 0.7143241009126323,
+      "laplacian_var": 0.005099296569824219,
+      "saturation_penalty": 1.0,
+      "edge_density": 0.000318287037037037
+    },
+    "yolo_detections": []
+  },
+  {
+    "rank": 31,
+    "path": "/Users/leolu/Desktop/seathru/07-03-2022/2022-03-07_13-58-31rec0/camera/c1062s283.jpg",
+    "combined_score": 0.273252099513814,
+    "clip_score": 0.568830634866442,
+    "yolo_score": 0.0,
+    "num_detections": 0,
+    "num_interesting": 0,
+    "clip_components": {
+      "clip_positive": 0.6484829783439636,
+      "clip_negative": 0.36969977617263794
+    },
+    "cv_components": {
+      "entropy": 0.738929717188529,
+      "laplacian_var": 0.004261016845703125,
+      "saturation_penalty": 1.0,
+      "edge_density": 0.0
+    },
+    "yolo_detections": []
+  },
+  {
+    "rank": 32,
+    "path": "/Users/leolu/Desktop/seathru/07-03-2022/2022-03-07_13-58-31rec0/camera/c116s37.jpg",
+    "combined_score": 0.2732356634310349,
+    "clip_score": 0.5678264243262154,
+    "yolo_score": 0.0,
+    "num_detections": 0,
+    "num_interesting": 0,
+    "clip_components": {
+      "clip_positive": 0.6459090709686279,
+      "clip_negative": 0.3726198077201843
+    },
+    "cv_components": {
+      "entropy": 0.763169702461999,
+      "laplacian_var": 0.0031359195709228516,
+      "saturation_penalty": 1.0,
+      "edge_density": 0.0
+    },
+    "yolo_detections": []
+  },
+  {
+    "rank": 33,
+    "path": "/Users/leolu/Desktop/seathru/07-03-2022/2022-03-07_13-58-31rec0/camera/c1386s336.jpg",
+    "combined_score": 0.2732259615384566,
+    "clip_score": 0.5711428608213153,
+    "yolo_score": 0.0,
+    "num_detections": 0,
+    "num_interesting": 0,
+    "clip_components": {
+      "clip_positive": 0.6529935598373413,
+      "clip_negative": 0.36651611328125
+    },
+    "cv_components": {
+      "entropy": 0.6812638630706811,
+      "laplacian_var": 0.004865169525146484,
+      "saturation_penalty": 1.0,
+      "edge_density": 0.0
+    },
+    "yolo_detections": []
+  },
+  {
+    "rank": 34,
+    "path": "/Users/leolu/Desktop/seathru/07-03-2022/2022-03-07_13-58-31rec0/camera/c1409s347.jpg",
+    "combined_score": 0.27319460822941827,
+    "clip_score": 0.5694887893540519,
+    "yolo_score": 0.0,
+    "num_detections": 0,
+    "num_interesting": 0,
+    "clip_components": {
+      "clip_positive": 0.6486154198646545,
+      "clip_negative": 0.37167221307754517
+    },
+    "cv_components": {
+      "entropy": 0.7191653759661534,
+      "laplacian_var": 0.004780173301696777,
+      "saturation_penalty": 1.0,
+      "edge_density": 0.0
+    },
+    "yolo_detections": []
+  },
+  {
+    "rank": 35,
+    "path": "/Users/leolu/Desktop/seathru/07-03-2022/2022-03-07_13-58-31rec0/camera/c1462s355.jpg",
+    "combined_score": 0.2731870188474388,
+    "clip_score": 0.5671317151614599,
+    "yolo_score": 0.0,
+    "num_detections": 0,
+    "num_interesting": 0,
+    "clip_components": {
+      "clip_positive": 0.6461498141288757,
+      "clip_negative": 0.3695864677429199
+    },
+    "cv_components": {
+      "entropy": 0.7745094632405154,
+      "laplacian_var": 0.005550503730773926,
+      "saturation_penalty": 1.0,
+      "edge_density": 0.0
+    },
+    "yolo_detections": []
+  },
+  {
+    "rank": 36,
+    "path": "/Users/leolu/Desktop/seathru/07-03-2022/2022-03-07_13-58-31rec0/camera/c1383s335.jpg",
+    "combined_score": 0.2731857393400539,
+    "clip_score": 0.5711919665336609,
+    "yolo_score": 0.0,
+    "num_detections": 0,
+    "num_interesting": 0,
+    "clip_components": {
+      "clip_positive": 0.6520499587059021,
+      "clip_negative": 0.36904698610305786
+    },
+    "cv_components": {
+      "entropy": 0.6773796928922475,
+      "laplacian_var": 0.005157470703125,
+      "saturation_penalty": 1.0,
+      "edge_density": 0.0
+    },
+    "yolo_detections": []
+  },
+  {
+    "rank": 37,
+    "path": "/Users/leolu/Desktop/seathru/07-03-2022/2022-03-07_13-58-31rec0/camera/c109s33.jpg",
+    "combined_score": 0.27317831921628744,
+    "clip_score": 0.5684089320046561,
+    "yolo_score": 0.0,
+    "num_detections": 0,
+    "num_interesting": 0,
+    "clip_components": {
+      "clip_positive": 0.6463483572006226,
+      "clip_negative": 0.37356036901474
+    },
+    "cv_components": {
+      "entropy": 0.7452396032096159,
+      "laplacian_var": 0.003645181655883789,
+      "saturation_penalty": 1.0,
+      "edge_density": 0.0
+    },
+    "yolo_detections": []
+  },
+  {
+    "rank": 38,
+    "path": "/Users/leolu/Desktop/seathru/07-03-2022/2022-03-07_13-58-31rec0/camera/c1384s335.jpg",
+    "combined_score": 0.27314837408343395,
+    "clip_score": 0.5710831114224025,
+    "yolo_score": 0.0,
+    "num_detections": 0,
+    "num_interesting": 0,
+    "clip_components": {
+      "clip_positive": 0.6517685055732727,
+      "clip_negative": 0.36936962604522705
+    },
+    "cv_components": {
+      "entropy": 0.6777969109974638,
+      "laplacian_var": 0.0051108598709106445,
+      "saturation_penalty": 1.0,
+      "edge_density": 0.0
+    },
+    "yolo_detections": []
+  },
+  {
+    "rank": 39,
+    "path": "/Users/leolu/Desktop/seathru/07-03-2022/2022-03-07_13-58-31rec0/camera/c1059s281.jpg",
+    "combined_score": 0.27310572643749104,
+    "clip_score": 0.5683911868504116,
+    "yolo_score": 0.0,
+    "num_detections": 0,
+    "num_interesting": 0,
+    "clip_components": {
+      "clip_positive": 0.6476945877075195,
+      "clip_negative": 0.3701326847076416
+    },
+    "cv_components": {
+      "entropy": 0.7414337786355448,
+      "laplacian_var": 0.0035213232040405273,
+      "saturation_penalty": 1.0,
+      "edge_density": 0.0
+    },
+    "yolo_detections": []
+  },
+  {
+    "rank": 40,
+    "path": "/Users/leolu/Desktop/seathru/07-03-2022/2022-03-07_13-58-31rec0/camera/c1220s313.jpg",
+    "combined_score": 0.2731025592321529,
+    "clip_score": 0.5696863872664315,
+    "yolo_score": 0.0,
+    "num_detections": 0,
+    "num_interesting": 0,
+    "clip_components": {
+      "clip_positive": 0.6491290926933289,
+      "clip_negative": 0.37107962369918823
+    },
+    "cv_components": {
+      "entropy": 0.6972081653875218,
+      "laplacian_var": 0.007386445999145508,
+      "saturation_penalty": 1.0,
+      "edge_density": 0.004542824074074074
+    },
+    "yolo_detections": []
+  },
+  {
+    "rank": 41,
+    "path": "/Users/leolu/Desktop/seathru/07-03-2022/2022-03-07_13-58-31rec0/camera/c1065s284.jpg",
+    "combined_score": 0.27306025338057743,
+    "clip_score": 0.5680860706738063,
+    "yolo_score": 0.0,
+    "num_detections": 0,
+    "num_interesting": 0,
+    "clip_components": {
+      "clip_positive": 0.6484394669532776,
+      "clip_negative": 0.3672025799751282
+    },
+    "cv_components": {
+      "entropy": 0.745035289286584,
+      "laplacian_var": 0.004514217376708984,
+      "saturation_penalty": 1.0,
+      "edge_density": 0.0
+    },
+    "yolo_detections": []
+  },
+  {
+    "rank": 42,
+    "path": "/Users/leolu/Desktop/seathru/07-03-2022/2022-03-07_13-58-31rec0/camera/c1222s314.jpg",
+    "combined_score": 0.2730264593549301,
+    "clip_score": 0.5698197569165911,
+    "yolo_score": 0.0,
+    "num_detections": 0,
+    "num_interesting": 0,
+    "clip_components": {
+      "clip_positive": 0.6507755517959595,
+      "clip_negative": 0.36743026971817017
+    },
+    "cv_components": {
+      "entropy": 0.6956442593986037,
+      "laplacian_var": 0.006970524787902832,
+      "saturation_penalty": 1.0,
+      "edge_density": 0.0016493055555555556
+    },
+    "yolo_detections": []
+  },
+  {
+    "rank": 43,
+    "path": "/Users/leolu/Desktop/seathru/07-03-2022/2022-03-07_13-58-31rec0/camera/c1179s308.jpg",
+    "combined_score": 0.2729990206899065,
+    "clip_score": 0.5692361678395953,
+    "yolo_score": 0.0,
+    "num_detections": 0,
+    "num_interesting": 0,
+    "clip_components": {
+      "clip_positive": 0.6484375596046448,
+      "clip_negative": 0.37123268842697144
+    },
+    "cv_components": {
+      "entropy": 0.7071801212793806,
+      "laplacian_var": 0.00640559196472168,
+      "saturation_penalty": 1.0,
+      "edge_density": 0.00234375
+    },
+    "yolo_detections": []
+  },
+  {
+    "rank": 44,
+    "path": "/Users/leolu/Desktop/seathru/07-03-2022/2022-03-07_13-58-31rec0/camera/c1064s284.jpg",
+    "combined_score": 0.2729900033575759,
+    "clip_score": 0.5680087634495327,
+    "yolo_score": 0.0,
+    "num_detections": 0,
+    "num_interesting": 0,
+    "clip_components": {
+      "clip_positive": 0.6483316421508789,
+      "clip_negative": 0.367201566696167
+    },
+    "cv_components": {
+      "entropy": 0.7427126161688204,
+      "laplacian_var": 0.004477262496948242,
+      "saturation_penalty": 1.0,
+      "edge_density": 0.0
+    },
+    "yolo_detections": []
+  },
+  {
+    "rank": 45,
+    "path": "/Users/leolu/Desktop/seathru/07-03-2022/2022-03-07_13-58-31rec0/camera/c1441s354.jpg",
+    "combined_score": 0.27295276862823004,
+    "clip_score": 0.5683064375604903,
+    "yolo_score": 0.0,
+    "num_detections": 0,
+    "num_interesting": 0,
+    "clip_components": {
+      "clip_positive": 0.6489140391349792,
+      "clip_negative": 0.3667874336242676
+    },
+    "cv_components": {
+      "entropy": 0.7335255654455279,
+      "laplacian_var": 0.004286050796508789,
+      "saturation_penalty": 1.0,
+      "edge_density": 0.0
+    },
+    "yolo_detections": []
+  },
+  {
+    "rank": 46,
+    "path": "/Users/leolu/Desktop/seathru/07-03-2022/2022-03-07_13-58-31rec0/camera/c1180s308.jpg",
+    "combined_score": 0.2729435602851276,
+    "clip_score": 0.5690863387925285,
+    "yolo_score": 0.0,
+    "num_detections": 0,
+    "num_interesting": 0,
+    "clip_components": {
+      "clip_positive": 0.6475204825401306,
+      "clip_negative": 0.37300097942352295
+    },
+    "cv_components": {
+      "entropy": 0.7072821201221541,
+      "laplacian_var": 0.006340384483337402,
+      "saturation_penalty": 1.0,
+      "edge_density": 0.0024594907407407404
+    },
+    "yolo_detections": []
+  },
+  {
+    "rank": 47,
+    "path": "/Users/leolu/Desktop/seathru/07-03-2022/2022-03-07_13-58-31rec0/camera/c1060s281.jpg",
+    "combined_score": 0.272903093285669,
+    "clip_score": 0.5679339340754919,
+    "yolo_score": 0.0,
+    "num_detections": 0,
+    "num_interesting": 0,
+    "clip_components": {
+      "clip_positive": 0.6461848020553589,
+      "clip_negative": 0.372306764125824
+    },
+    "cv_components": {
+      "entropy": 0.7400387364724992,
+      "laplacian_var": 0.003732442855834961,
+      "saturation_penalty": 1.0,
+      "edge_density": 0.0
+    },
+    "yolo_detections": []
+  },
+  {
+    "rank": 48,
+    "path": "/Users/leolu/Desktop/seathru/07-03-2022/2022-03-07_13-58-31rec0/camera/c1416s351.jpg",
+    "combined_score": 0.27289531521656185,
+    "clip_score": 0.5688977582114084,
+    "yolo_score": 0.0,
+    "num_detections": 0,
+    "num_interesting": 0,
+    "clip_components": {
+      "clip_positive": 0.6474632024765015,
+      "clip_negative": 0.37248414754867554
+    },
+    "cv_components": {
+      "entropy": 0.7152844197925896,
+      "laplacian_var": 0.004888296127319336,
+      "saturation_penalty": 1.0,
+      "edge_density": 0.0
+    },
+    "yolo_detections": []
+  },
+  {
+    "rank": 49,
+    "path": "/Users/leolu/Desktop/seathru/07-03-2022/2022-03-07_13-58-31rec0/camera/c1071s288.jpg",
+    "combined_score": 0.27280235766194344,
+    "clip_score": 0.5683060203279768,
+    "yolo_score": 0.0,
+    "num_detections": 0,
+    "num_interesting": 0,
+    "clip_components": {
+      "clip_positive": 0.6487588882446289,
+      "clip_negative": 0.36717385053634644
+    },
+    "cv_components": {
+      "entropy": 0.7244703395573939,
+      "laplacian_var": 0.003632187843322754,
+      "saturation_penalty": 1.0,
+      "edge_density": 0.00034722222222222224
+    },
+    "yolo_detections": []
+  },
+  {
+    "rank": 50,
+    "path": "/Users/leolu/Desktop/seathru/07-03-2022/2022-03-07_13-58-31rec0/camera/c1061s282.jpg",
+    "combined_score": 0.27279534085885637,
+    "clip_score": 0.5676727380071368,
+    "yolo_score": 0.0,
+    "num_detections": 0,
+    "num_interesting": 0,
+    "clip_components": {
+      "clip_positive": 0.6455195546150208,
+      "clip_negative": 0.37305569648742676
+    },
+    "cv_components": {
+      "entropy": 0.7394316205017616,
+      "laplacian_var": 0.004143118858337402,
+      "saturation_penalty": 1.0,
+      "edge_density": 0.0
+    },
+    "yolo_detections": []
+  },
+  {
+    "rank": 51,
+    "path": "/Users/leolu/Desktop/seathru/07-03-2022/2022-03-07_13-58-31rec0/camera/c1412s349.jpg",
+    "combined_score": 0.27278884435460105,
+    "clip_score": 0.5685511912618365,
+    "yolo_score": 0.0,
+    "num_detections": 0,
+    "num_interesting": 0,
+    "clip_components": {
+      "clip_positive": 0.6489331126213074,
+      "clip_negative": 0.3675963878631592
+    },
+    "cv_components": {
+      "entropy": 0.7171148311543389,
+      "laplacian_var": 0.004987239837646484,
+      "saturation_penalty": 1.0,
+      "edge_density": 0.0
+    },
+    "yolo_detections": []
+  },
+  {
+    "rank": 52,
+    "path": "/Users/leolu/Desktop/seathru/07-03-2022/2022-03-07_13-58-31rec0/camera/c1387s337.jpg",
+    "combined_score": 0.2727494525225941,
+    "clip_score": 0.5698485970497131,
+    "yolo_score": 0.0,
+    "num_detections": 0,
+    "num_interesting": 0,
+    "clip_components": {
+      "clip_positive": 0.6516007781028748,
+      "clip_negative": 0.3654681444168091
+    },
+    "cv_components": {
+      "entropy": 0.6838146883963537,
+      "laplacian_var": 0.004786133766174316,
+      "saturation_penalty": 1.0,
+      "edge_density": 0.0
+    },
+    "yolo_detections": []
+  },
+  {
+    "rank": 53,
+    "path": "/Users/leolu/Desktop/seathru/07-03-2022/2022-03-07_13-58-31rec0/camera/c126s44.jpg",
+    "combined_score": 0.2727442778467279,
+    "clip_score": 0.5687471457890102,
+    "yolo_score": 0.0,
+    "num_detections": 0,
+    "num_interesting": 0,
+    "clip_components": {
+      "clip_positive": 0.6460824012756348,
+      "clip_negative": 0.37540900707244873
+    },
+    "cv_components": {
+      "entropy": 0.7114448898468582,
+      "laplacian_var": 0.0032802820205688477,
+      "saturation_penalty": 1.0,
+      "edge_density": 0.0
+    },
+    "yolo_detections": []
+  },
+  {
+    "rank": 54,
+    "path": "/Users/leolu/Desktop/seathru/07-03-2022/2022-03-07_13-58-31rec0/camera/c106s31.jpg",
+    "combined_score": 0.2727328369030031,
+    "clip_score": 0.5677998576845441,
+    "yolo_score": 0.0,
+    "num_detections": 0,
+    "num_interesting": 0,
+    "clip_components": {
+      "clip_positive": 0.6461549997329712,
+      "clip_negative": 0.37191200256347656
+    },
+    "cv_components": {
+      "entropy": 0.7337478595637487,
+      "laplacian_var": 0.0030257701873779297,
+      "saturation_penalty": 1.0,
+      "edge_density": 0.0
+    },
+    "yolo_detections": []
+  },
+  {
+    "rank": 55,
+    "path": "/Users/leolu/Desktop/seathru/07-03-2022/2022-03-07_13-58-31rec0/camera/c120s41.jpg",
+    "combined_score": 0.27270157103250486,
+    "clip_score": 0.5672834430422102,
+    "yolo_score": 0.0,
+    "num_detections": 0,
+    "num_interesting": 0,
+    "clip_components": {
+      "clip_positive": 0.6448832750320435,
+      "clip_negative": 0.37328386306762695
+    },
+    "cv_components": {
+      "entropy": 0.7440316124959021,
+      "laplacian_var": 0.003260016441345215,
+      "saturation_penalty": 1.0,
+      "edge_density": 0.0
+    },
+    "yolo_detections": []
+  },
+  {
+    "rank": 56,
+    "path": "/Users/leolu/Desktop/seathru/07-03-2022/2022-03-07_13-58-31rec0/camera/c1318s322.jpg",
+    "combined_score": 0.27269563612458736,
+    "clip_score": 0.5693483778408596,
+    "yolo_score": 0.0,
+    "num_detections": 0,
+    "num_interesting": 0,
+    "clip_components": {
+      "clip_positive": 0.6485665440559387,
+      "clip_negative": 0.3713029623031616
+    },
+    "cv_components": {
+      "entropy": 0.6847056719210792,
+      "laplacian_var": 0.006826519966125488,
+      "saturation_penalty": 1.0,
+      "edge_density": 0.002922453703703704
+    },
+    "yolo_detections": []
+  },
+  {
+    "rank": 57,
+    "path": "/Users/leolu/Desktop/seathru/07-03-2022/2022-03-07_13-58-31rec0/camera/c108s32.jpg",
+    "combined_score": 0.27268803759531823,
+    "clip_score": 0.5673009242330279,
+    "yolo_score": 0.0,
+    "num_detections": 0,
+    "num_interesting": 0,
+    "clip_components": {
+      "clip_positive": 0.645209014415741,
+      "clip_negative": 0.3725306987762451
+    },
+    "cv_components": {
+      "entropy": 0.7424945242759596,
+      "laplacian_var": 0.003565549850463867,
+      "saturation_penalty": 1.0,
+      "edge_density": 0.0
+    },
+    "yolo_detections": []
+  },
+  {
+    "rank": 58,
+    "path": "/Users/leolu/Desktop/seathru/07-03-2022/2022-03-07_13-58-31rec0/camera/c124s43.jpg",
+    "combined_score": 0.2726841749930672,
+    "clip_score": 0.5680492946079799,
+    "yolo_score": 0.0,
+    "num_detections": 0,
+    "num_interesting": 0,
+    "clip_components": {
+      "clip_positive": 0.6455882787704468,
+      "clip_negative": 0.37420183420181274
+    },
+    "cv_components": {
+      "entropy": 0.7243887827141319,
+      "laplacian_var": 0.0034786462783813477,
+      "saturation_penalty": 1.0,
+      "edge_density": 0.0
+    },
+    "yolo_detections": []
+  },
+  {
+    "rank": 59,
+    "path": "/Users/leolu/Desktop/seathru/07-03-2022/2022-03-07_13-58-31rec0/camera/c1319s322.jpg",
+    "combined_score": 0.27265252534680995,
+    "clip_score": 0.5690249119486128,
+    "yolo_score": 0.0,
+    "num_detections": 0,
+    "num_interesting": 0,
+    "clip_components": {
+      "clip_positive": 0.6482964158058167,
+      "clip_negative": 0.370846152305603
+    },
+    "cv_components": {
+      "entropy": 0.6860128673965289,
+      "laplacian_var": 0.0069342851638793945,
+      "saturation_penalty": 1.0,
+      "edge_density": 0.004803240740740741
+    },
+    "yolo_detections": []
+  },
+  {
+    "rank": 60,
+    "path": "/Users/leolu/Desktop/seathru/07-03-2022/2022-03-07_13-58-31rec0/camera/c1047s276.jpg",
+    "combined_score": 0.2726074443311095,
+    "clip_score": 0.5678536210741316,
+    "yolo_score": 0.0,
+    "num_detections": 0,
+    "num_interesting": 0,
+    "clip_components": {
+      "clip_positive": 0.6482776403427124,
+      "clip_negative": 0.36679357290267944
+    },
+    "cv_components": {
+      "entropy": 0.7255960722941952,
+      "laplacian_var": 0.0023636817932128906,
+      "saturation_penalty": 1.0,
+      "edge_density": 0.0
+    },
+    "yolo_detections": []
+  },
+  {
+    "rank": 61,
+    "path": "/Users/leolu/Desktop/seathru/07-03-2022/2022-03-07_13-58-31rec0/camera/c1394s340.jpg",
+    "combined_score": 0.27257302164264247,
+    "clip_score": 0.5686600719179427,
+    "yolo_score": 0.0,
+    "num_detections": 0,
+    "num_interesting": 0,
+    "clip_components": {
+      "clip_positive": 0.650713324546814,
+      "clip_negative": 0.36352694034576416
+    },
+    "cv_components": {
+      "entropy": 0.7013432395964051,
+      "laplacian_var": 0.005196332931518555,
+      "saturation_penalty": 1.0,
+      "edge_density": 0.0
+    },
+    "yolo_detections": []
+  },
+  {
+    "rank": 62,
+    "path": "/Users/leolu/Desktop/seathru/07-03-2022/2022-03-07_13-58-31rec0/camera/c127s45.jpg",
+    "combined_score": 0.27256137180004336,
+    "clip_score": 0.568385090146746,
+    "yolo_score": 0.0,
+    "num_detections": 0,
+    "num_interesting": 0,
+    "clip_components": {
+      "clip_positive": 0.6457604169845581,
+      "clip_negative": 0.3749467730522156
+    },
+    "cv_components": {
+      "entropy": 0.7089997643842628,
+      "laplacian_var": 0.003440380096435547,
+      "saturation_penalty": 1.0,
+      "edge_density": 0.0
+    },
+    "yolo_detections": []
+  },
+  {
+    "rank": 63,
+    "path": "/Users/leolu/Desktop/seathru/07-03-2022/2022-03-07_13-58-31rec0/camera/c1057s280.jpg",
+    "combined_score": 0.27255768525331403,
+    "clip_score": 0.5668067165783474,
+    "yolo_score": 0.0,
+    "num_detections": 0,
+    "num_interesting": 0,
+    "clip_components": {
+      "clip_positive": 0.6463162302970886,
+      "clip_negative": 0.36803293228149414
+    },
+    "cv_components": {
+      "entropy": 0.7460264166852654,
+      "laplacian_var": 0.004073500633239746,
+      "saturation_penalty": 1.0,
+      "edge_density": 0.0
+    },
+    "yolo_detections": []
+  },
+  {
+    "rank": 64,
+    "path": "/Users/leolu/Desktop/seathru/07-03-2022/2022-03-07_13-58-31rec0/camera/c1058s281.jpg",
+    "combined_score": 0.2725550371837199,
+    "clip_score": 0.5669833336557661,
+    "yolo_score": 0.0,
+    "num_detections": 0,
+    "num_interesting": 0,
+    "clip_components": {
+      "clip_positive": 0.6453481316566467,
+      "clip_negative": 0.37107133865356445
+    },
+    "cv_components": {
+      "entropy": 0.7425884766417408,
+      "laplacian_var": 0.0031137466430664062,
+      "saturation_penalty": 1.0,
+      "edge_density": 0.0
+    },
+    "yolo_detections": []
+  },
+  {
+    "rank": 65,
+    "path": "/Users/leolu/Desktop/seathru/07-03-2022/2022-03-07_13-58-31rec0/camera/c1221s313.jpg",
+    "combined_score": 0.27255209370242583,
+    "clip_score": 0.5684056878089905,
+    "yolo_score": 0.0,
+    "num_detections": 0,
+    "num_interesting": 0,
+    "clip_components": {
+      "clip_positive": 0.6479223370552063,
+      "clip_negative": 0.3696140646934509
+    },
+    "cv_components": {
+      "entropy": 0.6964374087971603,
+      "laplacian_var": 0.0071392059326171875,
+      "saturation_penalty": 1.0,
+      "edge_density": 0.00390625
+    },
+    "yolo_detections": []
+  },
+  {
+    "rank": 66,
+    "path": "/Users/leolu/Desktop/seathru/07-03-2022/2022-03-07_13-58-31rec0/camera/c103s29.jpg",
+    "combined_score": 0.2725448174972435,
+    "clip_score": 0.5671974761145456,
+    "yolo_score": 0.0,
+    "num_detections": 0,
+    "num_interesting": 0,
+    "clip_components": {
+      "clip_positive": 0.6463547945022583,
+      "clip_negative": 0.36930418014526367
+    },
+    "cv_components": {
+      "entropy": 0.7373658809437917,
+      "laplacian_var": 0.002583742141723633,
+      "saturation_penalty": 1.0,
+      "edge_density": 0.0
+    },
+    "yolo_detections": []
+  },
+  {
+    "rank": 67,
+    "path": "/Users/leolu/Desktop/seathru/07-03-2022/2022-03-07_13-58-31rec0/camera/c1390s338.jpg",
+    "combined_score": 0.2725244311547918,
+    "clip_score": 0.5689935088157655,
+    "yolo_score": 0.0,
+    "num_detections": 0,
+    "num_interesting": 0,
+    "clip_components": {
+      "clip_positive": 0.6512020230293274,
+      "clip_negative": 0.36347222328186035
+    },
+    "cv_components": {
+      "entropy": 0.6908588889637145,
+      "laplacian_var": 0.004762768745422363,
+      "saturation_penalty": 1.0,
+      "edge_density": 0.0
+    },
+    "yolo_detections": []
+  },
+  {
+    "rank": 68,
+    "path": "/Users/leolu/Desktop/seathru/07-03-2022/2022-03-07_13-58-31rec0/camera/c1392s339.jpg",
+    "combined_score": 0.2724697274219964,
+    "clip_score": 0.5686111450195314,
+    "yolo_score": 0.0,
+    "num_detections": 0,
+    "num_interesting": 0,
+    "clip_components": {
+      "clip_positive": 0.6512675285339355,
+      "clip_negative": 0.3619701862335205
+    },
+    "cv_components": {
+      "entropy": 0.6966741219280557,
+      "laplacian_var": 0.004842042922973633,
+      "saturation_penalty": 1.0,
+      "edge_density": 0.0
+    },
+    "yolo_detections": []
+  },
+  {
+    "rank": 69,
+    "path": "/Users/leolu/Desktop/seathru/07-03-2022/2022-03-07_13-58-31rec0/camera/c1385s336.jpg",
+    "combined_score": 0.2724680746966913,
+    "clip_score": 0.5693114740507943,
+    "yolo_score": 0.0,
+    "num_detections": 0,
+    "num_interesting": 0,
+    "clip_components": {
+      "clip_positive": 0.6504313349723816,
+      "clip_negative": 0.36651182174682617
+    },
+    "cv_components": {
+      "entropy": 0.6795677437273148,
+      "laplacian_var": 0.005041360855102539,
+      "saturation_penalty": 1.0,
+      "edge_density": 0.0
+    },
+    "yolo_detections": []
+  },
+  {
+    "rank": 70,
+    "path": "/Users/leolu/Desktop/seathru/07-03-2022/2022-03-07_13-58-31rec0/camera/c1410s348.jpg",
+    "combined_score": 0.2724472746882731,
+    "clip_score": 0.567403725215367,
+    "yolo_score": 0.0,
+    "num_detections": 0,
+    "num_interesting": 0,
+    "clip_components": {
+      "clip_positive": 0.6476197242736816,
+      "clip_negative": 0.3668637275695801
+    },
+    "cv_components": {
+      "entropy": 0.7197099513101195,
+      "laplacian_var": 0.0050389766693115234,
+      "saturation_penalty": 1.0,
+      "edge_density": 0.002199074074074074
+    },
+    "yolo_detections": []
+  },
+  {
+    "rank": 71,
+    "path": "/Users/leolu/Desktop/seathru/07-03-2022/2022-03-07_13-58-31rec0/camera/c1173s305.jpg",
+    "combined_score": 0.27242244431327206,
+    "clip_score": 0.5677108679498946,
+    "yolo_score": 0.0,
+    "num_detections": 0,
+    "num_interesting": 0,
+    "clip_components": {
+      "clip_positive": 0.6472722887992859,
+      "clip_negative": 0.368807315826416
+    },
+    "cv_components": {
+      "entropy": 0.7127902313251,
+      "laplacian_var": 0.005238652229309082,
+      "saturation_penalty": 1.0,
+      "edge_density": 0.0011284722222222221
+    },
+    "yolo_detections": []
+  },
+  {
+    "rank": 72,
+    "path": "/Users/leolu/Desktop/seathru/07-03-2022/2022-03-07_13-58-31rec0/camera/c1171s304.jpg",
+    "combined_score": 0.2724008247821164,
+    "clip_score": 0.5674836209842138,
+    "yolo_score": 0.0,
+    "num_detections": 0,
+    "num_interesting": 0,
+    "clip_components": {
+      "clip_positive": 0.6468847393989563,
+      "clip_negative": 0.3689808249473572
+    },
+    "cv_components": {
+      "entropy": 0.7151516938484349,
+      "laplacian_var": 0.005239963531494141,
+      "saturation_penalty": 1.0,
+      "edge_density": 0.002025462962962963
+    },
+    "yolo_detections": []
+  },
+  {
+    "rank": 73,
+    "path": "/Users/leolu/Desktop/seathru/07-03-2022/2022-03-07_13-58-31rec0/camera/c1377s332.jpg",
+    "combined_score": 0.27237678570687024,
+    "clip_score": 0.569085887500218,
+    "yolo_score": 0.0,
+    "num_detections": 0,
+    "num_interesting": 0,
+    "clip_components": {
+      "clip_positive": 0.6509746313095093,
+      "clip_negative": 0.36436402797698975
+    },
+    "cv_components": {
+      "entropy": 0.6794610893704833,
+      "laplacian_var": 0.0050847530364990234,
+      "saturation_penalty": 1.0,
+      "edge_density": 0.0
+    },
+    "yolo_detections": []
+  },
+  {
+    "rank": 74,
+    "path": "/Users/leolu/Desktop/seathru/07-03-2022/2022-03-07_13-58-31rec0/camera/c1361s324.jpg",
+    "combined_score": 0.2723763806311135,
+    "clip_score": 0.5680944578988212,
+    "yolo_score": 0.0,
+    "num_detections": 0,
+    "num_interesting": 0,
+    "clip_components": {
+      "clip_positive": 0.6493206024169922,
+      "clip_negative": 0.36502909660339355
+    },
+    "cv_components": {
+      "entropy": 0.6835688836991671,
+      "laplacian_var": 0.008022427558898926,
+      "saturation_penalty": 1.0,
+      "edge_density": 0.008362268518518519
+    },
+    "yolo_detections": []
+  },
+  {
+    "rank": 75,
+    "path": "/Users/leolu/Desktop/seathru/07-03-2022/2022-03-07_13-58-31rec0/camera/c1413s350.jpg",
+    "combined_score": 0.27234153735286704,
+    "clip_score": 0.5675016641616821,
+    "yolo_score": 0.0,
+    "num_detections": 0,
+    "num_interesting": 0,
+    "clip_components": {
+      "clip_positive": 0.6472769975662231,
+      "clip_negative": 0.3680633306503296
+    },
+    "cv_components": {
+      "entropy": 0.7155148909370351,
+      "laplacian_var": 0.004937410354614258,
+      "saturation_penalty": 1.0,
+      "edge_density": 0.0
+    },
+    "yolo_detections": []
+  },
+  {
+    "rank": 76,
+    "path": "/Users/leolu/Desktop/seathru/07-03-2022/2022-03-07_13-58-31rec0/camera/c1365s326.jpg",
+    "combined_score": 0.2723235120032533,
+    "clip_score": 0.5688299196107047,
+    "yolo_score": 0.0,
+    "num_detections": 0,
+    "num_interesting": 0,
+    "clip_components": {
+      "clip_positive": 0.6490138173103333,
+      "clip_negative": 0.3683701753616333
+    },
+    "cv_components": {
+      "entropy": 0.6822835612127832,
+      "laplacian_var": 0.005209088325500488,
+      "saturation_penalty": 1.0,
+      "edge_density": 0.0
+    },
+    "yolo_detections": []
+  },
+  {
+    "rank": 77,
+    "path": "/Users/leolu/Desktop/seathru/07-03-2022/2022-03-07_13-58-31rec0/camera/c1401s344.jpg",
+    "combined_score": 0.2723149006526392,
+    "clip_score": 0.5673819099153792,
+    "yolo_score": 0.0,
+    "num_detections": 0,
+    "num_interesting": 0,
+    "clip_components": {
+      "clip_positive": 0.6467897891998291,
+      "clip_negative": 0.36886221170425415
+    },
+    "cv_components": {
+      "entropy": 0.713363552900098,
+      "laplacian_var": 0.005066037178039551,
+      "saturation_penalty": 1.0,
+      "edge_density": 0.0016493055555555556
+    },
+    "yolo_detections": []
+  },
+  {
+    "rank": 78,
+    "path": "/Users/leolu/Desktop/seathru/07-03-2022/2022-03-07_13-58-31rec0/camera/c104s29.jpg",
+    "combined_score": 0.27229123905510993,
+    "clip_score": 0.5666213205882481,
+    "yolo_score": 0.0,
+    "num_detections": 0,
+    "num_interesting": 0,
+    "clip_components": {
+      "clip_positive": 0.64576256275177,
+      "clip_negative": 0.36876821517944336
+    },
+    "cv_components": {
+      "entropy": 0.7360145506244931,
+      "laplacian_var": 0.0025480985641479492,
+      "saturation_penalty": 1.0,
+      "edge_density": 0.0
+    },
+    "yolo_detections": []
+  },
+  {
+    "rank": 79,
+    "path": "/Users/leolu/Desktop/seathru/07-03-2022/2022-03-07_13-58-31rec0/camera/c1300s320.jpg",
+    "combined_score": 0.27228890270605727,
+    "clip_score": 0.5689359562737601,
+    "yolo_score": 0.0,
+    "num_detections": 0,
+    "num_interesting": 0,
+    "clip_components": {
+      "clip_positive": 0.6498466730117798,
+      "clip_negative": 0.36665916442871094
+    },
+    "cv_components": {
+      "entropy": 0.6705874530292779,
+      "laplacian_var": 0.006438851356506348,
+      "saturation_penalty": 1.0,
+      "edge_density": 0.002922453703703704
+    },
+    "yolo_detections": []
+  },
+  {
+    "rank": 80,
+    "path": "/Users/leolu/Desktop/seathru/07-03-2022/2022-03-07_13-58-31rec0/camera/c1032s275.jpg",
+    "combined_score": 0.27224443315072555,
+    "clip_score": 0.5680672185761588,
+    "yolo_score": 0.0,
+    "num_detections": 0,
+    "num_interesting": 0,
+    "clip_components": {
+      "clip_positive": 0.6487300992012024,
+      "clip_negative": 0.3664100170135498
+    },
+    "cv_components": {
+      "entropy": 0.6980192244245237,
+      "laplacian_var": 0.0030335187911987305,
+      "saturation_penalty": 1.0,
+      "edge_density": 0.0
+    },
+    "yolo_detections": []
+  },
+  {
+    "rank": 81,
+    "path": "/Users/leolu/Desktop/seathru/07-03-2022/2022-03-07_13-58-31rec0/camera/c1415s351.jpg",
+    "combined_score": 0.2722188007402342,
+    "clip_score": 0.5672231486865453,
+    "yolo_score": 0.0,
+    "num_detections": 0,
+    "num_interesting": 0,
+    "clip_components": {
+      "clip_positive": 0.6475673317909241,
+      "clip_negative": 0.36636269092559814
+    },
+    "cv_components": {
+      "entropy": 0.7149087369232933,
+      "laplacian_var": 0.004863739013671875,
+      "saturation_penalty": 1.0,
+      "edge_density": 0.0
+    },
+    "yolo_detections": []
+  },
+  {
+    "rank": 82,
+    "path": "/Users/leolu/Desktop/seathru/07-03-2022/2022-03-07_13-58-31rec0/camera/c1094s289.jpg",
+    "combined_score": 0.2722175600335741,
+    "clip_score": 0.568396372454507,
+    "yolo_score": 0.0,
+    "num_detections": 0,
+    "num_interesting": 0,
+    "clip_components": {
+      "clip_positive": 0.6500011086463928,
+      "clip_negative": 0.3643845319747925
+    },
+    "cv_components": {
+      "entropy": 0.6865691588948505,
+      "laplacian_var": 0.004971504211425781,
+      "saturation_penalty": 1.0,
+      "edge_density": 0.0
+    },
+    "yolo_detections": []
+  },
+  {
+    "rank": 83,
+    "path": "/Users/leolu/Desktop/seathru/07-03-2022/2022-03-07_13-58-31rec0/camera/c1369s328.jpg",
+    "combined_score": 0.272177623872201,
+    "clip_score": 0.5684542996542795,
+    "yolo_score": 0.0,
+    "num_detections": 0,
+    "num_interesting": 0,
+    "clip_components": {
+      "clip_positive": 0.6495893001556396,
+      "clip_negative": 0.3656167984008789
+    },
+    "cv_components": {
+      "entropy": 0.6814548173409357,
+      "laplacian_var": 0.004968404769897461,
+      "saturation_penalty": 1.0,
+      "edge_density": 0.0006655092592592594
+    },
+    "yolo_detections": []
+  },
+  {
+    "rank": 84,
+    "path": "/Users/leolu/Desktop/seathru/07-03-2022/2022-03-07_13-58-31rec0/camera/c1172s304.jpg",
+    "combined_score": 0.2721611150089094,
+    "clip_score": 0.5668969920703343,
+    "yolo_score": 0.0,
+    "num_detections": 0,
+    "num_interesting": 0,
+    "clip_components": {
+      "clip_positive": 0.6464455723762512,
+      "clip_negative": 0.368025541305542
+    },
+    "cv_components": {
+      "entropy": 0.7146363240960635,
+      "laplacian_var": 0.005278229713439941,
+      "saturation_penalty": 1.0,
+      "edge_density": 0.0021122685185185185
+    },
+    "yolo_detections": []
+  },
+  {
+    "rank": 85,
+    "path": "/Users/leolu/Desktop/seathru/07-03-2022/2022-03-07_13-58-31rec0/camera/c1046s276.jpg",
+    "combined_score": 0.2721494141834728,
+    "clip_score": 0.5668400185448783,
+    "yolo_score": 0.0,
+    "num_detections": 0,
+    "num_interesting": 0,
+    "clip_components": {
+      "clip_positive": 0.6472448110580444,
+      "clip_negative": 0.3658280372619629
+    },
+    "cv_components": {
+      "entropy": 0.7224932954347688,
+      "laplacian_var": 0.002311110496520996,
+      "saturation_penalty": 1.0,
+      "edge_density": 0.0
+    },
+    "yolo_detections": []
+  },
+  {
+    "rank": 86,
+    "path": "/Users/leolu/Desktop/seathru/07-03-2022/2022-03-07_13-58-31rec0/camera/c1177s307.jpg",
+    "combined_score": 0.27211762974945564,
+    "clip_score": 0.5669797488621303,
+    "yolo_score": 0.0,
+    "num_detections": 0,
+    "num_interesting": 0,
+    "clip_components": {
+      "clip_positive": 0.6432324647903442,
+      "clip_negative": 0.37634795904159546
+    },
+    "cv_components": {
+      "entropy": 0.7092311261331143,
+      "laplacian_var": 0.006203889846801758,
+      "saturation_penalty": 1.0,
+      "edge_density": 0.002054398148148148
+    },
+    "yolo_detections": []
+  },
+  {
+    "rank": 87,
+    "path": "/Users/leolu/Desktop/seathru/07-03-2022/2022-03-07_13-58-31rec0/camera/c1070s287.jpg",
+    "combined_score": 0.2720707496541493,
+    "clip_score": 0.5662732890674046,
+    "yolo_score": 0.0,
+    "num_detections": 0,
+    "num_interesting": 0,
+    "clip_components": {
+      "clip_positive": 0.6441002488136292,
+      "clip_negative": 0.37170588970184326
+    },
+    "cv_components": {
+      "entropy": 0.7293556485111523,
+      "laplacian_var": 0.003693819046020508,
+      "saturation_penalty": 1.0,
+      "edge_density": 0.000318287037037037
+    },
+    "yolo_detections": []
+  },
+  {
+    "rank": 88,
+    "path": "/Users/leolu/Desktop/seathru/07-03-2022/2022-03-07_13-58-31rec0/camera/c117s38.jpg",
+    "combined_score": 0.2720650642960007,
+    "clip_score": 0.564965546131134,
+    "yolo_score": 0.0,
+    "num_detections": 0,
+    "num_interesting": 0,
+    "clip_components": {
+      "clip_positive": 0.6422935128211975,
+      "clip_negative": 0.37164562940597534
+    },
+    "cv_components": {
+      "entropy": 0.7614939799829421,
+      "laplacian_var": 0.0032367706298828125,
+      "saturation_penalty": 1.0,
+      "edge_density": 0.0
+    },
+    "yolo_detections": []
+  },
+  {
+    "rank": 89,
+    "path": "/Users/leolu/Desktop/seathru/07-03-2022/2022-03-07_13-58-31rec0/camera/c1363s325.jpg",
+    "combined_score": 0.2720635691200827,
+    "clip_score": 0.5680739283561707,
+    "yolo_score": 0.0,
+    "num_detections": 0,
+    "num_interesting": 0,
+    "clip_components": {
+      "clip_positive": 0.6486969590187073,
+      "clip_negative": 0.3665163516998291
+    },
+    "cv_components": {
+      "entropy": 0.6835319931217105,
+      "laplacian_var": 0.00650787353515625,
+      "saturation_penalty": 1.0,
+      "edge_density": 0.0
+    },
+    "yolo_detections": []
+  },
+  {
+    "rank": 90,
+    "path": "/Users/leolu/Desktop/seathru/07-03-2022/2022-03-07_13-58-31rec0/camera/c0s0.jpg",
+    "combined_score": 0.2720481126728069,
+    "clip_score": 0.5644723091806685,
+    "yolo_score": 0.0,
+    "num_detections": 0,
+    "num_interesting": 0,
+    "clip_components": {
+      "clip_positive": 0.6406287550926208,
+      "clip_negative": 0.37408119440078735
+    },
+    "cv_components": {
+      "entropy": 0.7599733570591988,
+      "laplacian_var": 0.004871964454650879,
+      "saturation_penalty": 1.0,
+      "edge_density": 0.00535300925925926
+    },
+    "yolo_detections": []
+  },
+  {
+    "rank": 91,
+    "path": "/Users/leolu/Desktop/seathru/07-03-2022/2022-03-07_13-58-31rec0/camera/c1170s303.jpg",
+    "combined_score": 0.2719661197560649,
+    "clip_score": 0.5664042149271283,
+    "yolo_score": 0.0,
+    "num_detections": 0,
+    "num_interesting": 0,
+    "clip_components": {
+      "clip_positive": 0.6445873379707336,
+      "clip_negative": 0.37094640731811523
+    },
+    "cv_components": {
+      "entropy": 0.7156641947229804,
+      "laplacian_var": 0.005476832389831543,
+      "saturation_penalty": 1.0,
+      "edge_density": 0.0015625
+    },
+    "yolo_detections": []
+  },
+  {
+    "rank": 92,
+    "path": "/Users/leolu/Desktop/seathru/07-03-2022/2022-03-07_13-58-31rec0/camera/c1033s275.jpg",
+    "combined_score": 0.2719591680468394,
+    "clip_score": 0.567427865096501,
+    "yolo_score": 0.0,
+    "num_detections": 0,
+    "num_interesting": 0,
+    "clip_components": {
+      "clip_positive": 0.6474592089653015,
+      "clip_negative": 0.3673495054244995
+    },
+    "cv_components": {
+      "entropy": 0.69612537376277,
+      "laplacian_var": 0.003155946731567383,
+      "saturation_penalty": 1.0,
+      "edge_density": 0.0
+    },
+    "yolo_detections": []
+  },
+  {
+    "rank": 93,
+    "path": "/Users/leolu/Desktop/seathru/07-03-2022/2022-03-07_13-58-31rec0/camera/c110s34.jpg",
+    "combined_score": 0.2719446914006654,
+    "clip_score": 0.5651641658374242,
+    "yolo_score": 0.0,
+    "num_detections": 0,
+    "num_interesting": 0,
+    "clip_components": {
+      "clip_positive": 0.6425499320030212,
+      "clip_negative": 0.3716997504234314
+    },
+    "cv_components": {
+      "entropy": 0.7491938354847096,
+      "laplacian_var": 0.00354766845703125,
+      "saturation_penalty": 1.0,
+      "edge_density": 0.0
+    },
+    "yolo_detections": []
+  },
+  {
+    "rank": 94,
+    "path": "/Users/leolu/Desktop/seathru/07-03-2022/2022-03-07_13-58-31rec0/camera/c1376s331.jpg",
+    "combined_score": 0.27194209795335145,
+    "clip_score": 0.5679477112633842,
+    "yolo_score": 0.0,
+    "num_detections": 0,
+    "num_interesting": 0,
+    "clip_components": {
+      "clip_positive": 0.6478163003921509,
+      "clip_negative": 0.3682762384414673
+    },
+    "cv_components": {
+      "entropy": 0.6808535293148649,
+      "laplacian_var": 0.004927277565002441,
+      "saturation_penalty": 1.0,
+      "edge_density": 0.0
+    },
+    "yolo_detections": []
+  },
+  {
+    "rank": 95,
+    "path": "/Users/leolu/Desktop/seathru/07-03-2022/2022-03-07_13-58-31rec0/camera/c1159s297.jpg",
+    "combined_score": 0.27194062419366305,
+    "clip_score": 0.5664643985884531,
+    "yolo_score": 0.0,
+    "num_detections": 0,
+    "num_interesting": 0,
+    "clip_components": {
+      "clip_positive": 0.6459336876869202,
+      "clip_negative": 0.36779117584228516
+    },
+    "cv_components": {
+      "entropy": 0.7140466742488639,
+      "laplacian_var": 0.004525303840637207,
+      "saturation_penalty": 1.0,
+      "edge_density": 0.0013599537037037035
+    },
+    "yolo_detections": []
+  },
+  {
+    "rank": 96,
+    "path": "/Users/leolu/Desktop/seathru/07-03-2022/2022-03-07_13-58-31rec0/camera/c1391s338.jpg",
+    "combined_score": 0.27193763998447573,
+    "clip_score": 0.5674794571740287,
+    "yolo_score": 0.0,
+    "num_detections": 0,
+    "num_interesting": 0,
+    "clip_components": {
+      "clip_positive": 0.6499272584915161,
+      "clip_negative": 0.36135995388031006
+    },
+    "cv_components": {
+      "entropy": 0.6919311992688664,
+      "laplacian_var": 0.00482022762298584,
+      "saturation_penalty": 1.0,
+      "edge_density": 0.0
+    },
+    "yolo_detections": []
+  },
+  {
+    "rank": 97,
+    "path": "/Users/leolu/Desktop/seathru/07-03-2022/2022-03-07_13-58-31rec0/camera/c1054s280.jpg",
+    "combined_score": 0.27192956269168156,
+    "clip_score": 0.565138476235526,
+    "yolo_score": 0.0,
+    "num_detections": 0,
+    "num_interesting": 0,
+    "clip_components": {
+      "clip_positive": 0.6445600986480713,
+      "clip_negative": 0.3665844202041626
+    },
+    "cv_components": {
+      "entropy": 0.7484878150635996,
+      "laplacian_var": 0.003962516784667969,
+      "saturation_penalty": 1.0,
+      "edge_density": 0.0
+    },
+    "yolo_detections": []
+  },
+  {
+    "rank": 98,
+    "path": "/Users/leolu/Desktop/seathru/07-03-2022/2022-03-07_13-58-31rec0/camera/c1169s303.jpg",
+    "combined_score": 0.2719210658020443,
+    "clip_score": 0.5663304924964905,
+    "yolo_score": 0.0,
+    "num_detections": 0,
+    "num_interesting": 0,
+    "clip_components": {
+      "clip_positive": 0.6447141766548157,
+      "clip_negative": 0.3703712821006775
+    },
+    "cv_components": {
+      "entropy": 0.7156071728600355,
+      "laplacian_var": 0.005468010902404785,
+      "saturation_penalty": 1.0,
+      "edge_density": 0.0011284722222222221
+    },
+    "yolo_detections": []
+  },
+  {
+    "rank": 99,
+    "path": "/Users/leolu/Desktop/seathru/07-03-2022/2022-03-07_13-58-31rec0/camera/c1226s316.jpg",
+    "combined_score": 0.27191964107569344,
+    "clip_score": 0.5667235255241394,
+    "yolo_score": 0.0,
+    "num_detections": 0,
+    "num_interesting": 0,
+    "clip_components": {
+      "clip_positive": 0.6446686387062073,
+      "clip_negative": 0.3718607425689697
+    },
+    "cv_components": {
+      "entropy": 0.6973547816506067,
+      "laplacian_var": 0.005868792533874512,
+      "saturation_penalty": 1.0,
+      "edge_density": 0.005295138888888889
+    },
+    "yolo_detections": []
+  },
+  {
+    "rank": 100,
+    "path": "/Users/leolu/Desktop/seathru/07-03-2022/2022-03-07_13-58-31rec0/camera/c1217s311.jpg",
+    "combined_score": 0.27191693141529527,
+    "clip_score": 0.5668784550258091,
+    "yolo_score": 0.0,
+    "num_detections": 0,
+    "num_interesting": 0,
+    "clip_components": {
+      "clip_positive": 0.6429874897003174,
+      "clip_negative": 0.3766058683395386
+    },
+    "cv_components": {
+      "entropy": 0.6985286133464294,
+      "laplacian_var": 0.007353425025939941,
+      "saturation_penalty": 1.0,
+      "edge_density": 0.002025462962962963
+    },
+    "yolo_detections": []
+  },
+  {
+    "rank": 101,
+    "path": "/Users/leolu/Desktop/seathru/07-03-2022/2022-03-07_13-58-31rec0/camera/c1362s324.jpg",
+    "combined_score": 0.27191117422590905,
+    "clip_score": 0.5667061635426113,
+    "yolo_score": 0.0,
+    "num_detections": 0,
+    "num_interesting": 0,
+    "clip_components": {
+      "clip_positive": 0.6467937231063843,
+      "clip_negative": 0.3664872646331787
+    },
+    "cv_components": {
+      "entropy": 0.6841227974750954,
+      "laplacian_var": 0.008014082908630371,
+      "saturation_penalty": 1.0,
+      "edge_density": 0.010792824074074074
+    },
+    "yolo_detections": []
+  },
+  {
+    "rank": 102,
+    "path": "/Users/leolu/Desktop/seathru/07-03-2022/2022-03-07_13-58-31rec0/camera/c1133s292.jpg",
+    "combined_score": 0.2719091073609905,
+    "clip_score": 0.5669636385781425,
+    "yolo_score": 0.0,
+    "num_detections": 0,
+    "num_interesting": 0,
+    "clip_components": {
+      "clip_positive": 0.6473748683929443,
+      "clip_negative": 0.3659355640411377
+    },
+    "cv_components": {
+      "entropy": 0.7026130740664829,
+      "laplacian_var": 0.004806041717529297,
+      "saturation_penalty": 1.0,
+      "edge_density": 0.0
+    },
+    "yolo_detections": []
+  },
+  {
+    "rank": 103,
+    "path": "/Users/leolu/Desktop/seathru/07-03-2022/2022-03-07_13-58-31rec0/camera/c1176s306.jpg",
+    "combined_score": 0.27190688867018775,
+    "clip_score": 0.5665440133639745,
+    "yolo_score": 0.0,
+    "num_detections": 0,
+    "num_interesting": 0,
+    "clip_components": {
+      "clip_positive": 0.6443445086479187,
+      "clip_negative": 0.37204277515411377
+    },
+    "cv_components": {
+      "entropy": 0.7098487321791925,
+      "laplacian_var": 0.005598545074462891,
+      "saturation_penalty": 1.0,
+      "edge_density": 0.0009548611111111112
+    },
+    "yolo_detections": []
+  },
+  {
+    "rank": 104,
+    "path": "/Users/leolu/Desktop/seathru/07-03-2022/2022-03-07_13-58-31rec0/camera/c1403s344.jpg",
+    "combined_score": 0.27188333883177196,
+    "clip_score": 0.5663910678454809,
+    "yolo_score": 0.0,
+    "num_detections": 0,
+    "num_interesting": 0,
+    "clip_components": {
+      "clip_positive": 0.64555424451828,
+      "clip_negative": 0.36848312616348267
+    },
+    "cv_components": {
+      "entropy": 0.7145138553241891,
+      "laplacian_var": 0.005100846290588379,
+      "saturation_penalty": 1.0,
+      "edge_density": 0.0
+    },
+    "yolo_detections": []
+  },
+  {
+    "rank": 105,
+    "path": "/Users/leolu/Desktop/seathru/07-03-2022/2022-03-07_13-58-31rec0/camera/c1048s277.jpg",
+    "combined_score": 0.2718786326825014,
+    "clip_score": 0.5659195780754089,
+    "yolo_score": 0.0,
+    "num_detections": 0,
+    "num_interesting": 0,
+    "clip_components": {
+      "clip_positive": 0.6457808613777161,
+      "clip_negative": 0.3662663698196411
+    },
+    "cv_components": {
+      "entropy": 0.7281799780094098,
+      "laplacian_var": 0.002468109130859375,
+      "saturation_penalty": 1.0,
+      "edge_density": 0.0
+    },
+    "yolo_detections": []
+  },
+  {
+    "rank": 106,
+    "path": "/Users/leolu/Desktop/seathru/07-03-2022/2022-03-07_13-58-31rec0/camera/c1372s330.jpg",
+    "combined_score": 0.2718690089116562,
+    "clip_score": 0.5676645977156503,
+    "yolo_score": 0.0,
+    "num_detections": 0,
+    "num_interesting": 0,
+    "clip_components": {
+      "clip_positive": 0.6484745144844055,
+      "clip_negative": 0.3656398057937622
+    },
+    "cv_components": {
+      "entropy": 0.6821179447029955,
+      "laplacian_var": 0.005088448524475098,
+      "saturation_penalty": 1.0,
+      "edge_density": 0.0004918981481481482
+    },
+    "yolo_detections": []
+  },
+  {
+    "rank": 107,
+    "path": "/Users/leolu/Desktop/seathru/07-03-2022/2022-03-07_13-58-31rec0/camera/c1225s316.jpg",
+    "combined_score": 0.27185994604697916,
+    "clip_score": 0.5664692095347814,
+    "yolo_score": 0.0,
+    "num_detections": 0,
+    "num_interesting": 0,
+    "clip_components": {
+      "clip_positive": 0.644379734992981,
+      "clip_negative": 0.3716928958892822
+    },
+    "cv_components": {
+      "entropy": 0.6975484470842869,
+      "laplacian_var": 0.0051877498626708984,
+      "saturation_penalty": 1.0,
+      "edge_density": 0.006799768518518518
+    },
+    "yolo_detections": []
+  },
+  {
+    "rank": 108,
+    "path": "/Users/leolu/Desktop/seathru/07-03-2022/2022-03-07_13-58-31rec0/camera/c1379s333.jpg",
+    "combined_score": 0.2718429685974548,
+    "clip_score": 0.5677573510578701,
+    "yolo_score": 0.0,
+    "num_detections": 0,
+    "num_interesting": 0,
+    "clip_components": {
+      "clip_positive": 0.6485604047775269,
+      "clip_negative": 0.365749716758728
+    },
+    "cv_components": {
+      "entropy": 0.6789694423428676,
+      "laplacian_var": 0.005432248115539551,
+      "saturation_penalty": 1.0,
+      "edge_density": 0.0
+    },
+    "yolo_detections": []
+  },
+  {
+    "rank": 109,
+    "path": "/Users/leolu/Desktop/seathru/07-03-2022/2022-03-07_13-58-31rec0/camera/c1440s354.jpg",
+    "combined_score": 0.27183625262847516,
+    "clip_score": 0.5656484195164272,
+    "yolo_score": 0.0,
+    "num_detections": 0,
+    "num_interesting": 0,
+    "clip_components": {
+      "clip_positive": 0.6434721946716309,
+      "clip_negative": 0.37108898162841797
+    },
+    "cv_components": {
+      "entropy": 0.7302820966155865,
+      "laplacian_var": 0.004330992698669434,
+      "saturation_penalty": 1.0,
+      "edge_density": 0.0
+    },
+    "yolo_detections": []
+  },
+  {
+    "rank": 110,
+    "path": "/Users/leolu/Desktop/seathru/07-03-2022/2022-03-07_13-58-31rec0/camera/c119s40.jpg",
+    "combined_score": 0.27183501879654787,
+    "clip_score": 0.5649429219109672,
+    "yolo_score": 0.0,
+    "num_detections": 0,
+    "num_interesting": 0,
+    "clip_components": {
+      "clip_positive": 0.6418863534927368,
+      "clip_negative": 0.37258434295654297
+    },
+    "cv_components": {
+      "entropy": 0.7483253071969915,
+      "laplacian_var": 0.0031456947326660156,
+      "saturation_penalty": 1.0,
+      "edge_density": 0.0
+    },
+    "yolo_detections": []
+  },
+  {
+    "rank": 111,
+    "path": "/Users/leolu/Desktop/seathru/07-03-2022/2022-03-07_13-58-31rec0/camera/c1056s280.jpg",
+    "combined_score": 0.27182399861839335,
+    "clip_score": 0.5649168150765556,
+    "yolo_score": 0.0,
+    "num_detections": 0,
+    "num_interesting": 0,
+    "clip_components": {
+      "clip_positive": 0.6434938907623291,
+      "clip_negative": 0.3684741258621216
+    },
+    "cv_components": {
+      "entropy": 0.7474315191838066,
+      "laplacian_var": 0.004004836082458496,
+      "saturation_penalty": 1.0,
+      "edge_density": 0.0
+    },
+    "yolo_detections": []
+  },
+  {
+    "rank": 112,
+    "path": "/Users/leolu/Desktop/seathru/07-03-2022/2022-03-07_13-58-31rec0/camera/c1320s323.jpg",
+    "combined_score": 0.27179144620466633,
+    "clip_score": 0.5667165773255485,
+    "yolo_score": 0.0,
+    "num_detections": 0,
+    "num_interesting": 0,
+    "clip_components": {
+      "clip_positive": 0.6434218287467957,
+      "clip_negative": 0.3749534487724304
+    },
+    "cv_components": {
+      "entropy": 0.6876648703530593,
+      "laplacian_var": 0.0069921016693115234,
+      "saturation_penalty": 1.0,
+      "edge_density": 0.0058159722222222215
+    },
+    "yolo_detections": []
+  },
+  {
+    "rank": 113,
+    "path": "/Users/leolu/Desktop/seathru/07-03-2022/2022-03-07_13-58-31rec0/camera/c1116s290.jpg",
+    "combined_score": 0.2717700690437404,
+    "clip_score": 0.5664639643260411,
+    "yolo_score": 0.0,
+    "num_detections": 0,
+    "num_interesting": 0,
+    "clip_components": {
+      "clip_positive": 0.6453539133071899,
+      "clip_negative": 0.36923909187316895
+    },
+    "cv_components": {
+      "entropy": 0.705121665887417,
+      "laplacian_var": 0.004558444023132324,
+      "saturation_penalty": 1.0,
+      "edge_density": 0.0006944444444444445
+    },
+    "yolo_detections": []
+  },
+  {
+    "rank": 114,
+    "path": "/Users/leolu/Desktop/seathru/07-03-2022/2022-03-07_13-58-31rec0/camera/c1389s338.jpg",
+    "combined_score": 0.27175413634747114,
+    "clip_score": 0.5671975442341396,
+    "yolo_score": 0.0,
+    "num_detections": 0,
+    "num_interesting": 0,
+    "clip_components": {
+      "clip_positive": 0.6477378606796265,
+      "clip_negative": 0.36584675312042236
+    },
+    "cv_components": {
+      "entropy": 0.6877459002042595,
+      "laplacian_var": 0.004761219024658203,
+      "saturation_penalty": 1.0,
+      "edge_density": 0.0
+    },
+    "yolo_detections": []
+  },
+  {
+    "rank": 115,
+    "path": "/Users/leolu/Desktop/seathru/07-03-2022/2022-03-07_13-58-31rec0/camera/c1393s339.jpg",
+    "combined_score": 0.2717528091044624,
+    "clip_score": 0.5666761228016445,
+    "yolo_score": 0.0,
+    "num_detections": 0,
+    "num_interesting": 0,
+    "clip_components": {
+      "clip_positive": 0.6484466791152954,
+      "clip_negative": 0.3622497320175171
+    },
+    "cv_components": {
+      "entropy": 0.6981722986381055,
+      "laplacian_var": 0.004975318908691406,
+      "saturation_penalty": 1.0,
+      "edge_density": 0.0008969907407407407
+    },
+    "yolo_detections": []
+  },
+  {
+    "rank": 116,
+    "path": "/Users/leolu/Desktop/seathru/07-03-2022/2022-03-07_13-58-31rec0/camera/c1400s343.jpg",
+    "combined_score": 0.27174690441023075,
+    "clip_score": 0.5659798894609724,
+    "yolo_score": 0.0,
+    "num_detections": 0,
+    "num_interesting": 0,
+    "clip_components": {
+      "clip_positive": 0.6444758176803589,
+      "clip_negative": 0.3697400689125061
+    },
+    "cv_components": {
+      "entropy": 0.7132111192163146,
+      "laplacian_var": 0.005192279815673828,
+      "saturation_penalty": 1.0,
+      "edge_density": 0.0014467592592592592
+    },
+    "yolo_detections": []
+  },
+  {
+    "rank": 117,
+    "path": "/Users/leolu/Desktop/seathru/07-03-2022/2022-03-07_13-58-31rec0/camera/c1068s286.jpg",
+    "combined_score": 0.2717287322176436,
+    "clip_score": 0.5648938076836723,
+    "yolo_score": 0.0,
+    "num_detections": 0,
+    "num_interesting": 0,
+    "clip_components": {
+      "clip_positive": 0.6428829431533813,
+      "clip_negative": 0.3699209690093994
+    },
+    "cv_components": {
+      "entropy": 0.7423268403756376,
+      "laplacian_var": 0.003945708274841309,
+      "saturation_penalty": 1.0,
+      "edge_density": 0.0
+    },
+    "yolo_detections": []
+  },
+  {
+    "rank": 118,
+    "path": "/Users/leolu/Desktop/seathru/07-03-2022/2022-03-07_13-58-31rec0/camera/c1161s299.jpg",
+    "combined_score": 0.27170090761956095,
+    "clip_score": 0.5661276408604213,
+    "yolo_score": 0.0,
+    "num_detections": 0,
+    "num_interesting": 0,
+    "clip_components": {
+      "clip_positive": 0.6437320709228516,
+      "clip_negative": 0.3721165657043457
+    },
+    "cv_components": {
+      "entropy": 0.7072782805242295,
+      "laplacian_var": 0.0054558515548706055,
+      "saturation_penalty": 1.0,
+      "edge_density": 0.0011284722222222221
+    },
+    "yolo_detections": []
+  },
+  {
+    "rank": 119,
+    "path": "/Users/leolu/Desktop/seathru/07-03-2022/2022-03-07_13-58-31rec0/camera/c1055s280.jpg",
+    "combined_score": 0.2716854146962717,
+    "clip_score": 0.5645713721002851,
+    "yolo_score": 0.0,
+    "num_detections": 0,
+    "num_interesting": 0,
+    "clip_components": {
+      "clip_positive": 0.6428043246269226,
+      "clip_negative": 0.3689889907836914
+    },
+    "cv_components": {
+      "entropy": 0.7474453814689455,
+      "laplacian_var": 0.003966569900512695,
+      "saturation_penalty": 1.0,
+      "edge_density": 0.0
+    },
+    "yolo_detections": []
+  },
+  {
+    "rank": 120,
+    "path": "/Users/leolu/Desktop/seathru/07-03-2022/2022-03-07_13-58-31rec0/camera/c1174s305.jpg",
+    "combined_score": 0.2716638494418864,
+    "clip_score": 0.5657186252730234,
+    "yolo_score": 0.0,
+    "num_detections": 0,
+    "num_interesting": 0,
+    "clip_components": {
+      "clip_positive": 0.6430776715278625,
+      "clip_negative": 0.3723210096359253
+    },
+    "cv_components": {
+      "entropy": 0.7119487544091928,
+      "laplacian_var": 0.005311131477355957,
+      "saturation_penalty": 1.0,
+      "edge_density": 0.0026620370370370374
+    },
+    "yolo_detections": []
+  },
+  {
+    "rank": 121,
+    "path": "/Users/leolu/Desktop/seathru/07-03-2022/2022-03-07_13-58-31rec0/camera/c1378s332.jpg",
+    "combined_score": 0.2716461683725526,
+    "clip_score": 0.5672895738056728,
+    "yolo_score": 0.0,
+    "num_detections": 0,
+    "num_interesting": 0,
+    "clip_components": {
+      "clip_positive": 0.6485559940338135,
+      "clip_negative": 0.36412352323532104
+    },
+    "cv_components": {
+      "entropy": 0.6785438894429132,
+      "laplacian_var": 0.00527644157409668,
+      "saturation_penalty": 1.0,
+      "edge_density": 0.0
+    },
+    "yolo_detections": []
+  },
+  {
+    "rank": 122,
+    "path": "/Users/leolu/Desktop/seathru/07-03-2022/2022-03-07_13-58-31rec0/camera/c1168s302.jpg",
+    "combined_score": 0.27164259378441924,
+    "clip_score": 0.5656811680112567,
+    "yolo_score": 0.0,
+    "num_detections": 0,
+    "num_interesting": 0,
+    "clip_components": {
+      "clip_positive": 0.6435648202896118,
+      "clip_negative": 0.37097203731536865
+    },
+    "cv_components": {
+      "entropy": 0.7147230731057539,
+      "laplacian_var": 0.005343317985534668,
+      "saturation_penalty": 1.0,
+      "edge_density": 0.0010706018518518519
+    },
+    "yolo_detections": []
+  },
+  {
+    "rank": 123,
+    "path": "/Users/leolu/Desktop/seathru/07-03-2022/2022-03-07_13-58-31rec0/camera/c1115s290.jpg",
+    "combined_score": 0.2716346852379411,
+    "clip_score": 0.5660710675375802,
+    "yolo_score": 0.0,
+    "num_detections": 0,
+    "num_interesting": 0,
+    "clip_components": {
+      "clip_positive": 0.6445491313934326,
+      "clip_negative": 0.3698759078979492
+    },
+    "cv_components": {
+      "entropy": 0.7057734665764333,
+      "laplacian_var": 0.004576563835144043,
+      "saturation_penalty": 1.0,
+      "edge_density": 0.0010127314814814814
+    },
+    "yolo_detections": []
+  },
+  {
+    "rank": 124,
+    "path": "/Users/leolu/Desktop/seathru/07-03-2022/2022-03-07_13-58-31rec0/camera/c1405s346.jpg",
+    "combined_score": 0.27160770692241665,
+    "clip_score": 0.565591369356428,
+    "yolo_score": 0.0,
+    "num_detections": 0,
+    "num_interesting": 0,
+    "clip_components": {
+      "clip_positive": 0.6446229219436646,
+      "clip_negative": 0.3680124878883362
+    },
+    "cv_components": {
+      "entropy": 0.717159883012712,
+      "laplacian_var": 0.005109667778015137,
+      "saturation_penalty": 1.0,
+      "edge_density": 0.0
+    },
+    "yolo_detections": []
+  },
+  {
+    "rank": 125,
+    "path": "/Users/leolu/Desktop/seathru/07-03-2022/2022-03-07_13-58-31rec0/camera/c1395s340.jpg",
+    "combined_score": 0.27159817576942524,
+    "clip_score": 0.5661783048084804,
+    "yolo_score": 0.0,
+    "num_detections": 0,
+    "num_interesting": 0,
+    "clip_components": {
+      "clip_positive": 0.647057056427002,
+      "clip_negative": 0.3639814257621765
+    },
+    "cv_components": {
+      "entropy": 0.7024607934069445,
+      "laplacian_var": 0.005150437355041504,
+      "saturation_penalty": 1.0,
+      "edge_density": 0.0
+    },
+    "yolo_detections": []
+  },
+  {
+    "rank": 126,
+    "path": "/Users/leolu/Desktop/seathru/07-03-2022/2022-03-07_13-58-31rec0/camera/c1175s306.jpg",
+    "combined_score": 0.2715781835577177,
+    "clip_score": 0.5655787161418371,
+    "yolo_score": 0.0,
+    "num_detections": 0,
+    "num_interesting": 0,
+    "clip_components": {
+      "clip_positive": 0.643136739730835,
+      "clip_negative": 0.37168365716934204
+    },
+    "cv_components": {
+      "entropy": 0.710486955295263,
+      "laplacian_var": 0.0053958892822265625,
+      "saturation_penalty": 1.0,
+      "edge_density": 0.0024594907407407404
+    },
+    "yolo_detections": []
+  },
+  {
+    "rank": 127,
+    "path": "/Users/leolu/Desktop/seathru/07-03-2022/2022-03-07_13-58-31rec0/camera/c128s45.jpg",
+    "combined_score": 0.2715719355473032,
+    "clip_score": 0.5658729587282454,
+    "yolo_score": 0.0,
+    "num_detections": 0,
+    "num_interesting": 0,
+    "clip_components": {
+      "clip_positive": 0.641040563583374,
+      "clip_negative": 0.3779539465904236
+    },
+    "cv_components": {
+      "entropy": 0.7099193788458347,
+      "laplacian_var": 0.003445744514465332,
+      "saturation_penalty": 1.0,
+      "edge_density": 0.0
+    },
+    "yolo_detections": []
+  },
+  {
+    "rank": 128,
+    "path": "/Users/leolu/Desktop/seathru/07-03-2022/2022-03-07_13-58-31rec0/camera/c1218s311.jpg",
+    "combined_score": 0.2715564168837911,
+    "clip_score": 0.5659445268767221,
+    "yolo_score": 0.0,
+    "num_detections": 0,
+    "num_interesting": 0,
+    "clip_components": {
+      "clip_positive": 0.642367422580719,
+      "clip_negative": 0.37488728761672974
+    },
+    "cv_components": {
+      "entropy": 0.6981606663418041,
+      "laplacian_var": 0.007578849792480469,
+      "saturation_penalty": 1.0,
+      "edge_density": 0.002488425925925926
+    },
+    "yolo_detections": []
+  },
+  {
+    "rank": 129,
+    "path": "/Users/leolu/Desktop/seathru/07-03-2022/2022-03-07_13-58-31rec0/camera/c1246s317.jpg",
+    "combined_score": 0.2715259282488348,
+    "clip_score": 0.5658234698431832,
+    "yolo_score": 0.0,
+    "num_detections": 0,
+    "num_interesting": 0,
+    "clip_components": {
+      "clip_positive": 0.6436021327972412,
+      "clip_negative": 0.37137681245803833
+    },
+    "cv_components": {
+      "entropy": 0.6978890357212574,
+      "laplacian_var": 0.006727457046508789,
+      "saturation_penalty": 1.0,
+      "edge_density": 0.003587962962962963
+    },
+    "yolo_detections": []
+  },
+  {
+    "rank": 130,
+    "path": "/Users/leolu/Desktop/seathru/07-03-2022/2022-03-07_13-58-31rec0/camera/c1370s329.jpg",
+    "combined_score": 0.2715187791229484,
+    "clip_score": 0.5667933566229685,
+    "yolo_score": 0.0,
+    "num_detections": 0,
+    "num_interesting": 0,
+    "clip_components": {
+      "clip_positive": 0.6461917161941528,
+      "clip_negative": 0.3682974576950073
+    },
+    "cv_components": {
+      "entropy": 0.6819480976915342,
+      "laplacian_var": 0.004980683326721191,
+      "saturation_penalty": 1.0,
+      "edge_density": 0.0005787037037037037
+    },
+    "yolo_detections": []
+  },
+  {
+    "rank": 131,
+    "path": "/Users/leolu/Desktop/seathru/07-03-2022/2022-03-07_13-58-31rec0/camera/c1002s273.jpg",
+    "combined_score": 0.2714972749215395,
+    "clip_score": 0.5664013624191284,
+    "yolo_score": 0.0,
+    "num_detections": 0,
+    "num_interesting": 0,
+    "clip_components": {
+      "clip_positive": 0.6459615230560303,
+      "clip_negative": 0.3675009608268738
+    },
+    "cv_components": {
+      "entropy": 0.6929822853924688,
+      "laplacian_var": 0.0032215118408203125,
+      "saturation_penalty": 1.0,
+      "edge_density": 0.0
+    },
+    "yolo_detections": []
+  },
+  {
+    "rank": 132,
+    "path": "/Users/leolu/Desktop/seathru/07-03-2022/2022-03-07_13-58-31rec0/camera/c1404s345.jpg",
+    "combined_score": 0.27149022050421534,
+    "clip_score": 0.5653309907232013,
+    "yolo_score": 0.0,
+    "num_detections": 0,
+    "num_interesting": 0,
+    "clip_components": {
+      "clip_positive": 0.6450024247169495,
+      "clip_negative": 0.36615240573883057
+    },
+    "cv_components": {
+      "entropy": 0.7158025929514268,
+      "laplacian_var": 0.005146026611328125,
+      "saturation_penalty": 1.0,
+      "edge_density": 0.00026041666666666666
+    },
+    "yolo_detections": []
+  },
+  {
+    "rank": 133,
+    "path": "/Users/leolu/Desktop/seathru/07-03-2022/2022-03-07_13-58-31rec0/camera/c1247s317.jpg",
+    "combined_score": 0.27148924305821326,
+    "clip_score": 0.5655749695641654,
+    "yolo_score": 0.0,
+    "num_detections": 0,
+    "num_interesting": 0,
+    "clip_components": {
+      "clip_positive": 0.6435946226119995,
+      "clip_negative": 0.3705258369445801
+    },
+    "cv_components": {
+      "entropy": 0.6972293678867103,
+      "laplacian_var": 0.006520390510559082,
+      "saturation_penalty": 1.0,
+      "edge_density": 0.005902777777777778
+    },
+    "yolo_detections": []
+  },
+  {
+    "rank": 134,
+    "path": "/Users/leolu/Desktop/seathru/07-03-2022/2022-03-07_13-58-31rec0/camera/c1374s331.jpg",
+    "combined_score": 0.2714835368453675,
+    "clip_score": 0.5667149680001395,
+    "yolo_score": 0.0,
+    "num_detections": 0,
+    "num_interesting": 0,
+    "clip_components": {
+      "clip_positive": 0.647027850151062,
+      "clip_negative": 0.36593276262283325
+    },
+    "cv_components": {
+      "entropy": 0.6820404715131635,
+      "laplacian_var": 0.004423618316650391,
+      "saturation_penalty": 1.0,
+      "edge_density": 0.0006944444444444445
+    },
+    "yolo_detections": []
+  },
+  {
+    "rank": 135,
+    "path": "/Users/leolu/Desktop/seathru/07-03-2022/2022-03-07_13-58-31rec0/camera/c1366s327.jpg",
+    "combined_score": 0.27147459493993176,
+    "clip_score": 0.5666869793619429,
+    "yolo_score": 0.0,
+    "num_detections": 0,
+    "num_interesting": 0,
+    "clip_components": {
+      "clip_positive": 0.6475067734718323,
+      "clip_negative": 0.36463749408721924
+    },
+    "cv_components": {
+      "entropy": 0.6830083428475788,
+      "laplacian_var": 0.004979848861694336,
+      "saturation_penalty": 1.0,
+      "edge_density": 0.0
+    },
+    "yolo_detections": []
+  },
+  {
+    "rank": 136,
+    "path": "/Users/leolu/Desktop/seathru/07-03-2022/2022-03-07_13-58-31rec0/camera/c1163s300.jpg",
+    "combined_score": 0.2714590056517383,
+    "clip_score": 0.5653727224894933,
+    "yolo_score": 0.0,
+    "num_detections": 0,
+    "num_interesting": 0,
+    "clip_components": {
+      "clip_positive": 0.6447962522506714,
+      "clip_negative": 0.36681389808654785
+    },
+    "cv_components": {
+      "entropy": 0.7067777639396239,
+      "laplacian_var": 0.005393624305725098,
+      "saturation_penalty": 1.0,
+      "edge_density": 0.0032118055555555554
+    },
+    "yolo_detections": []
+  },
+  {
+    "rank": 137,
+    "path": "/Users/leolu/Desktop/seathru/07-03-2022/2022-03-07_13-58-31rec0/camera/c1388s337.jpg",
+    "combined_score": 0.27142009741874756,
+    "clip_score": 0.5664405567305429,
+    "yolo_score": 0.0,
+    "num_detections": 0,
+    "num_interesting": 0,
+    "clip_components": {
+      "clip_positive": 0.646232545375824,
+      "clip_negative": 0.3669605851173401
+    },
+    "cv_components": {
+      "entropy": 0.6859829636714739,
+      "laplacian_var": 0.004649519920349121,
+      "saturation_penalty": 1.0,
+      "edge_density": 0.0
+    },
+    "yolo_detections": []
+  },
+  {
+    "rank": 138,
+    "path": "/Users/leolu/Desktop/seathru/07-03-2022/2022-03-07_13-58-31rec0/camera/c1132s292.jpg",
+    "combined_score": 0.27141165920320487,
+    "clip_score": 0.5657759649412973,
+    "yolo_score": 0.0,
+    "num_detections": 0,
+    "num_interesting": 0,
+    "clip_components": {
+      "clip_positive": 0.6460484862327576,
+      "clip_negative": 0.3650946617126465
+    },
+    "cv_components": {
+      "entropy": 0.7011884551017036,
+      "laplacian_var": 0.004887938499450684,
+      "saturation_penalty": 1.0,
+      "edge_density": 0.0
+    },
+    "yolo_detections": []
+  },
+  {
+    "rank": 139,
+    "path": "/Users/leolu/Desktop/seathru/07-03-2022/2022-03-07_13-58-31rec0/camera/c1003s273.jpg",
+    "combined_score": 0.2713917460196701,
+    "clip_score": 0.5659926107951574,
+    "yolo_score": 0.0,
+    "num_detections": 0,
+    "num_interesting": 0,
+    "clip_components": {
+      "clip_positive": 0.6448701620101929,
+      "clip_negative": 0.36879873275756836
+    },
+    "cv_components": {
+      "entropy": 0.6966587160948434,
+      "laplacian_var": 0.003023386001586914,
+      "saturation_penalty": 1.0,
+      "edge_density": 0.0
+    },
+    "yolo_detections": []
+  },
+  {
+    "rank": 140,
+    "path": "/Users/leolu/Desktop/seathru/07-03-2022/2022-03-07_13-58-31rec0/camera/c1302s321.jpg",
+    "combined_score": 0.2713713646327929,
+    "clip_score": 0.566582977771759,
+    "yolo_score": 0.0,
+    "num_detections": 0,
+    "num_interesting": 0,
+    "clip_components": {
+      "clip_positive": 0.6465296149253845,
+      "clip_negative": 0.3667163848876953
+    },
+    "cv_components": {
+      "entropy": 0.6708512179670204,
+      "laplacian_var": 0.0063790082931518555,
+      "saturation_penalty": 1.0,
+      "edge_density": 0.0035300925925925925
+    },
+    "yolo_detections": []
+  },
+  {
+    "rank": 141,
+    "path": "/Users/leolu/Desktop/seathru/07-03-2022/2022-03-07_13-58-31rec0/camera/c1203s310.jpg",
+    "combined_score": 0.271371094869691,
+    "clip_score": 0.5653570209230696,
+    "yolo_score": 0.0,
+    "num_detections": 0,
+    "num_interesting": 0,
+    "clip_components": {
+      "clip_positive": 0.643012523651123,
+      "clip_negative": 0.3712182641029358
+    },
+    "cv_components": {
+      "entropy": 0.7046298109240232,
+      "laplacian_var": 0.0062896013259887695,
+      "saturation_penalty": 1.0,
+      "edge_density": 0.001388888888888889
+    },
+    "yolo_detections": []
+  },
+  {
+    "rank": 142,
+    "path": "/Users/leolu/Desktop/seathru/07-03-2022/2022-03-07_13-58-31rec0/camera/c1167s302.jpg",
+    "combined_score": 0.27137054335650745,
+    "clip_score": 0.5650172914777484,
+    "yolo_score": 0.0,
+    "num_detections": 0,
+    "num_interesting": 0,
+    "clip_components": {
+      "clip_positive": 0.6427512168884277,
+      "clip_negative": 0.3706824779510498
+    },
+    "cv_components": {
+      "entropy": 0.7140181677304936,
+      "laplacian_var": 0.005311012268066406,
+      "saturation_penalty": 1.0,
+      "edge_density": 0.001244212962962963
+    },
+    "yolo_detections": []
+  },
+  {
+    "rank": 143,
+    "path": "/Users/leolu/Desktop/seathru/07-03-2022/2022-03-07_13-58-31rec0/camera/c1001s272.jpg",
+    "combined_score": 0.2713692151301772,
+    "clip_score": 0.566216060093471,
+    "yolo_score": 0.0,
+    "num_detections": 0,
+    "num_interesting": 0,
+    "clip_components": {
+      "clip_positive": 0.6456551551818848,
+      "clip_negative": 0.3676183223724365
+    },
+    "cv_components": {
+      "entropy": 0.6895159990069644,
+      "laplacian_var": 0.0034514665603637695,
+      "saturation_penalty": 1.0,
+      "edge_density": 0.0
+    },
+    "yolo_detections": []
+  },
+  {
+    "rank": 144,
+    "path": "/Users/leolu/Desktop/seathru/07-03-2022/2022-03-07_13-58-31rec0/camera/c1200s309.jpg",
+    "combined_score": 0.27136872581801613,
+    "clip_score": 0.5653449467250279,
+    "yolo_score": 0.0,
+    "num_detections": 0,
+    "num_interesting": 0,
+    "clip_components": {
+      "clip_positive": 0.6416963338851929,
+      "clip_negative": 0.3744664788246155
+    },
+    "cv_components": {
+      "entropy": 0.706258755570933,
+      "laplacian_var": 0.00648653507232666,
+      "saturation_penalty": 1.0,
+      "edge_density": 0.0005497685185185186
+    },
+    "yolo_detections": []
+  },
+  {
+    "rank": 145,
+    "path": "/Users/leolu/Desktop/seathru/07-03-2022/2022-03-07_13-58-31rec0/camera/c12s1.jpg",
+    "combined_score": 0.2713414002803222,
+    "clip_score": 0.5627438255718776,
+    "yolo_score": 0.0,
+    "num_detections": 0,
+    "num_interesting": 0,
+    "clip_components": {
+      "clip_positive": 0.6371987462043762,
+      "clip_negative": 0.3766065239906311
+    },
+    "cv_components": {
+      "entropy": 0.7665911885995496,
+      "laplacian_var": 0.004337310791015625,
+      "saturation_penalty": 1.0,
+      "edge_density": 0.0018518518518518517
+    },
+    "yolo_detections": []
+  },
+  {
+    "rank": 146,
+    "path": "/Users/leolu/Desktop/seathru/07-03-2022/2022-03-07_13-58-31rec0/camera/c1399s343.jpg",
+    "combined_score": 0.27133078427400636,
+    "clip_score": 0.5651094487735203,
+    "yolo_score": 0.0,
+    "num_detections": 0,
+    "num_interesting": 0,
+    "clip_components": {
+      "clip_positive": 0.6437119841575623,
+      "clip_negative": 0.3686031103134155
+    },
+    "cv_components": {
+      "entropy": 0.712009409411052,
+      "laplacian_var": 0.00521087646484375,
+      "saturation_penalty": 1.0,
+      "edge_density": 0.0
+    },
+    "yolo_detections": []
+  },
+  {
+    "rank": 147,
+    "path": "/Users/leolu/Desktop/seathru/07-03-2022/2022-03-07_13-58-31rec0/camera/c10s1.jpg",
+    "combined_score": 0.2713264653566265,
+    "clip_score": 0.5626873118536813,
+    "yolo_score": 0.0,
+    "num_detections": 0,
+    "num_interesting": 0,
+    "clip_components": {
+      "clip_positive": 0.6395689249038696,
+      "clip_negative": 0.37048327922821045
+    },
+    "cv_components": {
+      "entropy": 0.770910932659668,
+      "laplacian_var": 0.004181504249572754,
+      "saturation_penalty": 1.0,
+      "edge_density": 0.0
+    },
+    "yolo_detections": []
+  },
+  {
+    "rank": 148,
+    "path": "/Users/leolu/Desktop/seathru/07-03-2022/2022-03-07_13-58-31rec0/camera/c1297s319.jpg",
+    "combined_score": 0.2713174597068258,
+    "clip_score": 0.5666481682232448,
+    "yolo_score": 0.0,
+    "num_detections": 0,
+    "num_interesting": 0,
+    "clip_components": {
+      "clip_positive": 0.64658123254776,
+      "clip_negative": 0.3668155074119568
+    },
+    "cv_components": {
+      "entropy": 0.6707635857013685,
+      "laplacian_var": 0.006239533424377441,
+      "saturation_penalty": 1.0,
+      "edge_density": 0.001244212962962963
+    },
+    "yolo_detections": []
+  },
+  {
+    "rank": 149,
+    "path": "/Users/leolu/Desktop/seathru/07-03-2022/2022-03-07_13-58-31rec0/camera/c1049s277.jpg",
+    "combined_score": 0.27131602075175254,
+    "clip_score": 0.5644197974886214,
+    "yolo_score": 0.0,
+    "num_detections": 0,
+    "num_interesting": 0,
+    "clip_components": {
+      "clip_positive": 0.6430445909500122,
+      "clip_negative": 0.36785781383514404
+    },
+    "cv_components": {
+      "entropy": 0.7303501661616233,
+      "laplacian_var": 0.0025359392166137695,
+      "saturation_penalty": 1.0,
+      "edge_density": 0.0
+    },
+    "yolo_detections": []
+  },
+  {
+    "rank": 150,
+    "path": "/Users/leolu/Desktop/seathru/07-03-2022/2022-03-07_13-58-31rec0/camera/c1178s307.jpg",
+    "combined_score": 0.2713147501755166,
+    "clip_score": 0.5651362538337708,
+    "yolo_score": 0.0,
+    "num_detections": 0,
+    "num_interesting": 0,
+    "clip_components": {
+      "clip_positive": 0.6410306096076965,
+      "clip_negative": 0.3754003643989563
+    },
+    "cv_components": {
+      "entropy": 0.7085096369025903,
+      "laplacian_var": 0.006410837173461914,
+      "saturation_penalty": 1.0,
+      "edge_density": 0.00034722222222222224
+    },
+    "yolo_detections": []
+  },
+  {
+    "rank": 151,
+    "path": "/Users/leolu/Desktop/seathru/07-03-2022/2022-03-07_13-58-31rec0/camera/c11s1.jpg",
+    "combined_score": 0.2713015742513253,
+    "clip_score": 0.562725876058851,
+    "yolo_score": 0.0,
+    "num_detections": 0,
+    "num_interesting": 0,
+    "clip_components": {
+      "clip_positive": 0.6381790041923523,
+      "clip_negative": 0.37409305572509766
+    },
+    "cv_components": {
+      "entropy": 0.7682912961832047,
+      "laplacian_var": 0.004382133483886719,
+      "saturation_penalty": 1.0,
+      "edge_density": 0.0
+    },
+    "yolo_detections": []
+  },
+  {
+    "rank": 152,
+    "path": "/Users/leolu/Desktop/seathru/07-03-2022/2022-03-07_13-58-31rec0/camera/c1299s320.jpg",
+    "combined_score": 0.27125662395606165,
+    "clip_score": 0.566388385636466,
+    "yolo_score": 0.0,
+    "num_detections": 0,
+    "num_interesting": 0,
+    "clip_components": {
+      "clip_positive": 0.6460952758789062,
+      "clip_negative": 0.367121160030365
+    },
+    "cv_components": {
+      "entropy": 0.6705630310256571,
+      "laplacian_var": 0.006478428840637207,
+      "saturation_penalty": 1.0,
+      "edge_density": 0.002517361111111111
+    },
+    "yolo_detections": []
+  },
+  {
+    "rank": 153,
+    "path": "/Users/leolu/Desktop/seathru/07-03-2022/2022-03-07_13-58-31rec0/camera/c1408s347.jpg",
+    "combined_score": 0.27124836814092446,
+    "clip_score": 0.5646012851170131,
+    "yolo_score": 0.0,
+    "num_detections": 0,
+    "num_interesting": 0,
+    "clip_components": {
+      "clip_positive": 0.6426854133605957,
+      "clip_negative": 0.36939096450805664
+    },
+    "cv_components": {
+      "entropy": 0.7190281759772144,
+      "laplacian_var": 0.004575014114379883,
+      "saturation_penalty": 1.0,
+      "edge_density": 0.0004340277777777778
+    },
+    "yolo_detections": []
+  },
+  {
+    "rank": 154,
+    "path": "/Users/leolu/Desktop/seathru/07-03-2022/2022-03-07_13-58-31rec0/camera/c1134s293.jpg",
+    "combined_score": 0.27122346037292355,
+    "clip_score": 0.5652034452983312,
+    "yolo_score": 0.0,
+    "num_detections": 0,
+    "num_interesting": 0,
+    "clip_components": {
+      "clip_positive": 0.6453083753585815,
+      "clip_negative": 0.3649411201477051
+    },
+    "cv_components": {
+      "entropy": 0.7037053036389269,
+      "laplacian_var": 0.004819631576538086,
+      "saturation_penalty": 1.0,
+      "edge_density": 0.0
+    },
+    "yolo_detections": []
+  },
+  {
+    "rank": 155,
+    "path": "/Users/leolu/Desktop/seathru/07-03-2022/2022-03-07_13-58-31rec0/camera/c118s39.jpg",
+    "combined_score": 0.2712097348810025,
+    "clip_score": 0.5630693605967931,
+    "yolo_score": 0.0,
+    "num_detections": 0,
+    "num_interesting": 0,
+    "clip_components": {
+      "clip_positive": 0.6388112306594849,
+      "clip_negative": 0.3737146854400635
+    },
+    "cv_components": {
+      "entropy": 0.7556830255350976,
+      "laplacian_var": 0.00323641300201416,
+      "saturation_penalty": 1.0,
+      "edge_density": 0.0
+    },
+    "yolo_detections": []
+  },
+  {
+    "rank": 156,
+    "path": "/Users/leolu/Desktop/seathru/07-03-2022/2022-03-07_13-58-31rec0/camera/c1298s319.jpg",
+    "combined_score": 0.27120544180387934,
+    "clip_score": 0.566357399736132,
+    "yolo_score": 0.0,
+    "num_detections": 0,
+    "num_interesting": 0,
+    "clip_components": {
+      "clip_positive": 0.6465082764625549,
+      "clip_negative": 0.36598020792007446
+    },
+    "cv_components": {
+      "entropy": 0.6706219846819896,
+      "laplacian_var": 0.006407022476196289,
+      "saturation_penalty": 1.0,
+      "edge_density": 0.0013599537037037035
+    },
+    "yolo_detections": []
+  },
+  {
+    "rank": 157,
+    "path": "/Users/leolu/Desktop/seathru/07-03-2022/2022-03-07_13-58-31rec0/camera/c1130s291.jpg",
+    "combined_score": 0.2711827700949613,
+    "clip_score": 0.565237854208265,
+    "yolo_score": 0.0,
+    "num_detections": 0,
+    "num_interesting": 0,
+    "clip_components": {
+      "clip_positive": 0.6452473998069763,
+      "clip_negative": 0.3652139902114868
+    },
+    "cv_components": {
+      "entropy": 0.7003853826167972,
+      "laplacian_var": 0.004872322082519531,
+      "saturation_penalty": 1.0,
+      "edge_density": 0.0
+    },
+    "yolo_detections": []
+  },
+  {
+    "rank": 158,
+    "path": "/Users/leolu/Desktop/seathru/07-03-2022/2022-03-07_13-58-31rec0/camera/c1160s298.jpg",
+    "combined_score": 0.27117837233582986,
+    "clip_score": 0.5648657083511353,
+    "yolo_score": 0.0,
+    "num_detections": 0,
+    "num_interesting": 0,
+    "clip_components": {
+      "clip_positive": 0.6411130428314209,
+      "clip_negative": 0.37424737215042114
+    },
+    "cv_components": {
+      "entropy": 0.7077180192972978,
+      "laplacian_var": 0.005339264869689941,
+      "saturation_penalty": 1.0,
+      "edge_density": 0.0004340277777777778
+    },
+    "yolo_detections": []
+  },
+  {
+    "rank": 159,
+    "path": "/Users/leolu/Desktop/seathru/07-03-2022/2022-03-07_13-58-31rec0/camera/c1368s328.jpg",
+    "combined_score": 0.27117707940990116,
+    "clip_score": 0.5659741503851755,
+    "yolo_score": 0.0,
+    "num_detections": 0,
+    "num_interesting": 0,
+    "clip_components": {
+      "clip_positive": 0.6459656953811646,
+      "clip_negative": 0.36599528789520264
+    },
+    "cv_components": {
+      "entropy": 0.6817366706860701,
+      "laplacian_var": 0.004929780960083008,
+      "saturation_penalty": 1.0,
+      "edge_density": 0.00028935185185185184
+    },
+    "yolo_detections": []
+  },
+  {
+    "rank": 160,
+    "path": "/Users/leolu/Desktop/seathru/07-03-2022/2022-03-07_13-58-31rec0/camera/c13s2.jpg",
+    "combined_score": 0.2711707305948957,
+    "clip_score": 0.5630949224744525,
+    "yolo_score": 0.0,
+    "num_detections": 0,
+    "num_interesting": 0,
+    "clip_components": {
+      "clip_positive": 0.6360911130905151,
+      "clip_negative": 0.38060444593429565
+    },
+    "cv_components": {
+      "entropy": 0.7519576415736089,
+      "laplacian_var": 0.004008054733276367,
+      "saturation_penalty": 1.0,
+      "edge_density": 0.0
+    },
+    "yolo_detections": []
+  },
+  {
+    "rank": 161,
+    "path": "/Users/leolu/Desktop/seathru/07-03-2022/2022-03-07_13-58-31rec0/camera/c1382s334.jpg",
+    "combined_score": 0.2711631639331967,
+    "clip_score": 0.5661158561706543,
+    "yolo_score": 0.0,
+    "num_detections": 0,
+    "num_interesting": 0,
+    "clip_components": {
+      "clip_positive": 0.6452544927597046,
+      "clip_negative": 0.36826926469802856
+    },
+    "cv_components": {
+      "entropy": 0.6777173491143608,
+      "laplacian_var": 0.005291938781738281,
+      "saturation_penalty": 1.0,
+      "edge_density": 0.0
+    },
+    "yolo_detections": []
+  },
+  {
+    "rank": 162,
+    "path": "/Users/leolu/Desktop/seathru/07-03-2022/2022-03-07_13-58-31rec0/camera/c1162s299.jpg",
+    "combined_score": 0.2711600536768169,
+    "clip_score": 0.5647734318460736,
+    "yolo_score": 0.0,
+    "num_detections": 0,
+    "num_interesting": 0,
+    "clip_components": {
+      "clip_positive": 0.6433021426200867,
+      "clip_negative": 0.36845165491104126
+    },
+    "cv_components": {
+      "entropy": 0.7065177673888673,
+      "laplacian_var": 0.005340218544006348,
+      "saturation_penalty": 1.0,
+      "edge_density": 0.0015914351851851853
+    },
+    "yolo_detections": []
+  },
+  {
+    "rank": 163,
+    "path": "/Users/leolu/Desktop/seathru/07-03-2022/2022-03-07_13-58-31rec0/camera/c1375s331.jpg",
+    "combined_score": 0.27114008819428703,
+    "clip_score": 0.56591796875,
+    "yolo_score": 0.0,
+    "num_detections": 0,
+    "num_interesting": 0,
+    "clip_components": {
+      "clip_positive": 0.6464462280273438,
+      "clip_negative": 0.3645973205566406
+    },
+    "cv_components": {
+      "entropy": 0.6816924544379841,
+      "laplacian_var": 0.004681587219238281,
+      "saturation_penalty": 1.0,
+      "edge_density": 0.0
+    },
+    "yolo_detections": []
+  },
+  {
+    "rank": 164,
+    "path": "/Users/leolu/Desktop/seathru/07-03-2022/2022-03-07_13-58-31rec0/camera/c1069s287.jpg",
+    "combined_score": 0.27113254530531583,
+    "clip_score": 0.5638633114950997,
+    "yolo_score": 0.0,
+    "num_detections": 0,
+    "num_interesting": 0,
+    "clip_components": {
+      "clip_positive": 0.6405279636383057,
+      "clip_negative": 0.37220168113708496
+    },
+    "cv_components": {
+      "entropy": 0.7315081905566737,
+      "laplacian_var": 0.0037250518798828125,
+      "saturation_penalty": 1.0,
+      "edge_density": 0.0
+    },
+    "yolo_detections": []
+  },
+  {
+    "rank": 165,
+    "path": "/Users/leolu/Desktop/seathru/07-03-2022/2022-03-07_13-58-31rec0/camera/c1154s295.jpg",
+    "combined_score": 0.2711184150166978,
+    "clip_score": 0.5637801034109934,
+    "yolo_score": 0.0,
+    "num_detections": 0,
+    "num_interesting": 0,
+    "clip_components": {
+      "clip_positive": 0.6437873840332031,
+      "clip_negative": 0.36376190185546875
+    },
+    "cv_components": {
+      "entropy": 0.7325709405232197,
+      "laplacian_var": 0.003811478614807129,
+      "saturation_penalty": 1.0,
+      "edge_density": 0.0
+    },
+    "yolo_detections": []
+  },
+  {
+    "rank": 166,
+    "path": "/Users/leolu/Desktop/seathru/07-03-2022/2022-03-07_13-58-31rec0/camera/c1381s334.jpg",
+    "combined_score": 0.27111462184232493,
+    "clip_score": 0.5659676449639457,
+    "yolo_score": 0.0,
+    "num_detections": 0,
+    "num_interesting": 0,
+    "clip_components": {
+      "clip_positive": 0.6450906991958618,
+      "clip_negative": 0.3681600093841553
+    },
+    "cv_components": {
+      "entropy": 0.6782518624488068,
+      "laplacian_var": 0.005401968955993652,
+      "saturation_penalty": 1.0,
+      "edge_density": 0.0
+    },
+    "yolo_detections": []
+  },
+  {
+    "rank": 167,
+    "path": "/Users/leolu/Desktop/seathru/07-03-2022/2022-03-07_13-58-31rec0/camera/c1202s310.jpg",
+    "combined_score": 0.27109217272467334,
+    "clip_score": 0.5646882227488927,
+    "yolo_score": 0.0,
+    "num_detections": 0,
+    "num_interesting": 0,
+    "clip_components": {
+      "clip_positive": 0.641173243522644,
+      "clip_negative": 0.37347567081451416
+    },
+    "cv_components": {
+      "entropy": 0.7055461661665716,
+      "laplacian_var": 0.00625157356262207,
+      "saturation_penalty": 1.0,
+      "edge_density": 0.0006076388888888889
+    },
+    "yolo_detections": []
+  },
+  {
+    "rank": 168,
+    "path": "/Users/leolu/Desktop/seathru/07-03-2022/2022-03-07_13-58-31rec0/camera/c1301s321.jpg",
+    "combined_score": 0.2710839519624439,
+    "clip_score": 0.5660178746495929,
+    "yolo_score": 0.0,
+    "num_detections": 0,
+    "num_interesting": 0,
+    "clip_components": {
+      "clip_positive": 0.6449833512306213,
+      "clip_negative": 0.3686041831970215
+    },
+    "cv_components": {
+      "entropy": 0.6706288763434669,
+      "laplacian_var": 0.006391286849975586,
+      "saturation_penalty": 1.0,
+      "edge_density": 0.0017939814814814815
+    },
+    "yolo_detections": []
+  },
+  {
+    "rank": 169,
+    "path": "/Users/leolu/Desktop/seathru/07-03-2022/2022-03-07_13-58-31rec0/camera/c1004s273.jpg",
+    "combined_score": 0.2710583476251612,
+    "clip_score": 0.5650394133159092,
+    "yolo_score": 0.0,
+    "num_detections": 0,
+    "num_interesting": 0,
+    "clip_components": {
+      "clip_positive": 0.6444915533065796,
+      "clip_negative": 0.3664090633392334
+    },
+    "cv_components": {
+      "entropy": 0.6995620695043882,
+      "laplacian_var": 0.002992868423461914,
+      "saturation_penalty": 1.0,
+      "edge_density": 0.0
+    },
+    "yolo_detections": []
+  },
+  {
+    "rank": 170,
+    "path": "/Users/leolu/Desktop/seathru/07-03-2022/2022-03-07_13-58-31rec0/camera/c1371s329.jpg",
+    "combined_score": 0.2710093031984192,
+    "clip_score": 0.5655296359743391,
+    "yolo_score": 0.0,
+    "num_detections": 0,
+    "num_interesting": 0,
+    "clip_components": {
+      "clip_positive": 0.6444212198257446,
+      "clip_negative": 0.3683006763458252
+    },
+    "cv_components": {
+      "entropy": 0.6820623127570986,
+      "laplacian_var": 0.00503230094909668,
+      "saturation_penalty": 1.0,
+      "edge_density": 0.0003761574074074074
+    },
+    "yolo_detections": []
+  },
+  {
+    "rank": 171,
+    "path": "/Users/leolu/Desktop/seathru/07-03-2022/2022-03-07_13-58-31rec0/camera/c1157s296.jpg",
+    "combined_score": 0.2709448879727697,
+    "clip_score": 0.5637961966650827,
+    "yolo_score": 0.0,
+    "num_detections": 0,
+    "num_interesting": 0,
+    "clip_components": {
+      "clip_positive": 0.6420223712921143,
+      "clip_negative": 0.36823076009750366
+    },
+    "cv_components": {
+      "entropy": 0.7212162531978982,
+      "laplacian_var": 0.004368305206298828,
+      "saturation_penalty": 1.0,
+      "edge_density": 0.0
+    },
+    "yolo_detections": []
+  },
+  {
+    "rank": 172,
+    "path": "/Users/leolu/Desktop/seathru/07-03-2022/2022-03-07_13-58-31rec0/camera/c1000s272.jpg",
+    "combined_score": 0.2708693083710022,
+    "clip_score": 0.5649410145623344,
+    "yolo_score": 0.0,
+    "num_detections": 0,
+    "num_interesting": 0,
+    "clip_components": {
+      "clip_positive": 0.6429216861724854,
+      "clip_negative": 0.3699893355369568
+    },
+    "cv_components": {
+      "entropy": 0.6900299413764722,
+      "laplacian_var": 0.0035442113876342773,
+      "saturation_penalty": 1.0,
+      "edge_density": 0.0
+    },
+    "yolo_detections": []
+  },
+  {
+    "rank": 173,
+    "path": "/Users/leolu/Desktop/seathru/07-03-2022/2022-03-07_13-58-31rec0/camera/c1364s325.jpg",
+    "combined_score": 0.2708478218347176,
+    "clip_score": 0.5650864669254848,
+    "yolo_score": 0.0,
+    "num_detections": 0,
+    "num_interesting": 0,
+    "clip_components": {
+      "clip_positive": 0.6443992853164673,
+      "clip_negative": 0.36680442094802856
+    },
+    "cv_components": {
+      "entropy": 0.6827360069857382,
+      "laplacian_var": 0.006058096885681152,
+      "saturation_penalty": 1.0,
+      "edge_density": 0.0
+    },
+    "yolo_detections": []
+  },
+  {
+    "rank": 174,
+    "path": "/Users/leolu/Desktop/seathru/07-03-2022/2022-03-07_13-58-31rec0/camera/c1006s274.jpg",
+    "combined_score": 0.2708234457032527,
+    "clip_score": 0.564003723008292,
+    "yolo_score": 0.0,
+    "num_detections": 0,
+    "num_interesting": 0,
+    "clip_components": {
+      "clip_positive": 0.6433795690536499,
+      "clip_negative": 0.36556410789489746
+    },
+    "cv_components": {
+      "entropy": 0.7105152564359718,
+      "laplacian_var": 0.002802133560180664,
+      "saturation_penalty": 1.0,
+      "edge_density": 0.0
+    },
+    "yolo_detections": []
+  },
+  {
+    "rank": 175,
+    "path": "/Users/leolu/Desktop/seathru/07-03-2022/2022-03-07_13-58-31rec0/camera/c1380s333.jpg",
+    "combined_score": 0.270804597269559,
+    "clip_score": 0.5651800632476807,
+    "yolo_score": 0.0,
+    "num_detections": 0,
+    "num_interesting": 0,
+    "clip_components": {
+      "clip_positive": 0.6449061632156372,
+      "clip_negative": 0.3658648133277893
+    },
+    "cv_components": {
+      "entropy": 0.6784851152339051,
+      "laplacian_var": 0.005469202995300293,
+      "saturation_penalty": 1.0,
+      "edge_density": 0.0
+    },
+    "yolo_detections": []
+  },
+  {
+    "rank": 176,
+    "path": "/Users/leolu/Desktop/seathru/07-03-2022/2022-03-07_13-58-31rec0/camera/c1053s279.jpg",
+    "combined_score": 0.27077707186916705,
+    "clip_score": 0.5624045644487654,
+    "yolo_score": 0.0,
+    "num_detections": 0,
+    "num_interesting": 0,
+    "clip_components": {
+      "clip_positive": 0.6412262916564941,
+      "clip_negative": 0.36535024642944336
+    },
+    "cv_components": {
+      "entropy": 0.7454426756121962,
+      "laplacian_var": 0.0034720897674560547,
+      "saturation_penalty": 1.0,
+      "edge_density": 0.0
+    },
+    "yolo_detections": []
+  },
+  {
+    "rank": 177,
+    "path": "/Users/leolu/Desktop/seathru/07-03-2022/2022-03-07_13-58-31rec0/camera/c1398s342.jpg",
+    "combined_score": 0.27077130614558176,
+    "clip_score": 0.5638179438454765,
+    "yolo_score": 0.0,
+    "num_detections": 0,
+    "num_interesting": 0,
+    "clip_components": {
+      "clip_positive": 0.642585277557373,
+      "clip_negative": 0.36689960956573486
+    },
+    "cv_components": {
+      "entropy": 0.7094938220190299,
+      "laplacian_var": 0.0051538944244384766,
+      "saturation_penalty": 1.0,
+      "edge_density": 0.0
+    },
+    "yolo_detections": []
+  },
+  {
+    "rank": 178,
+    "path": "/Users/leolu/Desktop/seathru/07-03-2022/2022-03-07_13-58-31rec0/camera/c1321s323.jpg",
+    "combined_score": 0.2707506197316694,
+    "clip_score": 0.5642371688570296,
+    "yolo_score": 0.0,
+    "num_detections": 0,
+    "num_interesting": 0,
+    "clip_components": {
+      "clip_positive": 0.6411756277084351,
+      "clip_negative": 0.3718910217285156
+    },
+    "cv_components": {
+      "entropy": 0.6881894697838289,
+      "laplacian_var": 0.007227420806884766,
+      "saturation_penalty": 1.0,
+      "edge_density": 0.0039641203703703705
+    },
+    "yolo_detections": []
+  },
+  {
+    "rank": 179,
+    "path": "/Users/leolu/Desktop/seathru/07-03-2022/2022-03-07_13-58-31rec0/camera/c1131s291.jpg",
+    "combined_score": 0.27073134253984066,
+    "clip_score": 0.5640860625675747,
+    "yolo_score": 0.0,
+    "num_detections": 0,
+    "num_interesting": 0,
+    "clip_components": {
+      "clip_positive": 0.643548846244812,
+      "clip_negative": 0.3654291033744812
+    },
+    "cv_components": {
+      "entropy": 0.7010409571407166,
+      "laplacian_var": 0.0047740936279296875,
+      "saturation_penalty": 1.0,
+      "edge_density": 0.0
+    },
+    "yolo_detections": []
+  },
+  {
+    "rank": 180,
+    "path": "/Users/leolu/Desktop/seathru/07-03-2022/2022-03-07_13-58-31rec0/camera/c1406s346.jpg",
+    "combined_score": 0.2707309529724463,
+    "clip_score": 0.5633816378457206,
+    "yolo_score": 0.0,
+    "num_detections": 0,
+    "num_interesting": 0,
+    "clip_components": {
+      "clip_positive": 0.6404756307601929,
+      "clip_negative": 0.3706466555595398
+    },
+    "cv_components": {
+      "entropy": 0.7182122893932184,
+      "laplacian_var": 0.003617525100708008,
+      "saturation_penalty": 1.0,
+      "edge_density": 0.0004340277777777778
+    },
+    "yolo_detections": []
+  },
+  {
+    "rank": 181,
+    "path": "/Users/leolu/Desktop/seathru/07-03-2022/2022-03-07_13-58-31rec0/camera/c1005s274.jpg",
+    "combined_score": 0.2706979756183207,
+    "clip_score": 0.5638404318264553,
+    "yolo_score": 0.0,
+    "num_detections": 0,
+    "num_interesting": 0,
+    "clip_components": {
+      "clip_positive": 0.6428256630897522,
+      "clip_negative": 0.3663773536682129
+    },
+    "cv_components": {
+      "entropy": 0.7069269013298054,
+      "laplacian_var": 0.0027812719345092773,
+      "saturation_penalty": 1.0,
+      "edge_density": 0.0
+    },
+    "yolo_detections": []
+  },
+  {
+    "rank": 182,
+    "path": "/Users/leolu/Desktop/seathru/07-03-2022/2022-03-07_13-58-31rec0/camera/c1397s341.jpg",
+    "combined_score": 0.27069084942287314,
+    "clip_score": 0.5637620091438295,
+    "yolo_score": 0.0,
+    "num_detections": 0,
+    "num_interesting": 0,
+    "clip_components": {
+      "clip_positive": 0.6431810259819031,
+      "clip_negative": 0.365214467048645
+    },
+    "cv_components": {
+      "entropy": 0.7060651182807088,
+      "laplacian_var": 0.005097627639770508,
+      "saturation_penalty": 1.0,
+      "edge_density": 0.0
+    },
+    "yolo_detections": []
+  },
+  {
+    "rank": 183,
+    "path": "/Users/leolu/Desktop/seathru/07-03-2022/2022-03-07_13-58-31rec0/camera/c1135s294.jpg",
+    "combined_score": 0.2706656925623905,
+    "clip_score": 0.5637263655662537,
+    "yolo_score": 0.0,
+    "num_detections": 0,
+    "num_interesting": 0,
+    "clip_components": {
+      "clip_positive": 0.6424041390419006,
+      "clip_negative": 0.36703193187713623
+    },
+    "cv_components": {
+      "entropy": 0.7057755753117263,
+      "laplacian_var": 0.0047332048416137695,
+      "saturation_penalty": 1.0,
+      "edge_density": 0.0
+    },
+    "yolo_detections": []
+  },
+  {
+    "rank": 184,
+    "path": "/Users/leolu/Desktop/seathru/07-03-2022/2022-03-07_13-58-31rec0/camera/c1407s347.jpg",
+    "combined_score": 0.27066303456731516,
+    "clip_score": 0.5632112366812569,
+    "yolo_score": 0.0,
+    "num_detections": 0,
+    "num_interesting": 0,
+    "clip_components": {
+      "clip_positive": 0.6411041021347046,
+      "clip_negative": 0.36847907304763794
+    },
+    "cv_components": {
+      "entropy": 0.7182505091901473,
+      "laplacian_var": 0.004461884498596191,
+      "saturation_penalty": 1.0,
+      "edge_density": 0.0
+    },
+    "yolo_detections": []
+  },
+  {
+    "rank": 185,
+    "path": "/Users/leolu/Desktop/seathru/07-03-2022/2022-03-07_13-58-31rec0/camera/c1072s288.jpg",
+    "combined_score": 0.27064613993593173,
+    "clip_score": 0.5630749038287571,
+    "yolo_score": 0.0,
+    "num_detections": 0,
+    "num_interesting": 0,
+    "clip_components": {
+      "clip_positive": 0.6392920613288879,
+      "clip_negative": 0.3725320100784302
+    },
+    "cv_components": {
+      "entropy": 0.7205870245932081,
+      "laplacian_var": 0.003747105598449707,
+      "saturation_penalty": 1.0,
+      "edge_density": 0.000318287037037037
+    },
+    "yolo_detections": []
+  },
+  {
+    "rank": 186,
+    "path": "/Users/leolu/Desktop/seathru/07-03-2022/2022-03-07_13-58-31rec0/camera/c1165s300.jpg",
+    "combined_score": 0.2706452838309756,
+    "clip_score": 0.5634526184626989,
+    "yolo_score": 0.0,
+    "num_detections": 0,
+    "num_interesting": 0,
+    "clip_components": {
+      "clip_positive": 0.6424990892410278,
+      "clip_negative": 0.3658364415168762
+    },
+    "cv_components": {
+      "entropy": 0.7085732091867242,
+      "laplacian_var": 0.005197644233703613,
+      "saturation_penalty": 1.0,
+      "edge_density": 0.0010416666666666667
+    },
+    "yolo_detections": []
+  },
+  {
+    "rank": 187,
+    "path": "/Users/leolu/Desktop/seathru/07-03-2022/2022-03-07_13-58-31rec0/camera/c1166s301.jpg",
+    "combined_score": 0.2705831949381933,
+    "clip_score": 0.5632153664316449,
+    "yolo_score": 0.0,
+    "num_detections": 0,
+    "num_interesting": 0,
+    "clip_components": {
+      "clip_positive": 0.6416288018226624,
+      "clip_negative": 0.36718177795410156
+    },
+    "cv_components": {
+      "entropy": 0.7106165608597548,
+      "laplacian_var": 0.005007266998291016,
+      "saturation_penalty": 1.0,
+      "edge_density": 0.001099537037037037
+    },
+    "yolo_detections": []
+  },
+  {
+    "rank": 188,
+    "path": "/Users/leolu/Desktop/seathru/07-03-2022/2022-03-07_13-58-31rec0/camera/c1367s327.jpg",
+    "combined_score": 0.27051750336208413,
+    "clip_score": 0.5643083027430943,
+    "yolo_score": 0.0,
+    "num_detections": 0,
+    "num_interesting": 0,
+    "clip_components": {
+      "clip_positive": 0.6439352035522461,
+      "clip_negative": 0.36524105072021484
+    },
+    "cv_components": {
+      "entropy": 0.6819286127203689,
+      "laplacian_var": 0.004912137985229492,
+      "saturation_penalty": 1.0,
+      "edge_density": 0.0004050925925925926
+    },
+    "yolo_detections": []
+  },
+  {
+    "rank": 189,
+    "path": "/Users/leolu/Desktop/seathru/07-03-2022/2022-03-07_13-58-31rec0/camera/c1164s300.jpg",
+    "combined_score": 0.2705103057345122,
+    "clip_score": 0.5632169076374599,
+    "yolo_score": 0.0,
+    "num_detections": 0,
+    "num_interesting": 0,
+    "clip_components": {
+      "clip_positive": 0.6418416500091553,
+      "clip_negative": 0.36665505170822144
+    },
+    "cv_components": {
+      "entropy": 0.7081025021779414,
+      "laplacian_var": 0.00531005859375,
+      "saturation_penalty": 1.0,
+      "edge_density": 0.0
+    },
+    "yolo_detections": []
+  },
+  {
+    "rank": 190,
+    "path": "/Users/leolu/Desktop/seathru/07-03-2022/2022-03-07_13-58-31rec0/camera/c1373s330.jpg",
+    "combined_score": 0.27047206829629433,
+    "clip_score": 0.5642269679478237,
+    "yolo_score": 0.0,
+    "num_detections": 0,
+    "num_interesting": 0,
+    "clip_components": {
+      "clip_positive": 0.6434299945831299,
+      "clip_negative": 0.3662194013595581
+    },
+    "cv_components": {
+      "entropy": 0.6822844748501914,
+      "laplacian_var": 0.003724336624145508,
+      "saturation_penalty": 1.0,
+      "edge_density": 0.0004340277777777778
+    },
+    "yolo_detections": []
+  },
+  {
+    "rank": 191,
+    "path": "/Users/leolu/Desktop/seathru/07-03-2022/2022-03-07_13-58-31rec0/camera/c1396s341.jpg",
+    "combined_score": 0.2702324475368955,
+    "clip_score": 0.5626641852515085,
+    "yolo_score": 0.0,
+    "num_detections": 0,
+    "num_interesting": 0,
+    "clip_components": {
+      "clip_positive": 0.6419767141342163,
+      "clip_negative": 0.36438286304473877
+    },
+    "cv_components": {
+      "entropy": 0.7048813604011588,
+      "laplacian_var": 0.0051250457763671875,
+      "saturation_penalty": 1.0,
+      "edge_density": 0.0
+    },
+    "yolo_detections": []
+  },
+  {
+    "rank": 192,
+    "path": "/Users/leolu/Desktop/seathru/07-03-2022/2022-03-07_13-58-31rec0/camera/c1155s295.jpg",
+    "combined_score": 0.2701968413913327,
+    "clip_score": 0.5615489057132176,
+    "yolo_score": 0.0,
+    "num_detections": 0,
+    "num_interesting": 0,
+    "clip_components": {
+      "clip_positive": 0.6397766470909119,
+      "clip_negative": 0.36597955226898193
+    },
+    "cv_components": {
+      "entropy": 0.7306397780933913,
+      "laplacian_var": 0.0039969682693481445,
+      "saturation_penalty": 1.0,
+      "edge_density": 0.0
+    },
+    "yolo_detections": []
+  },
+  {
+    "rank": 193,
+    "path": "/Users/leolu/Desktop/seathru/07-03-2022/2022-03-07_13-58-31rec0/camera/c1158s297.jpg",
+    "combined_score": 0.27003056784651286,
+    "clip_score": 0.5615949034690857,
+    "yolo_score": 0.0,
+    "num_detections": 0,
+    "num_interesting": 0,
+    "clip_components": {
+      "clip_positive": 0.6388099789619446,
+      "clip_negative": 0.3685572147369385
+    },
+    "cv_components": {
+      "entropy": 0.716858670113337,
+      "laplacian_var": 0.0043250322341918945,
+      "saturation_penalty": 1.0,
+      "edge_density": 0.0011863425925925926
+    },
+    "yolo_detections": []
+  },
+  {
+    "rank": 194,
+    "path": "/Users/leolu/Desktop/seathru/07-03-2022/2022-03-07_13-58-31rec0/camera/c1136s294.jpg",
+    "combined_score": 0.27001654157393024,
+    "clip_score": 0.562059930392674,
+    "yolo_score": 0.0,
+    "num_detections": 0,
+    "num_interesting": 0,
+    "clip_components": {
+      "clip_positive": 0.6409697532653809,
+      "clip_negative": 0.364785373210907
+    },
+    "cv_components": {
+      "entropy": 0.7068928433716233,
+      "laplacian_var": 0.0046613216400146484,
+      "saturation_penalty": 1.0,
+      "edge_density": 0.0
+    },
+    "yolo_detections": []
+  },
+  {
+    "rank": 195,
+    "path": "/Users/leolu/Desktop/seathru/07-03-2022/2022-03-07_13-58-31rec0/camera/c1156s296.jpg",
+    "combined_score": 0.27001650057952575,
+    "clip_score": 0.5612869347844806,
+    "yolo_score": 0.0,
+    "num_detections": 0,
+    "num_interesting": 0,
+    "clip_components": {
+      "clip_positive": 0.6397202610969543,
+      "clip_negative": 0.3652036190032959
+    },
+    "cv_components": {
+      "entropy": 0.7259024261616628,
+      "laplacian_var": 0.004201173782348633,
+      "saturation_penalty": 1.0,
+      "edge_density": 0.0
+    },
+    "yolo_detections": []
+  },
+  {
+    "rank": 196,
+    "path": "/Users/leolu/Desktop/seathru/07-03-2022/2022-03-07_13-58-31rec0/camera/c1052s279.jpg",
+    "combined_score": 0.2699057907911999,
+    "clip_score": 0.560425877571106,
+    "yolo_score": 0.0,
+    "num_detections": 0,
+    "num_interesting": 0,
+    "clip_components": {
+      "clip_positive": 0.6389344930648804,
+      "clip_negative": 0.3641543388366699
+    },
+    "cv_components": {
+      "entropy": 0.7410356465152688,
+      "laplacian_var": 0.0030907392501831055,
+      "saturation_penalty": 1.0,
+      "edge_density": 0.0
+    },
+    "yolo_detections": []
+  },
+  {
+    "rank": 197,
+    "path": "/Users/leolu/Desktop/seathru/07-03-2022/2022-03-07_13-58-31rec0/camera/c1281s318.jpg",
+    "combined_score": 0.26958122615435914,
+    "clip_score": 0.561837911605835,
+    "yolo_score": 0.0,
+    "num_detections": 0,
+    "num_interesting": 0,
+    "clip_components": {
+      "clip_positive": 0.6401054859161377,
+      "clip_negative": 0.3661689758300781
+    },
+    "cv_components": {
+      "entropy": 0.676431057173197,
+      "laplacian_var": 0.005131244659423828,
+      "saturation_penalty": 1.0,
+      "edge_density": 0.004600694444444445
+    },
+    "yolo_detections": []
+  },
+  {
+    "rank": 198,
+    "path": "/Users/leolu/Desktop/seathru/07-03-2022/2022-03-07_13-58-31rec0/camera/c1050s278.jpg",
+    "combined_score": 0.2694043349729942,
+    "clip_score": 0.5595189758709499,
+    "yolo_score": 0.0,
+    "num_detections": 0,
+    "num_interesting": 0,
+    "clip_components": {
+      "clip_positive": 0.6378759741783142,
+      "clip_negative": 0.36362648010253906
+    },
+    "cv_components": {
+      "entropy": 0.7332901959323613,
+      "laplacian_var": 0.002514481544494629,
+      "saturation_penalty": 1.0,
+      "edge_density": 0.0
+    },
+    "yolo_detections": []
+  },
+  {
+    "rank": 199,
+    "path": "/Users/leolu/Desktop/seathru/07-03-2022/2022-03-07_13-58-31rec0/camera/c1051s278.jpg",
+    "combined_score": 0.2686417045117015,
+    "clip_score": 0.5576227222170149,
+    "yolo_score": 0.0,
+    "num_detections": 0,
+    "num_interesting": 0,
+    "clip_components": {
+      "clip_positive": 0.6350995302200317,
+      "clip_negative": 0.36393070220947266
+    },
+    "cv_components": {
+      "entropy": 0.7331439030546458,
+      "laplacian_var": 0.002413034439086914,
+      "saturation_penalty": 1.0,
+      "edge_density": 0.0
+    },
+    "yolo_detections": []
+  },
+  {
+    "rank": 200,
+    "path": "/Users/leolu/Desktop/seathru/07-03-2022/2022-03-07_13-58-31rec0/camera/c1282s318.jpg",
+    "combined_score": 0.2685764299914705,
+    "clip_score": 0.5594869937215533,
+    "yolo_score": 0.0,
+    "num_detections": 0,
+    "num_interesting": 0,
+    "clip_components": {
+      "clip_positive": 0.6368951201438904,
+      "clip_negative": 0.36596667766571045
+    },
+    "cv_components": {
+      "entropy": 0.6748338782331084,
+      "laplacian_var": 0.005177497863769531,
+      "saturation_penalty": 1.0,
+      "edge_density": 0.003443287037037037
+    },
+    "yolo_detections": []
+  }
+]
