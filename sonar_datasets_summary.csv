@@ -1,22 +1,22 @@
 name,sonar,annotation,num_samples,year,has_paper,setup,completeness_score
-UXO,FLS,Object Detection,74437.0,2024.0,True,True,100
-SubPipe,SSS+Multi,Object Detection,10030.0,2024.0,True,True,100
-MBES-Slam,MBES,SLAM,4.0,2022.0,True,True,100
-Aurora,MBES+SSS+Multi,SLAM,,2020.0,True,True,100
-Cave Sonar,MSIS+Multi,SLAM,,2017.0,True,True,100
-AI4Shipwreck,SSS,Segmentation,286.0,2024.0,True,True,100
-DIDSON,FLS,Segmentation,1000.0,2022.0,True,True,100
-Seafloor Sediments,SSS,Segmentation,434164.0,2023.0,True,True,100
 MDT,FLS,Segmentation,2471.0,2021.0,True,True,100
-BenthiCat,SSS+Multi,Segmentation,950000.0,2025.0,True,True,100
+SubPipe,SSS+Multi,Object Detection,10030.0,2024.0,True,True,100
 SWDD,SSS,Object Detection,7904.0,2024.0,True,True,100
 UATD,FLS,Object Detection,9200.0,2022.0,True,True,100
 NKSID,FLS,Classification,2617.0,2024.0,True,True,100
+MBES-Slam,MBES,SLAM,4.0,2022.0,True,True,100
+Aurora,MBES+SSS+Multi,SLAM,,2020.0,True,True,100
+AI4Shipwreck,SSS,Segmentation,286.0,2024.0,True,True,100
+Cave Sonar,MSIS+Multi,SLAM,,2017.0,True,True,100
+BenthiCat,SSS+Multi,Segmentation,950000.0,2025.0,True,True,100
+UXO,FLS,Object Detection,74437.0,2024.0,True,True,100
+DIDSON,FLS,Segmentation,1000.0,2022.0,True,True,100
+Seafloor Sediments,SSS,Segmentation,434164.0,2023.0,True,True,100
 Lago Grey,SSS,None,,2019.0,True,True,75
-NNSSS,SSS,Segmentation,10.0,2020.0,True,False,75
 SSS for Mine Detection,SSS,Object Detection,1170.0,2024.0,True,False,75
-Marine_PULSE,SSS,Classification,627.0,2023.0,True,False,75
 SeabedObjects-KLSG,SSS,Classification,1190.0,2020.0,True,False,75
-SASSED,SAS,Segmentation,129.0,2023.0,False,False,50
+Marine_PULSE,SSS,Classification,627.0,2023.0,True,False,75
+NNSSS,SSS,Segmentation,10.0,2020.0,True,False,75
 Northern Adriatic Reefs,SSS,None,7.0,2010.0,False,True,50
+SASSED,SAS,Segmentation,129.0,2023.0,False,False,50
 UCI ML,Unknown,Classification,211.0,,False,False,25
