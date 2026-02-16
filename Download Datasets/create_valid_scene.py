@@ -29,7 +29,7 @@ def convert_images_to_scene(IMAGE_FOLDER_PATH, dataset_name, scene_name):
     frame_count = 0
     for item in Path(IMAGE_FOLDER_PATH).iterdir(): #save abs image file path strings to list
         frame_count += 1
-        if item.is_file() and (frame_count % 10 == 0):
+        if item.is_file() and (frame_count % 1 == 0):
             print(f"Frame: {frame_count}, File: {str(item)}")
             
             file_path = item.resolve()
@@ -80,6 +80,8 @@ def convert_images_to_scene(IMAGE_FOLDER_PATH, dataset_name, scene_name):
         print(f"  ✗ Error during reconstruction: {e}\n")
         return False
         
+    split_scene(SCENE_FOLDER)
+
     return True
 
 
@@ -95,8 +97,8 @@ def colmap_to_llff(scene_folder):
     for image_id, image in reconstruction.images.items():
         camera = reconstruction.cameras[image.camera_id]
         
-        # FIXED: Call cam_from_world() as a method
-        transform = image.cam_from_world()  # ← Added parentheses
+        # Call cam_from_world() as a method
+        transform = image.cam_from_world() 
         R = transform.rotation.matrix()
         t = transform.translation
         
@@ -128,7 +130,7 @@ def colmap_to_llff(scene_folder):
     print(f"  ✓ Saved poses_bounds.npy with shape {poses_bounds.shape}")
 
         
-
+convert_images_to_scene("/data/Lockheed1-Spring26/watersplatting_data/SeathruNeRF_dataset/Curasao/images_wb", "SeathruNeRF_dataset", "Carusao2")
     
 
 

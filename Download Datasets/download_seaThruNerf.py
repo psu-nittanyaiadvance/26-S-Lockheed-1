@@ -93,8 +93,6 @@ def split_scene(scene_dir: str, eval_interval: int = 8):
 
     with open(os.path.join(scene_dir, "train_list.txt"), "w") as f:
         f.write("\n".join(train_images))
-    with open(os.path.join(scene_dir, "val_list.txt"), "w") as f:
-        f.write("\n".join(test_images))
     with open(os.path.join(scene_dir, "test_list.txt"), "w") as f:
         f.write("\n".join(test_images))
 
