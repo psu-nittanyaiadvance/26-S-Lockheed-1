@@ -90,11 +90,18 @@ def split_scene(scene_dir: str, eval_interval: int = 8):
         if image not in test_images:
             train_images += [image]
 
-
-    with open(os.path.join(scene_dir, "train_list.txt"), "w") as f:
-        f.write("\n".join(train_images))
-    with open(os.path.join(scene_dir, "test_list.txt"), "w") as f:
-        f.write("\n".join(test_images))
+    # Rename images to include train/eval in filename
+    for image in all_images:
+        name, ext = os.path.splitext(image)
+        
+        if image in test_images:
+            new_name = f"{name}_eval{ext}"
+        else:
+            new_name = f"{name}_train{ext}"
+        
+        old_path = os.path.join(images_dir, image)
+        new_path = os.path.join(images_dir, new_name)
+        os.rename(old_path, new_path)
 
     print(f"  - {os.path.basename(scene_dir)}: total={len(all_images)} train={len(train_images)} test={len(test_images)}")
 

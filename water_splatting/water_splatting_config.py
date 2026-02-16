@@ -3,6 +3,7 @@ from nerfstudio.plugins.types import MethodSpecification
 from nerfstudio.pipelines.base_pipeline import VanillaPipelineConfig
 from nerfstudio.data.datamanagers.full_images_datamanager import FullImageDatamanagerConfig
 from nerfstudio.data.dataparsers.nerfstudio_dataparser import NerfstudioDataParserConfig
+from nerfstudio.data.dataparsers.colmap_dataparser import ColmapDataParserConfig
 from nerfstudio.engine.schedulers import ExponentialDecaySchedulerConfig
 from nerfstudio.engine.optimizers import AdamOptimizerConfig
 from nerfstudio.configs.base_config import ViewerConfig
@@ -21,7 +22,7 @@ water_splatting_method = MethodSpecification(
         mixed_precision=False,
         pipeline=VanillaPipelineConfig(
             datamanager=FullImageDatamanagerConfig(
-                dataparser=NerfstudioDataParserConfig(load_3D_points=True),
+                dataparser=ColmapDataParserConfig(load_3D_points=True, eval_mode="filename"),
             ),
             model=WaterSplattingModelConfig(
                 num_steps=NUM_STEPS,
@@ -90,7 +91,7 @@ water_splatting_method = MethodSpecification(
             },
         },
         viewer=ViewerConfig(num_rays_per_chunk=1 << 15),
-        vis="viewer",
+        vis="viewer+tensorboard",
     ),
     description="Water-Splatting for underwater scenes.",
 )
@@ -106,7 +107,7 @@ water_splatting_method_big = MethodSpecification(
         mixed_precision=False,
         pipeline=VanillaPipelineConfig(
             datamanager=FullImageDatamanagerConfig(
-                dataparser=NerfstudioDataParserConfig(load_3D_points=True),
+                dataparser=ColmapDataParserConfig(load_3D_points=True, eval_mode="filename"),
             ),
             model=WaterSplattingModelConfig(
                 num_steps=NUM_STEPS,
@@ -158,7 +159,7 @@ water_splatting_method_big = MethodSpecification(
             },
         },
         viewer=ViewerConfig(num_rays_per_chunk=1 << 15),
-        vis="viewer",
+        vis="viewer+tensorboard",
     ),
     description="Water-Splatting big for underwater scenes.",
 )

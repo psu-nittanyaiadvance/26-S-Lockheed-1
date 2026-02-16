@@ -36,6 +36,8 @@ def convert_images_to_scene(IMAGE_FOLDER_PATH, dataset_name, scene_name):
             file_paths += [file_path]
 
             shutil.copy2(item, SCENE_IMAGES)
+    
+    split_scene(SCENE_FOLDER)
 
     try:
         # 1. Extract features
@@ -79,8 +81,6 @@ def convert_images_to_scene(IMAGE_FOLDER_PATH, dataset_name, scene_name):
     except Exception as e:
         print(f"  ✗ Error during reconstruction: {e}\n")
         return False
-        
-    split_scene(SCENE_FOLDER)
 
     return True
 
@@ -129,9 +129,7 @@ def colmap_to_llff(scene_folder):
     np.save(scene_folder / "poses_bounds.npy", poses_bounds)
     print(f"  ✓ Saved poses_bounds.npy with shape {poses_bounds.shape}")
 
-        
-convert_images_to_scene("/data/Lockheed1-Spring26/watersplatting_data/SeathruNeRF_dataset/Curasao/images_wb", "SeathruNeRF_dataset", "Carusao2")
-    
+
 
 
 
