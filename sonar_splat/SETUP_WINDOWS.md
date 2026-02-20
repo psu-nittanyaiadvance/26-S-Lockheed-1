@@ -1,0 +1,184 @@
+# SonarSplat Windows Setup Guide
+
+System tested on: Windows 11 Pro, RTX 3080 (12GB), NVIDIA Driver 591.59, VS 2019 Build Tools.
+
+## Prerequisites
+
+- **Conda** (Miniconda or Anaconda)
+- **Visual Studio 2019 Build Tools** with C++ workload (specifically `vcvars64.bat` at `C:\Program Files (x86)\Microsoft Visual Studio\2019\BuildTools\VC\Auxiliary\Build\vcvars64.bat`)
+- **NVIDIA GPU** with CUDA support (RTX 3080 = compute capability 8.6)
+
+## Step 1: Create Conda Environment
+
+```bash
+conda create -n sonarsplat python=3.10 -y
+conda activate sonarsplat
+```
+
+## Step 2: Install PyTorch with CUDA 12.4
+
+```bash
+pip install torch==2.5.1 torchvision==0.20.1 torchaudio==2.5.1 --index-url https://download.pytorch.org/whl/cu124
+```
+
+## Step 3: Install CUDA nvcc (must match PyTorch's CUDA 12.4)
+
+```bash
+conda install -c "nvidia/label/cuda-12.4.1" cuda-nvcc -y
+```
+
+**Important:** Do NOT install `cuda-toolkit` from the default nvidia channel -- it may install CUDA 13.x which mismatches PyTorch's CUDA 12.4.
+
+## Step 4: Install gsplat (without CUDA first)
+
+First install build dependencies and gsplat in CPU-only mode:
+
+```bash
+pip install ninja setuptools wheel
+```
+
+Set env variable to skip CUDA compilation initially:
+```bash
+conda env config vars set BUILD_NO_CUDA=1
+conda deactivate && conda activate sonarsplat
+```
+
+Install gsplat in editable mode:
+```bash
+pip install --no-build-isolation -e .
+```
+
+Then unset the flag:
+```bash
+conda env config vars unset BUILD_NO_CUDA
+conda deactivate && conda activate sonarsplat
+```
+
+## Step 5: Build gsplat with CUDA Extensions
+
+CUDA compilation on Windows requires VS2019 developer environment. Run `build_gsplat.bat` from a standard Command Prompt (NOT from conda/bash):
+
+```
+build_gsplat.bat
+```
+
+This batch file:
+1. Activates the conda env
+2. Sets up VS2019 developer tools (vcvars64.bat)
+3. Sets CUDA_HOME to the conda env root
+4. Sets TORCH_CUDA_ARCH_LIST=8.6 (adjust for your GPU)
+5. Runs `pip install --no-build-isolation -e .`
+
+**Critical:** `CUDA_HOME` must point to the conda environment root (e.g., `C:\Users\omviz\.conda\envs\sonarsplat`), NOT `Library/`. Conda places CUDA headers in `<env>/include/` and binaries in `<env>/bin/`.
+
+## Step 6: Build fused-ssim
+
+Clone fused-ssim source:
+```bash
+cd D:\Lockheed2026\sonar_splat
+git clone https://github.com/jparismorgan/fused-ssim.git fused-ssim-src
+```
+
+Run `build_fused_ssim.bat` from a standard Command Prompt:
+```
+build_fused_ssim.bat
+```
+
+## Step 7: Install Remaining Dependencies
+
+```bash
+conda activate sonarsplat
+pip install -r examples/requirements.txt
+pip install nerfacc
+```
+
+Note: `fused_ssim` from examples/requirements.txt may fail via pip (needs CUDA build) -- that's fine since we already built it in Step 6.
+
+## Step 8: Fix Code Issues
+
+### 8a. Comment out unused pycolmap import
+
+In `sonar/dataset/dataloader.py`, line 11:
+```python
+# from pycolmap import SceneManager  # unused import
+```
+
+### 8b. Fix opacity_pred_for_loss_img bug
+
+In `examples/sonar_simple_trainer.py`, around line 817: move `opacity_pred_for_loss_img` and `opacity_gt_img` assignments BEFORE the `if step >= cfg.opacity_supervision_start_step` block so they're always defined when the logging code at line 839 references them.
+
+## Step 9: Initialize GLM Submodule
+
+```bash
+cd D:\Lockheed2026\sonar_splat
+git submodule update --init --recursive
+```
+
+This pulls the GLM math library needed by CUDA kernels into `gsplat/cuda/csrc/third_party/glm/`.
+
+## Step 10: Run Training
+
+Use `run_training.bat` from a standard Command Prompt, or run manually:
+
+```
+run_training.bat
+```
+
+Example training command:
+```bash
+python examples/sonar_simple_trainer.py prune_only \
+    --batch_size 1 \
+    --camera_model ortho \
+    --data_dir data/sonarsplat_dataset/concrete_piling_3D \
+    --result_dir results/test_run \
+    --data_factor 1 \
+    --disable_viewer \
+    --init_type predefined \
+    --init_num_pts 100000 \
+    --init_opa 0.9 \
+    --init_scale 0.01 \
+    --max_steps 100 \
+    --near_plane -10 \
+    --far_plane 10 \
+    --test_every 8 \
+    --train \
+    --render_eval \
+    --sh_degree 3 \
+    --tb_every 50 \
+    --tb_save_image \
+    --skip_frames 1 \
+    --start_from_frame 0 \
+    --end_at_frame 10000
+```
+
+**Important:** Use `--skip_frames 1` (not 0, which causes a division-by-zero error).
+
+## Batch Files Reference
+
+Three `.bat` files were created in the project root for Windows CUDA compilation:
+
+| File | Purpose |
+|------|---------|
+| `build_gsplat.bat` | Build gsplat with CUDA extensions |
+| `build_fused_ssim.bat` | Build fused-ssim CUDA extension |
+| `run_training.bat` | Run training with VS2019/CUDA environment |
+
+All three share the same environment setup pattern:
+```bat
+@echo off
+call conda activate sonarsplat
+call "C:\Program Files (x86)\Microsoft Visual Studio\2019\BuildTools\VC\Auxiliary\Build\vcvars64.bat"
+set DISTUTILS_USE_SDK=1
+set MSSdk=1
+set CUDA_HOME=C:\Users\omviz\.conda\envs\sonarsplat
+set TORCH_CUDA_ARCH_LIST=8.6
+set PATH=C:\Users\omviz\.conda\envs\sonarsplat\bin;%PATH%
+```
+
+## Troubleshooting
+
+- **"CUDA_HOME not set"**: Make sure CUDA_HOME points to the conda env root, not Library/
+- **CUDA version mismatch**: nvcc version must match PyTorch's CUDA version (12.4)
+- **cl.exe not found**: Must run builds from .bat files that call vcvars64.bat first
+- **`[WinError 2]` during build**: Usually means CUDA_HOME is wrong or nvcc isn't on PATH
+- **`skip_frames` division by zero**: Use `--skip_frames 1` not `--skip_frames 0`
