@@ -19,6 +19,10 @@ conda activate sonarsplat
 
 ```bash
 pip install torch==2.5.1 torchvision==0.20.1 torchaudio==2.5.1 --index-url https://download.pytorch.org/whl/cu124
+
+or 
+
+pip install torch==2.6.0+cu124 torchvision==0.21.0+cu124 torchaudio==2.6.0+cu124 --index-url https://download.pytorch.org/whl/cu124
 ```
 
 ## Step 3: Install CUDA nvcc (must match PyTorch's CUDA 12.4)
