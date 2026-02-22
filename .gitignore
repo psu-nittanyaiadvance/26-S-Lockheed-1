@@ -4,3 +4,4 @@ __pycache__/
 *.pyc
 .vscode/
 yolov8m.pt
+venv/
