@@ -215,13 +215,13 @@ def detect_mount_row(image_path: str) -> dict:
         # Convert to absolute coordinates
         rightmost_col_abs = right_start + rightmost_col_in_region
         
-        # Clustering Rule 1: Check proximity to right edge
+        #### Clustering Rule 1: Check proximity to right edge
         distance_from_right = w - rightmost_col_abs
         if distance_from_right > RIGHT_EDGE_PROXIMITY:
             result['error'] = f'Highest point too far from right edge ({distance_from_right}px > {RIGHT_EDGE_PROXIMITY}px)'
             return result
 
-        # Clustering Rule 2: Check cluster concentration
+        # ### Clustering Rule 2: Check cluster concentration
         # The largest component must dominate the yellow-green pixels in the scan zone.
         # Evenly spread pixels = contamination; one tight cluster = camera mount.
         total_yellow_green = int(np.sum(mask))
@@ -235,6 +235,9 @@ def detect_mount_row(image_path: str) -> dict:
         result['detected_row']   = abs_row
         result['component_area'] = int(largest_area)
         result['concentration']  = float(concentration)
+
+
+
 
     except Exception as e:
         result['error'] = str(e)
