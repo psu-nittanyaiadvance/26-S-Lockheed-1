@@ -29,7 +29,7 @@ def convert_images_to_scene(IMAGE_FOLDER_PATH, dataset_name, scene_name):
     frame_count = 0
     for item in Path(IMAGE_FOLDER_PATH).iterdir(): #save abs image file path strings to list
         frame_count += 1
-        if item.is_file() and (frame_count % 1 == 0):
+        if item.is_file() and (frame_count % 3 == 0):
             print(f"Frame: {frame_count}, File: {str(item)}")
             
             file_path = item.resolve()
@@ -133,7 +133,7 @@ def colmap_to_llff(scene_folder):
 
 
 
-
+convert_images_to_scene("/data/Lockheed1-Spring26/watersplatting_data/FLSEA_data/red_sea/coral_table_loop/imgs", "FLSEA_dataset", "coral_reef")
 
     
 

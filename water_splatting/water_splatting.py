@@ -110,6 +110,18 @@ class WaterSplattingModelConfig(ModelConfig):
     """If True, continue to cull gaussians post refinement"""
     zero_medium: bool = False
     """If True, zero out the medium field"""
+
+    #this is where I hardcoded
+    #force_blue_medium: bool = True
+    #"""If True, override medium with pure blue values"""
+    #blue_medium_rgb: float = 0.7
+    #"""Blue intensity for medium_rgb when force_blue_medium=True"""
+    #blue_medium_bs: float = 0.15
+    #"""Blue intensity for medium_bs when force_blue_medium=True"""
+    #blue_medium_attn: float = 0.3
+    #"""Blue intensity for medium_attn when force_blue_medium=True"""
+    #end of hardcoding
+
     reset_alpha_every: int = 5
     """Every this many refinement steps, reset the alpha"""
     abs_grad_densification: bool = True
@@ -791,6 +803,17 @@ class WaterSplattingModel(Model):
             medium_bs = torch.zeros_like(medium_bs)
             medium_attn = torch.zeros_like(medium_attn)
 
+        #if self.config.force_blue_medium:
+         #   medium_rgb = torch.zeros_like(medium_rgb)
+          #  medium_rgb[..., 2] = self.config.blue_medium_rgb
+        #    
+        #    medium_bs = torch.zeros_like(medium_bs)
+        #    medium_bs[..., 2] = self.config.blue_medium_bs
+        #    
+        #    medium_attn = torch.zeros_like(medium_attn)
+         #   medium_attn[..., 2] = self.config.blue_medium_attn
+ 
+
         if self.crop_box is not None and not self.training:
             crop_ids = self.crop_box.within(self.means).squeeze()
             if crop_ids.sum() == 0:
@@ -850,7 +873,7 @@ class WaterSplattingModel(Model):
                     "rgb_object": torch.zeros_like(rgb), "rgb_clear": torch.zeros_like(rgb), "rgb_clear_clamp": torch.zeros_like(rgb), "rgb_medium": medium_rgb, "pred_image": rgb,
                     "medium_rgb": medium_rgb, "medium_bs": medium_bs, "medium_attn": medium_attn}
 
-        if self.training:
+        if self.training and self.xys.requires_grad:
             self.xys.retain_grad()
 
         if self.config.sh_degree > 0:
@@ -1021,15 +1044,26 @@ class WaterSplattingModel(Model):
         predicted_rgb = outputs["pred_image"]
         predicted_rgb = torch.clamp(predicted_rgb, 0.0, 1.0)
 
-        d = self._get_downscale_factor()
-        if d > 1:
+        #d = self._get_downscale_factor()
+        #if d > 1:
             # torchvision can be slow to import, so we do it lazily.
-            import torchvision.transforms.functional as TF
+        #    import torchvision.transforms.functional as TF
 
-            newsize = [batch["image"].shape[0] // d, batch["image"].shape[1] // d]
-            predicted_rgb = TF.resize(predicted_rgb.permute(2, 0, 1), newsize, antialias=None).permute(1, 2, 0)
-        else:
-            predicted_rgb = predicted_rgb
+        #    newsize = [batch["image"].shape[0] // d, batch["image"].shape[1] // d]
+        #    predicted_rgb = TF.resize(predicted_rgb.permute(2, 0, 1), newsize, antialias=None).permute(1, 2, 0)
+        #else:
+        #    predicted_rgb = predicted_rgb
+
+        if predicted_rgb.shape != gt_rgb.shape:
+            import torchvision.transforms.functional as TF
+            
+            # Resize to match gt_rgb dimensions
+            target_h, target_w = gt_rgb.shape[0], gt_rgb.shape[1]
+            predicted_rgb = TF.resize(
+                predicted_rgb.permute(2, 0, 1), 
+                [target_h, target_w], 
+                antialias=None
+            ).permute(1, 2, 0)
 
         output_gt_rgb = gt_rgb.cpu()
 
