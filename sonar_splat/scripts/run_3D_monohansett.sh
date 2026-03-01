@@ -9,7 +9,8 @@ fi
 DATA_DIR="$1"
 RESULTS_DIR="$2"
 
-python examples/sonar_simple_trainer.py \
+#python examples/sonar_simple_trainer.py \
+CUDA_VISIBLE_DEVICES=0 /home/apd6062/.conda/envs/sonarsplat/bin/python examples/sonar_simple_trainer.py \
 "prune_only" \
 "--batch_size" "1" \
 "--camera_model" "ortho" \
@@ -92,4 +93,5 @@ python examples/sonar_simple_trainer.py \
 "--tb_every" "100" \
 "--tb_save_image" \
 "--test_every" "8" \
+"--disable_viewer" \
 "--train"
