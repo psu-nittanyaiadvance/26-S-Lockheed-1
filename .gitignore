@@ -113,3 +113,6 @@ venv.bak/
 
 # Model weights
 yolov8m.pt
+
+#claude
+.claude
