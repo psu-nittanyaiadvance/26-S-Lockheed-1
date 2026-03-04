@@ -1,32 +1,33 @@
 """
-Sunboat Persistent Object Detection (Layer Accumulation)
+Sunboat Persistent Bar Detection (Median Mask + Threshold)
 
-This script replaces the previous highest-point cropping strategy with a simple,
-dataset-level persistence approach:
-
-  1) Run Canny edge detection on every full image
-  2) Convert edges to binary masks
-  3) Accumulate masks across the dataset
-     persistent_map = sum(all_binary_masks) / num_images
-  4) Threshold persistence to keep only pixels that appear in >= X% of images
-     final_mask = persistent_map >= X
-  5) Save an overlay of final_mask on a sample image for verification
+Strategy:
+    1) Load every image and resize to a consistent shape
+    2) Stack images as float32 and compute:
+             median_image = median(all_images, axis=0)
+    3) Compute variance map:
+             variance_map = var(all_images, axis=0)
+    4) Threshold the variance map:
+             persistent_mask = variance_map < threshold
+         Low variance -> visually consistent across dataset (persistent object)
+         High variance -> transient content (fish/debris/water motion)
+    5) Save median_image, variance_map, and persistent_mask overlay for
+         visual verification before any cropping decisions
 
 Important:
-  - This script does NOT crop images.
-  - No shape filtering, bottom-crop logic, or boundary heuristics are used.
+    - This script does NOT crop images.
+    - No shape filtering, boundary logic, or cropping heuristics are used.
 
 Usage:
-  python sunboat_robust.py
-  python sunboat_robust.py --threshold 0.65
-  python sunboat_robust.py --input-dir path/to/images --output-dir out_dir
+    python sunboat_robust.py
+    python sunboat_robust.py --variance-threshold 0.0025
+    python sunboat_robust.py --input-dir path/to/images --output-dir out_dir
 """
 
 import argparse
 import os
 import sys
 from datetime import datetime
-from pathlib import Path
 from typing import Generator, Optional, Set, Tuple
 
 import cv2
@@ -43,12 +44,10 @@ ImageFile.LOAD_TRUNCATED_IMAGES = True
 # ── Config ────────────────────────────────────────────────────────────────────
 
 INPUT_DIR = "watersplatting_data/Sunboat_03-09-2023"
-OUTPUT_DIR = "artifact_analysis/sunboat/persistence"
+OUTPUT_DIR = "artifact_analysis/sunboat/median_variance"
 
-PERSISTENCE_THRESHOLD = 0.60
-CANNY_LOW = 80
-CANNY_HIGH = 180
-GAUSSIAN_KERNEL = 5
+STACK_COLOR_SPACE = "LAB"
+VARIANCE_THRESHOLD = 0.0025
 
 IMG_EXTENSIONS = {".png", ".jpg", ".jpeg", ".PNG", ".JPG", ".JPEG"}
 
@@ -103,28 +102,34 @@ def load_image_safe(image_path: str) -> Tuple[Optional[np.ndarray], Optional[str
         return None, str(exc)
 
 
-# ── Core accumulation logic ───────────────────────────────────────────────────
+# ── Core median/variance logic ───────────────────────────────────────────────
 
-def canny_binary_mask(
-    img_bgr: np.ndarray,
-    canny_low: int,
-    canny_high: int,
-    gaussian_kernel: int,
-) -> np.ndarray:
-    """Return full-image Canny edge mask as uint8 binary {0, 1}."""
-    gray = cv2.cvtColor(img_bgr, cv2.COLOR_BGR2GRAY)
+def convert_to_color_space(img_bgr: np.ndarray, color_space: str) -> np.ndarray:
+    """Convert BGR image to the requested color space for stacking."""
+    color_space = color_space.upper()
+    if color_space == "BGR":
+        return img_bgr
+    if color_space == "RGB":
+        return cv2.cvtColor(img_bgr, cv2.COLOR_BGR2RGB)
+    if color_space == "HSV":
+        return cv2.cvtColor(img_bgr, cv2.COLOR_BGR2HSV)
+    if color_space == "LAB":
+        return cv2.cvtColor(img_bgr, cv2.COLOR_BGR2LAB)
+    raise ValueError(f"Unsupported color space: {color_space}")
 
-    # Ensure odd kernel size >= 1
-    if gaussian_kernel < 1:
-        gaussian_kernel = 1
-    if gaussian_kernel % 2 == 0:
-        gaussian_kernel += 1
 
-    if gaussian_kernel > 1:
-        gray = cv2.GaussianBlur(gray, (gaussian_kernel, gaussian_kernel), 0)
-
-    edges = cv2.Canny(gray, canny_low, canny_high)
-    return (edges > 0).astype(np.uint8)
+def convert_from_color_space(img_space_u8: np.ndarray, color_space: str) -> np.ndarray:
+    """Convert image from stack color space back to BGR for visualization."""
+    color_space = color_space.upper()
+    if color_space == "BGR":
+        return img_space_u8
+    if color_space == "RGB":
+        return cv2.cvtColor(img_space_u8, cv2.COLOR_RGB2BGR)
+    if color_space == "HSV":
+        return cv2.cvtColor(img_space_u8, cv2.COLOR_HSV2BGR)
+    if color_space == "LAB":
+        return cv2.cvtColor(img_space_u8, cv2.COLOR_LAB2BGR)
+    raise ValueError(f"Unsupported color space: {color_space}")
 
 
 def choose_reference_shape(image_paths: list) -> Tuple[Tuple[int, int], np.ndarray, str]:
@@ -146,77 +151,95 @@ def choose_reference_shape(image_paths: list) -> Tuple[Tuple[int, int], np.ndarr
 
 def save_visualizations(
     sample_bgr: np.ndarray,
-    persistent_map: np.ndarray,
-    final_mask: np.ndarray,
+    median_image: np.ndarray,
+    variance_map: np.ndarray,
+    persistent_mask: np.ndarray,
+    color_space: str,
+    variance_threshold: float,
     output_dir: str,
     timestamp: str,
 ) -> None:
-    """Save persistence map, final mask, and overlay preview artifacts."""
+    """Save median image, variance map, and persistent-mask preview artifacts."""
     os.makedirs(output_dir, exist_ok=True)
 
-    # Save raw arrays for later downstream steps
-    np.save(os.path.join(output_dir, f"persistent_map_{timestamp}.npy"), persistent_map)
-    np.save(os.path.join(output_dir, f"final_mask_{timestamp}.npy"), final_mask.astype(np.uint8))
+    median_u8 = np.clip(median_image * 255.0, 0, 255).astype(np.uint8)
+    median_bgr = convert_from_color_space(median_u8, color_space)
 
-    # Convert sample to RGB for plotting
+    np.save(os.path.join(output_dir, f"median_image_{timestamp}.npy"), median_image.astype(np.float32))
+    np.save(os.path.join(output_dir, f"variance_map_{timestamp}.npy"), variance_map.astype(np.float32))
+    np.save(os.path.join(output_dir, f"persistent_mask_{timestamp}.npy"), persistent_mask.astype(np.uint8))
+
+    median_png_path = os.path.join(output_dir, f"median_image_{timestamp}.png")
+    cv2.imwrite(median_png_path, median_bgr)
+
     sample_rgb = cv2.cvtColor(sample_bgr, cv2.COLOR_BGR2RGB)
+    median_rgb = cv2.cvtColor(median_bgr, cv2.COLOR_BGR2RGB)
 
-    # Build color overlay (red where mask is persistent)
+    # Build persistent mask overlay on sample image
     red_overlay = np.zeros_like(sample_rgb)
-    red_overlay[..., 0] = final_mask.astype(np.uint8) * 255
+    red_overlay[..., 0] = persistent_mask.astype(np.uint8) * 255
     overlay_rgb = cv2.addWeighted(sample_rgb, 0.75, red_overlay, 0.35, 0)
 
-    # Save panel: sample, persistence heatmap, final overlay
-    fig, axes = plt.subplots(1, 3, figsize=(18, 6))
+    variance_png_path = os.path.join(output_dir, f"variance_map_{timestamp}.png")
+    var_norm = cv2.normalize(variance_map, None, 0, 255, cv2.NORM_MINMAX).astype(np.uint8)
+    cv2.imwrite(variance_png_path, var_norm)
+
+    mask_png_path = os.path.join(output_dir, f"persistent_mask_{timestamp}.png")
+    cv2.imwrite(mask_png_path, persistent_mask.astype(np.uint8) * 255)
+
+    # Save panel: sample, median image, variance map, persistent overlay
+    fig, axes = plt.subplots(1, 4, figsize=(24, 6))
 
     axes[0].imshow(sample_rgb)
     axes[0].set_title("Sample Image")
     axes[0].axis("off")
 
-    heat = axes[1].imshow(persistent_map, cmap="magma", vmin=0.0, vmax=1.0)
-    axes[1].set_title("Persistence Map")
+    axes[1].imshow(median_rgb)
+    axes[1].set_title("Median Image")
     axes[1].axis("off")
-    plt.colorbar(heat, ax=axes[1], fraction=0.046, pad=0.04)
 
-    axes[2].imshow(overlay_rgb)
-    axes[2].set_title("Final Mask Overlay")
+    heat = axes[2].imshow(variance_map, cmap="magma")
+    axes[2].set_title(f"Variance Map (threshold={variance_threshold:.6f})")
     axes[2].axis("off")
+    plt.colorbar(heat, ax=axes[2], fraction=0.046, pad=0.04)
+
+    axes[3].imshow(overlay_rgb)
+    axes[3].set_title("Persistent Mask Overlay")
+    axes[3].axis("off")
 
     plt.tight_layout()
-    panel_path = os.path.join(output_dir, f"persistence_overlay_{timestamp}.png")
+    panel_path = os.path.join(output_dir, f"median_variance_overlay_{timestamp}.png")
     plt.savefig(panel_path, dpi=150, bbox_inches="tight")
     plt.close(fig)
 
-    # Also save standalone binary mask image for quick visual checks
-    mask_png_path = os.path.join(output_dir, f"final_mask_{timestamp}.png")
-    cv2.imwrite(mask_png_path, final_mask.astype(np.uint8) * 255)
-
     print("\nSaved outputs:")
+    print(f"  - {median_png_path}")
+    print(f"  - {variance_png_path}")
     print(f"  - {panel_path}")
     print(f"  - {mask_png_path}")
-    print(f"  - {os.path.join(output_dir, f'persistent_map_{timestamp}.npy')}")
-    print(f"  - {os.path.join(output_dir, f'final_mask_{timestamp}.npy')}")
+    print(f"  - {os.path.join(output_dir, f'median_image_{timestamp}.npy')}")
+    print(f"  - {os.path.join(output_dir, f'variance_map_{timestamp}.npy')}")
+    print(f"  - {os.path.join(output_dir, f'persistent_mask_{timestamp}.npy')}")
 
 
 def main() -> None:
     parser = argparse.ArgumentParser(
-        description="Detect the most persistent object via edge-mask accumulation",
+        description="Detect persistent dataset structure via median image and variance thresholding",
     )
     parser.add_argument("--input-dir", default=INPUT_DIR, help="Dataset root directory")
     parser.add_argument("--output-dir", default=OUTPUT_DIR, help="Output directory")
     parser.add_argument(
-        "--threshold",
-        type=float,
-        default=PERSISTENCE_THRESHOLD,
-        help="Persistence threshold X in [0, 1] for final_mask = persistent_map >= X",
+        "--color-space",
+        type=str,
+        default=STACK_COLOR_SPACE,
+        choices=["BGR", "RGB", "HSV", "LAB"],
+        help="Color space used when stacking images",
     )
-    parser.add_argument("--canny-low", type=int, default=CANNY_LOW, help="Canny low threshold")
-    parser.add_argument("--canny-high", type=int, default=CANNY_HIGH, help="Canny high threshold")
     parser.add_argument(
-        "--gaussian-kernel",
-        type=int,
-        default=GAUSSIAN_KERNEL,
-        help="Gaussian blur kernel size before Canny (odd positive integer)",
+        "--variance-threshold",
+        type=float,
+        default=VARIANCE_THRESHOLD,
+        help="Threshold for persistent_mask = variance_map < threshold",
     )
     parser.add_argument(
         "--max-images",
@@ -226,8 +249,8 @@ def main() -> None:
     )
     args = parser.parse_args()
 
-    if not (0.0 <= args.threshold <= 1.0):
-        print("Error: --threshold must be between 0 and 1.")
+    if args.variance_threshold < 0.0:
+        print("Error: --variance-threshold must be >= 0.")
         sys.exit(1)
 
     image_paths = list(iter_dataset_images(args.input_dir, IMG_EXTENSIONS))
@@ -239,7 +262,7 @@ def main() -> None:
         sys.exit(1)
 
     print(f"Found {len(image_paths)} images")
-    print("Step 1/4: Running Canny on full images and collecting binary masks...")
+    print("Step 1/5: Loading images and resizing to consistent shape...")
 
     # Determine reference shape using first valid image
     try:
@@ -250,8 +273,7 @@ def main() -> None:
 
     print(f"Reference shape: {ref_w}x{ref_h} (from {os.path.basename(sample_path)})")
 
-    # Accumulate sum of binary masks (float32 accumulator)
-    sum_map = np.zeros((ref_h, ref_w), dtype=np.float32)
+    stacked_images = []
     processed_count = 0
     failed_count = 0
     resized_count = 0
@@ -267,44 +289,52 @@ def main() -> None:
             img_bgr = cv2.resize(img_bgr, (ref_w, ref_h), interpolation=cv2.INTER_LINEAR)
             resized_count += 1
 
-        binary_mask = canny_binary_mask(
-            img_bgr,
-            canny_low=args.canny_low,
-            canny_high=args.canny_high,
-            gaussian_kernel=args.gaussian_kernel,
-        )
-
-        sum_map += binary_mask.astype(np.float32)
+        img_space = convert_to_color_space(img_bgr, args.color_space)
+        stacked_images.append(img_space.astype(np.float32) / 255.0)
         processed_count += 1
 
-    print("\nStep 2/4: Accumulating over dataset")
+    print("\nStep 2/5: Stacking images and computing median image")
     if processed_count == 0:
         print("No valid images could be processed.")
         sys.exit(1)
 
-    persistent_map = sum_map / float(processed_count)
+    try:
+        all_images = np.stack(stacked_images, axis=0).astype(np.float32)
+    except MemoryError:
+        print("MemoryError: Unable to stack all images in memory. Try --max-images for debugging.")
+        sys.exit(1)
 
-    print("Step 3/4: Thresholding by persistence")
-    final_mask = persistent_map >= args.threshold
+    median_image = np.median(all_images, axis=0).astype(np.float32)
 
-    print("Step 4/4: Saving verification outputs")
+    print("Step 3/5: Computing variance map")
+    variance_volume = np.var(all_images, axis=0)
+    variance_map = variance_volume.mean(axis=2).astype(np.float32)
+
+    print("Step 4/5: Thresholding variance map to build persistent mask")
+    persistent_mask = variance_map < float(args.variance_threshold)
+
+    print("Step 5/5: Saving verification outputs")
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     save_visualizations(
         sample_bgr=sample_bgr if sample_bgr.shape[:2] == (ref_h, ref_w)
         else cv2.resize(sample_bgr, (ref_w, ref_h), interpolation=cv2.INTER_LINEAR),
-        persistent_map=persistent_map,
-        final_mask=final_mask,
+        median_image=median_image,
+        variance_map=variance_map,
+        persistent_mask=persistent_mask,
+        color_space=args.color_space,
+        variance_threshold=float(args.variance_threshold),
         output_dir=args.output_dir,
         timestamp=timestamp,
     )
 
-    mask_ratio = float(np.mean(final_mask))
+    mask_ratio = float(np.mean(persistent_mask))
     print("\nSummary:")
     print(f"  Processed images: {processed_count}")
     print(f"  Failed images:    {failed_count}")
     print(f"  Resized images:   {resized_count}")
-    print(f"  Threshold (X):    {args.threshold:.3f}")
-    print(f"  Final mask fill:  {mask_ratio:.2%} of pixels")
+    print(f"  Color space:      {args.color_space}")
+    print(f"  Var threshold:    {args.variance_threshold:.6f}")
+    print(f"  Mask fill ratio:  {mask_ratio:.2%} of pixels")
     print("\nDone. No cropping performed.")
 
 
