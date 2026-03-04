@@ -1,7 +1,22 @@
-.venv/
-.DS_Store
+# Python
 __pycache__/
 *.pyc
-.vscode/
-yolov8m.pt
+*.so
+*.egg-info/
+build/
+.venv/
 venv/
+
+# IDE / OS
+.DS_Store
+.vscode/
+
+# Model weights
+yolov8m.pt
+
+# Data outputs (generated at runtime)
+analysis_output/
+artifact_analysis/
+classification_output/
+cleaned_datasets/
+ranked_dataset/
