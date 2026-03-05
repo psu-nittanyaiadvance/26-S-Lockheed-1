@@ -124,3 +124,7 @@ compile_commands.json
 =======
 .DS_Store
 >>>>>>> a59c1d6 (added gitignore)
+
+# removing data and output files in sonarsplat
+*data
+*results

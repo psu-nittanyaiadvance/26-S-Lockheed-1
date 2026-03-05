@@ -32,7 +32,7 @@ water_splatting_method = MethodSpecification(
                                           ),
         ),
         optimizers={
-            "means": {
+        "means": {
                 "optimizer": AdamOptimizerConfig(lr=1.6e-4, eps=1e-15),
                 "scheduler": ExponentialDecaySchedulerConfig(
                     lr_final=5e-5,
