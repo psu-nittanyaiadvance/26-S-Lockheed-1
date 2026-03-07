@@ -1,8 +1,8 @@
 # Underwater 3D Reconstruction Pipeline
 
-**3D Gaussian Splatting for Synthetic Underwater 3D Model Generation**
+**Complete end-to-end pipeline for underwater 3D reconstruction using Gaussian Splatting**
 
-A unified pipeline for underwater dataset acquisition, quality analysis, image preprocessing, and 3D Gaussian splatting reconstruction using both optical and sonar imagery. This repository consolidates tools for the complete workflow: from raw dataset download through image classification and artifact removal to novel view synthesis and 3D scene reconstruction.
+A unified pipeline for underwater dataset acquisition, quality analysis, image preprocessing, and 3D Gaussian splatting reconstruction using both optical and sonar imagery. This repository consolidates tools for the complete workflow: from raw dataset download through image classification and artifact removal to novel view synthesis and 3D scene reconstruction for the Lockheed Martin NAISS project.
 
 ---
 
@@ -17,9 +17,14 @@ A unified pipeline for underwater dataset acquisition, quality analysis, image p
   - [2. Exploratory Data Analysis](#2-exploratory-data-analysis)
   - [3. Image Classification and Preprocessing](#3-image-classification-and-preprocessing)
   - [4. Artifact Detection and Cropping](#4-artifact-detection-and-cropping)
-  - [5. SonarSplat: Gaussian Splatting for Sonar](#5-sonarsplat-gaussian-splatting-for-sonar)
+  - [5. 3D Reconstruction](#5-3d-reconstruction)
+    - [SonarSplat (Sonar Imagery)](#sonarsplat-sonar-imagery)
+    - [WaterSplatting (Optical Imagery)](#watersplatting-optical-imagery)
+- [Usage Guide](#usage-guide)
 - [Dependencies](#dependencies)
 - [Branch Origins](#branch-origins)
+- [Troubleshooting](#troubleshooting)
+- [Resources](#resources)
 
 ---
 
@@ -27,8 +32,8 @@ A unified pipeline for underwater dataset acquisition, quality analysis, image p
 
 This project addresses the challenge of generating synthetic 3D models of underwater environments using Gaussian splatting techniques. The pipeline handles two complementary data modalities:
 
-- **Optical imagery** -- RGB camera frames from underwater vehicles (ROVs/AUVs), used for visual 3D reconstruction of scenes like shipwrecks, coral reefs, and seafloor terrain.
-- **Acoustic sonar imagery** -- Imaging sonar data (side-scan sonar, forward-looking sonar, multibeam) for 3D reconstruction in low-visibility or turbid conditions where optical cameras fail.
+- **Optical imagery** - RGB camera frames from underwater vehicles (ROVs/AUVs), used for visual 3D reconstruction of scenes like shipwrecks, coral reefs, and seafloor terrain using **WaterSplatting**
+- **Acoustic sonar imagery** - Imaging sonar data (side-scan sonar, forward-looking sonar, multibeam) for 3D reconstruction in low-visibility or turbid conditions where optical cameras fail using **SonarSplat**
 
 The pipeline is organized into stages that can be run independently or chained together:
 
@@ -36,7 +41,7 @@ The pipeline is organized into stages that can be run independently or chained t
 2. **Analyze** dataset quality through EDA and statistical profiling
 3. **Classify** images using CLIP zero-shot classification to filter out unusable frames
 4. **Clean** images by detecting and cropping camera housing artifacts
-5. **Reconstruct** 3D scenes using SonarSplat (for sonar data) or other splatting frameworks (for optical data)
+5. **Reconstruct** 3D scenes using SonarSplat (for sonar data) or WaterSplatting (for optical data)
 
 ---
 
@@ -81,8 +86,7 @@ The pipeline is organized into stages that can be run independently or chained t
                          +-------------+--------------+
                          |                            |
                     Optical Pipeline            Sonar Pipeline
-                    (WaterSplatting /           (SonarSplat)
-                     other frameworks)
+                    (WaterSplatting)            (SonarSplat)
                          |                            |
                          v                            v
                     +-----------+             +-----------+
@@ -96,63 +100,88 @@ The pipeline is organized into stages that can be run independently or chained t
 ## Repository Structure
 
 ```
-.
-|-- download_dataset.py                 # Download files from Harvard Dataverse
-|-- download_and_rank.py                # Download + incremental CLIP ranking pipeline
-|-- rank_images.py                      # Standalone two-pass image ranking (CLIP + CV)
-|-- preprocess_datasets.py              # CLIP zero-shot classification + artifact detection + cleaning
-|-- sunboat_crop.py                     # Sunboat camera mount detection (connected component)
-|-- sunboat_templatematching.py         # Sunboat camera mount detection (template matching)
-|-- vehicle_artifact_crop.py            # Generic vehicle housing artifact detection + cropping
-|-- underwater_optical_datasets_analysis.py  # Catalog of underwater datasets with suitability scores
-|-- underwater_object_detection_pipeline.ipynb  # YOLO + CLIP object detection notebook
-|-- sonar_datasets_eda.ipynb            # Exploratory data analysis for sonar datasets
-|-- sonar_datasets_eda.html             # Exported HTML of EDA notebook
-|-- sonar_datasets_summary.csv          # Summary statistics for 21 sonar datasets
-|-- sonar_analysis_report.txt           # FLSea dataset analysis report
-|-- sonar_dataset_analysis.png          # FLSea dataset visualization
-|-- eda_slides_prompt.md                # Prompt template for generating EDA presentation
-|-- requirements.txt                    # Python dependencies for data analysis pipeline
-|
-|-- sonar_splat/                        # SonarSplat Gaussian splatting framework
-|   |-- README.md                       # SonarSplat documentation and usage
-|   |-- SETUP_LINUX.md                  # Linux installation guide
-|   |-- SETUP_WINDOWS.md               # Windows installation guide
-|   |-- setup.py                        # Package installation (gsplat with CUDA extensions)
-|   |-- requirements.txt               # SonarSplat-specific dependencies
-|   |-- gsplat/                         # Core Gaussian splatting library
-|   |   |-- cuda/                       # CUDA kernels for rasterization
-|   |   |-- compression/               # Point cloud compression utilities
-|   |   |-- rendering.py               # Rasterization rendering pipeline
-|   |   |-- strategy/                   # Gaussian densification strategies
-|   |   +-- ...
-|   |-- sonar/                          # Sonar-specific modules
-|   |   |-- dataset/dataloader.py       # Sonar image loading and point initialization
-|   |   |-- convert_to_cartesian.py     # Polar-to-Cartesian sonar image conversion
-|   |   |-- utils.py                    # 3D Gaussian visualization and sonar utilities
-|   |   +-- img_metrics.py             # Image quality metrics (PSNR, SSIM, LPIPS)
-|   |-- examples/
-|   |   |-- sonar_simple_trainer.py     # Main sonar training script
-|   |   |-- sonar_image_fitting.py      # Single-image sonar fitting
-|   |   |-- simple_trainer.py           # Standard (optical) trainer
-|   |   +-- ...
-|   |-- scripts/
-|   |   |-- run_3D_monohansett.sh       # 3D reconstruction training script
-|   |   |-- run_nvs_infra_360_1.sh      # Novel view synthesis training script
-|   |   |-- compute_pcd_metrics_ply.py  # Point cloud evaluation metrics
-|   |   |-- evaluate_imgs.py           # Image quality evaluation
-|   |   +-- mesh_gaussian.py           # Convert Gaussians to mesh
-|   +-- docker/                         # Docker build configuration
-+-- README.md                           # This file
+Lockheed_Sonar/
+├── water_splatting/          # WaterSplatting 3D Gaussian Splatting implementation
+│   ├── cuda/                 # CUDA kernels for GPU acceleration
+│   ├── __init__.py           # Python bindings
+│   └── _torch_impl.py        # PyTorch implementation
+│
+├── sonar_splat/              # SonarSplat Gaussian splatting framework
+│   ├── README.md             # SonarSplat documentation and usage
+│   ├── SETUP_LINUX.md        # Linux installation guide
+│   ├── SETUP_WINDOWS.md      # Windows installation guide
+│   ├── setup.py              # Package installation (gsplat with CUDA extensions)
+│   ├── requirements.txt      # SonarSplat-specific dependencies
+│   ├── gsplat/               # Core Gaussian splatting library
+│   │   ├── cuda/             # CUDA kernels for rasterization
+│   │   ├── compression/      # Point cloud compression utilities
+│   │   ├── rendering.py      # Rasterization rendering pipeline
+│   │   └── strategy/         # Gaussian densification strategies
+│   ├── sonar/                # Sonar-specific modules
+│   │   ├── dataset/dataloader.py      # Sonar image loading and point initialization
+│   │   ├── convert_to_cartesian.py    # Polar-to-Cartesian sonar image conversion
+│   │   ├── utils.py                   # 3D Gaussian visualization and sonar utilities
+│   │   └── img_metrics.py            # Image quality metrics (PSNR, SSIM, LPIPS)
+│   ├── examples/
+│   │   ├── sonar_simple_trainer.py    # Main sonar training script
+│   │   ├── sonar_image_fitting.py     # Single-image sonar fitting
+│   │   └── simple_trainer.py          # Standard (optical) trainer
+│   ├── scripts/
+│   │   ├── run_3D_monohansett.sh      # 3D reconstruction training script
+│   │   ├── run_nvs_infra_360_1.sh     # Novel view synthesis training script
+│   │   ├── compute_pcd_metrics_ply.py # Point cloud evaluation metrics
+│   │   ├── evaluate_imgs.py          # Image quality evaluation
+│   │   └── mesh_gaussian.py          # Convert Gaussians to mesh
+│   └── docker/                        # Docker build configuration
+│
+├── scripts/                  # Analysis and preprocessing tools
+│   ├── dataset_tools/        # Dataset download and ranking
+│   │   ├── download_and_rank.py      # Incremental download + CLIP ranking
+│   │   ├── download_dataset.py       # Harvard Dataverse downloader
+│   │   └── rank_images.py            # Image quality ranking with CLIP
+│   ├── eda/                  # Exploratory Data Analysis
+│   │   ├── optical_imagery_eda.py    # Comprehensive underwater EDA with HTML reports
+│   │   └── underwater_optical_datasets_analysis.py  # Quick dataset analysis
+│   ├── preprocessing/        # Image preprocessing pipeline
+│   │   └── preprocess_datasets.py    # CLIP-based classification and artifact removal
+│   └── template_matching/    # Object detection and isolation
+│       ├── sunboat_crop.py           # Sunboat scene cropping
+│       ├── sunboat_templatematching.py  # Template-based object detection
+│       └── vehicle_artifact_crop.py  # Vehicle detection and cropping
+│
+├── Download Datasets/        # Scene creation and data preparation
+│   ├── create_valid_scene.py         # Convert images to 3DGS-ready scenes
+│   └── download_seaThruNerf.py       # SeaThru NeRF dataset tools
+│
+├── notebooks/                # Jupyter notebooks for interactive analysis
+│   ├── sonar_datasets_eda.ipynb      # Sonar dataset exploration
+│   └── underwater_object_detection_pipeline.ipynb  # Object detection pipeline
+│
+├── outputs/                  # Analysis outputs and reports
+│   ├── sonar_datasets_eda.html       # Interactive sonar analysis report
+│   ├── sonar_datasets_summary.csv    # Dataset statistics
+│   ├── sonar_analysis_report.txt     # Text summary
+│   └── sonar_dataset_analysis.png    # Visualization
+│
+├── requirements.txt          # Consolidated Python dependencies
+├── setup.py                  # WaterSplatting package installation
+├── pyproject.toml            # Build configuration
+└── README.md                 # This file
 ```
 
 ---
 
 ## Setup and Installation
 
-### Data Analysis Pipeline (Ranking, Classification, Preprocessing)
+### Prerequisites
+- Python 3.8+ (Python 3.9+ for data analysis tools)
+- CUDA 11.8 (for WaterSplatting) or CUDA 12.4 (for SonarSplat)
+- GCC 11 (for CUDA compilation)
+- Git
 
-The data analysis tools require Python 3.9+ and standard ML libraries.
+### Option 1: Data Analysis and Preprocessing Only
+
+If you only need the data analysis tools (ranking, classification, preprocessing):
 
 ```bash
 # Create and activate a virtual environment
@@ -164,15 +193,43 @@ source .venv/bin/activate  # Linux/macOS
 pip install -r requirements.txt
 ```
 
-**Key dependencies**: `torch`, `transformers` (CLIP), `ultralytics` (YOLOv8), `opencv-python`, `Pillow`, `scipy`, `numpy`, `pandas`, `matplotlib`, `seaborn`, `tqdm`, `requests`, `py7zr`
+### Option 2: WaterSplatting (Optical 3D Reconstruction)
 
-### SonarSplat (Gaussian Splatting for Sonar)
-
-SonarSplat requires a CUDA-capable GPU and has its own installation process. See `sonar_splat/SETUP_LINUX.md` or `sonar_splat/SETUP_WINDOWS.md` for detailed platform-specific instructions.
-
-Quick start (Linux):
+For optical imagery 3D reconstruction with WaterSplatting:
 
 ```bash
+# Create environment
+conda create -n watersplatting python=3.8 -y
+conda activate watersplatting
+
+# Install PyTorch with CUDA 11.8
+pip install torch==2.1.2+cu118 torchvision==0.16.2+cu118 \
+    --extra-index-url https://download.pytorch.org/whl/cu118
+
+# Install CUDA Toolkit
+conda install -c "nvidia/label/cuda-11.8.0" cuda-toolkit
+conda install -c conda-forge gcc=11 gxx=11
+
+# Install dependencies
+pip install -r requirements.txt
+
+# Install tiny-cuda-nn (required for WaterSplatting)
+pip install git+https://github.com/NVlabs/tiny-cuda-nn/#subdirectory=bindings/torch
+
+# Install Nerfstudio
+pip install nerfstudio==1.1.4
+ns-install-cli
+
+# Install WaterSplatting in editable mode
+pip install --no-use-pep517 -e .
+```
+
+### Option 3: SonarSplat (Sonar 3D Reconstruction)
+
+For sonar imagery 3D reconstruction with SonarSplat:
+
+```bash
+# Create environment
 conda create -n sonarsplat python=3.10 -y
 conda activate sonarsplat
 
@@ -194,6 +251,19 @@ pip install -r requirements.txt
 pip install -r examples/requirements.txt
 ```
 
+### Verify Installation
+
+```bash
+# Check CUDA
+python -c "import torch; print(f'CUDA: {torch.cuda.is_available()}')"
+
+# Check WaterSplatting (if installed)
+python -c "import water_splatting; print('WaterSplatting OK')"
+
+# Check CLIP (for data analysis)
+python -c "import transformers; print('CLIP OK')"
+```
+
 ---
 
 ## Pipeline Components
@@ -205,7 +275,7 @@ pip install -r examples/requirements.txt
 Downloads all files from a Harvard Dataverse dataset (default: FLSea, DOI `10.7910/DVN/VZD5S6`), organizing them by file type (sonar, images, metadata, ROS bags).
 
 ```bash
-python download_dataset.py
+python scripts/dataset_tools/download_dataset.py
 ```
 
 #### download_and_rank.py
@@ -214,31 +284,29 @@ Combined download and ranking pipeline. Downloads archives from Harvard Datavers
 
 ```bash
 # Basic usage (auto-detects CUDA, keeps top 200)
-python download_and_rank.py --outdir ranked_dataset --k 200
+python scripts/dataset_tools/download_and_rank.py --outdir ranked_dataset --k 200
 
 # With GPU acceleration and larger batch
-python download_and_rank.py --outdir ranked_dataset --device cuda --batch-size 32
+python scripts/dataset_tools/download_and_rank.py --outdir ranked_dataset --device cuda --batch-size 32
 
 # Custom scoring weights
-python download_and_rank.py --weight-clip-positive 0.5 --weight-entropy 0.1
+python scripts/dataset_tools/download_and_rank.py --weight-clip-positive 0.5 --weight-entropy 0.1
 ```
 
 **Scoring dimensions** (configurable weights):
-- `clip_positive` (50%) -- CLIP similarity to prompts describing objects of interest (shipwrecks, debris, structures)
-- `clip_negative` (20%) -- CLIP dissimilarity to prompts describing empty/boring scenes
-- `entropy` (5%) -- Shannon entropy of grayscale histogram (information content)
-- `laplacian_var` (5%) -- Laplacian variance (image sharpness)
-- `saturation_penalty` (10%) -- Penalty for over/under-exposed pixels
-- `edge_density` (10%) -- Canny edge density (structural content)
-
-**Output**: `ranked_dataset/results/` containing `top_images.jsonl`, `top_images.csv`, and `summary.json` with per-image scores and neighbor context.
+- `clip_positive` (50%) - CLIP similarity to prompts describing objects of interest (shipwrecks, debris, structures)
+- `clip_negative` (20%) - CLIP dissimilarity to prompts describing empty/boring scenes
+- `entropy` (5%) - Shannon entropy of grayscale histogram (information content)
+- `laplacian_var` (5%) - Laplacian variance (image sharpness)
+- `saturation_penalty` (10%) - Penalty for over/under-exposed pixels
+- `edge_density` (10%) - Canny edge density (structural content)
 
 #### rank_images.py
 
 Standalone two-pass image ranker that works on a local directory of images (no download step). Uses the same CLIP + CV heuristics scoring as `download_and_rank.py`.
 
 ```bash
-python rank_images.py --root /path/to/images --k 200 --outdir results/
+python scripts/dataset_tools/rank_images.py --root /path/to/images --k 200 --outdir results/
 ```
 
 ### 2. Exploratory Data Analysis
@@ -247,19 +315,31 @@ python rank_images.py --root /path/to/images --k 200 --outdir results/
 
 Jupyter notebook performing comprehensive EDA across 21 open sonar datasets. Analyzes sonar type distributions (SSS, FLS, MBES, MSIS, SAS), annotation tasks, dataset sizes, temporal trends, data quality, and completeness. Exports summary statistics and visualizations.
 
-Viewable as HTML: `sonar_datasets_eda.html`
+Viewable as HTML: `outputs/sonar_datasets_eda.html`
+
+#### optical_imagery_eda.py
+
+Generates comprehensive HTML reports with:
+- Color profile analysis (blue/red ratio, brightness distribution)
+- Quality metrics (blur detection, sharpness, edge density)
+- Content classification (coral, rock, seafloor, open water)
+- COLMAP reconstruction analysis (registration rate, reprojection error)
+- Gaussian Splatting readiness assessment
+
+**Output**: Interactive HTML dashboard with 18+ charts
+
+```bash
+python scripts/eda/optical_imagery_eda.py /path/to/dataset
+# Opens: underwater_eda_report.html in browser
+```
 
 #### underwater_optical_datasets_analysis.py
 
 Catalogs underwater optical datasets scored for Gaussian splatting suitability. Covers enhancement/restoration datasets (SQUID, UIEB, EUVP, UVEB, etc.), detection datasets, segmentation datasets, tracking datasets, and classification datasets. Each scored 0-100 for optical suitability.
 
 ```bash
-python underwater_optical_datasets_analysis.py
+python scripts/eda/underwater_optical_datasets_analysis.py
 ```
-
-#### sonar_datasets_summary.csv
-
-Tabular summary of 21 sonar datasets with columns: name, sonar type, annotation task, sample count, year, paper status, setup availability, and completeness score.
 
 ### 3. Image Classification and Preprocessing
 
@@ -267,22 +347,22 @@ Tabular summary of 21 sonar datasets with columns: name, sonar type, annotation 
 
 Two-phase pipeline for preparing underwater image datasets for 3D reconstruction.
 
-**Phase 1 -- Analyze**: Uses CLIP zero-shot classification to categorize every image into one of 14 underwater categories (fish, coral, marine_animal, vegetation, sand_seafloor, rocks, shipwreck_debris, man_made_structure, diver, open_water, murky_turbid, dark_overexposed, blurry_corrupt). Also detects static border artifacts using cross-image statistical analysis.
+**Phase 1 - Analyze**: Uses CLIP zero-shot classification to categorize every image into one of 14 underwater categories (fish, coral, marine_animal, vegetation, sand_seafloor, rocks, shipwreck_debris, man_made_structure, diver, open_water, murky_turbid, dark_overexposed, blurry_corrupt). Also detects static border artifacts using cross-image statistical analysis.
 
 ```bash
-python preprocess_datasets.py analyze --outdir classification_output --device auto --batch-size 16
+python scripts/preprocessing/preprocess_datasets.py analyze --outdir classification_output --device auto --batch-size 16
 ```
 
-**Phase 2 -- Clean**: Reads Phase 1 results, removes images classified as "empty" (open water, murky, dark, blurry), crops detected artifacts, and exports the cleaned dataset.
+**Phase 2 - Clean**: Reads Phase 1 results, removes images classified as "empty" (open water, murky, dark, blurry), crops detected artifacts, and exports the cleaned dataset.
 
 ```bash
-python preprocess_datasets.py clean --analysis-dir classification_output --outdir cleaned_datasets
+python scripts/preprocessing/preprocess_datasets.py clean --analysis-dir classification_output --outdir cleaned_datasets
 ```
 
 **Supported datasets** (configurable in `DATASET_CONFIGS`):
-- `flsea_vi` -- FLSEA-VI underwater scenes (TIFF images)
-- `shipwreck` -- Shipwreck survey recordings (JPEG images)
-- `sunboat` -- Sunboat mission recordings (PNG images)
+- `flsea_vi` - FLSEA-VI underwater scenes (TIFF images)
+- `shipwreck` - Shipwreck survey recordings (JPEG images)
+- `sunboat` - Sunboat mission recordings (PNG images)
 
 ### 4. Artifact Detection and Cropping
 
@@ -294,13 +374,13 @@ Generic vehicle/camera housing artifact detector using median compositing and br
 
 ```bash
 # Detect artifacts and generate diagnostic plots
-python vehicle_artifact_crop.py detect --datasets sunboat shipwreck flsea_vi
+python scripts/template_matching/vehicle_artifact_crop.py detect --datasets sunboat shipwreck flsea_vi
 
 # Preview before/after crop on sample images
-python vehicle_artifact_crop.py preview --datasets sunboat --crop bottom=80
+python scripts/template_matching/vehicle_artifact_crop.py preview --datasets sunboat --crop bottom=80
 
 # Apply crop to all images
-python vehicle_artifact_crop.py apply --datasets sunboat --output-dir cropped_datasets
+python scripts/template_matching/vehicle_artifact_crop.py apply --datasets sunboat --output-dir cropped_datasets
 ```
 
 #### sunboat_crop.py
@@ -308,8 +388,8 @@ python vehicle_artifact_crop.py apply --datasets sunboat --output-dir cropped_da
 Specialized camera mount detector for the Sunboat dataset. Uses connected component analysis on the yellow-green hue band (hue 25-75) to identify the camera mount bar, which always appears on the right side of the image.
 
 ```bash
-python sunboat_crop.py              # Preview only
-python sunboat_crop.py --crop       # Preview + crop all images
+python scripts/template_matching/sunboat_crop.py              # Preview only
+python scripts/template_matching/sunboat_crop.py --crop       # Preview + crop all images
 ```
 
 #### sunboat_templatematching.py
@@ -317,11 +397,13 @@ python sunboat_crop.py --crop       # Preview + crop all images
 Alternative Sunboat mount detector using OpenCV template matching (`cv2.TM_CCOEFF_NORMED`) against a pre-cropped reference image of the camera mount corner.
 
 ```bash
-python sunboat_templatematching.py              # Preview only
-python sunboat_templatematching.py --crop       # Preview + crop all images
+python scripts/template_matching/sunboat_templatematching.py              # Preview only
+python scripts/template_matching/sunboat_templatematching.py --crop       # Preview + crop all images
 ```
 
-### 5. SonarSplat: Gaussian Splatting for Sonar
+### 5. 3D Reconstruction
+
+#### SonarSplat (Sonar Imagery)
 
 SonarSplat is a Gaussian splatting framework for imaging sonar that enables novel view synthesis and 3D reconstruction of underwater scenes from sonar data. Based on the IEEE RA-L 2025 paper by Sethuraman et al.
 
@@ -331,23 +413,23 @@ SonarSplat is a Gaussian splatting framework for imaging sonar that enables nove
 - Azimuth streak modeling and removal
 - Polar-to-Cartesian coordinate conversion for sonar images
 
-For full SonarSplat documentation, see `sonar_splat/README.md`.
+For full SonarSplat documentation, see `/Users/priyanshudey/Code/Lockheed_Sonar/sonar_splat/README.md`.
 
-#### Novel View Synthesis Training
+##### Novel View Synthesis Training
 
 ```bash
 cd sonar_splat
 bash scripts/run_nvs_infra_360_1.sh <data_dir> <results_dir>
 ```
 
-#### 3D Reconstruction Training
+##### 3D Reconstruction Training
 
 ```bash
 cd sonar_splat
 bash scripts/run_3D_monohansett.sh <data_dir> <results_dir>
 ```
 
-#### Evaluation
+##### Evaluation
 
 ```bash
 # Image quality metrics (PSNR, SSIM, LPIPS)
@@ -357,7 +439,7 @@ python scripts/evaluate_imgs.py --root_folder <root_folder>
 python scripts/compute_pcd_metrics_ply.py --gt_root <gt_dir> --pred_root <pred_dir>
 ```
 
-#### Polar-to-Cartesian Conversion
+##### Polar-to-Cartesian Conversion
 
 Convert sonar images from polar (range/azimuth) to Cartesian coordinates:
 
@@ -368,6 +450,89 @@ python sonar/convert_to_cartesian.py \
     --hfov 130 \
     --max_range 10.0 \
     --cmap viridis
+```
+
+#### WaterSplatting (Optical Imagery)
+
+WaterSplatting is an underwater-specific 3D Gaussian Splatting implementation optimized for underwater light propagation and scattering.
+
+**Key Features**:
+- CUDA-accelerated rendering
+- Custom CUDA kernels for forward/backward passes
+- Integration with Nerfstudio
+- Support for multi-view underwater imagery
+- Custom underwater light model
+
+##### Workflow
+
+```bash
+# 1. Create a scene from images
+cd "Download Datasets"
+python create_valid_scene.py
+# Input: Path to image folder
+# Output: ../watersplatting_data/{dataset}/{scene}/
+
+# 2. Train a model
+ns-train water-splatting \
+    --data ../watersplatting_data/{dataset}/{scene} \
+    --output-dir outputs/{scene}_run1
+
+# 3. View results
+ns-viewer --load-config outputs/{scene}_run1/water-splatting/{timestamp}/config.yml
+# Access at http://localhost:7007
+```
+
+---
+
+## Usage Guide
+
+### Typical Workflow
+
+#### For Optical Imagery (WaterSplatting)
+
+```bash
+# 1. Download and Rank Dataset
+python scripts/dataset_tools/download_and_rank.py \
+    --outdir ranked_dataset \
+    --k 200 \
+    --device cuda \
+    --batch-size 32
+
+# 2. Run EDA to Assess Quality
+python scripts/eda/optical_imagery_eda.py ranked_dataset/images
+
+# 3. Preprocess Dataset
+python scripts/preprocessing/preprocess_datasets.py analyze --outdir preprocessed
+python scripts/preprocessing/preprocess_datasets.py clean --outdir cleaned_images
+
+# 4. Create 3DGS Scene
+cd "Download Datasets"
+python create_valid_scene.py
+
+# 5. Train WaterSplatting Model
+ns-train water-splatting \
+    --data ../watersplatting_data/{dataset}/{scene} \
+    --output-dir outputs/{scene}_run1
+
+# 6. View Results
+ns-viewer --load-config outputs/{scene}_run1/water-splatting/{timestamp}/config.yml
+```
+
+#### For Sonar Imagery (SonarSplat)
+
+```bash
+# 1. Download and prepare sonar dataset
+python scripts/dataset_tools/download_dataset.py
+
+# 2. Analyze sonar datasets
+jupyter notebook notebooks/sonar_datasets_eda.ipynb
+
+# 3. Train SonarSplat model
+cd sonar_splat
+bash scripts/run_nvs_infra_360_1.sh <data_dir> <results_dir>
+
+# 4. Evaluate results
+python scripts/evaluate_imgs.py --root_folder <root_folder>
 ```
 
 ---
@@ -396,18 +561,99 @@ python sonar/convert_to_cartesian.py \
 
 ### SonarSplat (`sonar_splat/requirements.txt`)
 
-Requires PyTorch with CUDA support, gsplat (custom CUDA extension built from source), open3d, wandb, nerfview, viser, torchmetrics, fused-ssim, and other specialized dependencies. See `sonar_splat/SETUP_LINUX.md` for complete installation instructions.
+Requires PyTorch with CUDA support, gsplat (custom CUDA extension built from source), open3d, wandb, nerfview, viser, torchmetrics, fused-ssim, and other specialized dependencies. See `/Users/priyanshudey/Code/Lockheed_Sonar/sonar_splat/SETUP_LINUX.md` for complete installation instructions.
+
+### WaterSplatting
+
+Requires PyTorch with CUDA 11.8 support, tiny-cuda-nn, Nerfstudio, and custom CUDA extensions. See installation instructions above.
 
 ---
 
 ## Branch Origins
 
-This unified branch consolidates work from three feature branches:
+This unified `main` branch consolidates work from two specialized branches:
 
 | Branch | Contribution | Key Files |
 |--------|-------------|-----------|
-| `flSea_analysis` | Dataset download/ranking pipeline, FLSea EDA, sonar dataset analysis | `download_and_rank.py`, `download_dataset.py`, `rank_images.py`, `sonar_datasets_eda.ipynb`, `sonar_analysis_report.txt` |
-| `image_class` | CLIP zero-shot classification, image preprocessing, artifact detection/cropping | `preprocess_datasets.py`, `sunboat_crop.py`, `sunboat_templatematching.py`, `vehicle_artifact_crop.py`, `eda_slides_prompt.md` |
-| `sonar-splat` | SonarSplat Gaussian splatting framework for imaging sonar | `sonar_splat/` directory (gsplat core, sonar modules, training scripts, evaluation tools) |
+| `main2` | SonarSplat Gaussian splatting framework for imaging sonar, dataset download/ranking pipeline, FLSea EDA, sonar dataset analysis, CLIP zero-shot classification, image preprocessing, artifact detection/cropping | `sonar_splat/` directory (gsplat core, sonar modules, training scripts, evaluation tools), `download_and_rank.py`, `download_dataset.py`, `rank_images.py`, `sonar_datasets_eda.ipynb`, `sonar_analysis_report.txt`, `preprocess_datasets.py`, `sunboat_crop.py`, `sunboat_templatematching.py`, `vehicle_artifact_crop.py`, `eda_slides_prompt.md` |
+| `main3` | WaterSplatting 3D Gaussian Splatting for underwater optical scenes, comprehensive optical imagery analysis, scene creation tools | `water_splatting/` directory (CUDA kernels, PyTorch implementation), `Download Datasets/create_valid_scene.py`, `Download Datasets/download_seaThruNerf.py`, `scripts/eda/optical_imagery_eda.py`, `setup.py`, `pyproject.toml` |
 
-**Shared between flSea_analysis and image_class**: `download_and_rank.py`, `download_dataset.py`, `rank_images.py`, `requirements.txt`, `underwater_optical_datasets_analysis.py`, `underwater_object_detection_pipeline.ipynb`. Where versions differed (EDA notebook, CSV summary), the more comprehensive `image_class` version was kept.
+**Overlap Resolution**: Where files existed in both branches, the versions were intelligently merged or the more comprehensive version was selected. Scripts were organized into logical directories (`scripts/dataset_tools/`, `scripts/eda/`, `scripts/preprocessing/`, `scripts/template_matching/`) for better code organization.
+
+---
+
+## Troubleshooting
+
+### CUDA Compilation Errors
+
+```bash
+# Verify GCC version (must be 11.x for WaterSplatting)
+gcc --version
+
+# Check CUDA paths
+echo $LD_LIBRARY_PATH
+which nvcc
+```
+
+### Port Forwarding (Remote Server)
+
+```bash
+# Single-hop (recommended)
+ssh -L 7007:localhost:7007 -J user@gateway user@compute
+
+# Then open: http://localhost:7007
+```
+
+### ModuleNotFoundError
+
+```bash
+# Ensure PyTorch installed before WaterSplatting
+pip install torch==2.1.2+cu118 torchvision==0.16.2+cu118
+
+# Then install WaterSplatting
+pip install -e .
+```
+
+---
+
+## Resources
+
+### Papers
+- [WaterSplatting](https://arxiv.org/pdf/2408.08206) - 3D Gaussian Splatting for Underwater Scenes
+- [SonarSplat](https://ieeexplore.ieee.org/) - IEEE RA-L 2025 paper on Gaussian Splatting for Imaging Sonar
+- [3D Gaussian Splatting](https://repo-sam.inria.fr/fungraph/3d-gaussian-splatting/) - Original 3DGS paper
+- [SeaThru-NeRF](https://sea-thru-nerf.github.io/) - Underwater neural radiance fields
+
+### Datasets
+- [REMARO OpenSonarDatasets](https://remaro.eu/) - 21 sonar datasets
+- [Harvard Dataverse](https://dataverse.harvard.edu/) - BenthiCat, FishNet, UXO datasets
+- [FLSEA-VI](https://www.kaggle.com/) - Forward-looking sonar underwater scenes
+
+### Tools
+- [Nerfstudio](https://docs.nerf.studio/) - NeRF training framework
+- [COLMAP](https://colmap.github.io/) - Structure-from-Motion
+- [gsplat](https://github.com/nerfstudio-project/gsplat) - Gaussian Splatting library
+
+---
+
+## Contributing
+
+This is a research project for Lockheed Martin NAISS. For questions or collaboration:
+- Review the code in each `scripts/` subdirectory
+- Check `notebooks/` for interactive examples
+- See `outputs/` for example analysis reports
+
+---
+
+## Acknowledgments
+
+- **Nittany AI Advance** - Penn State research group
+- **Lockheed Martin** - Project sponsor
+- **SonarSplat Team** - Original sonar 3DGS implementation
+- **WaterSplatting Team** - Original underwater optical 3DGS implementation
+- **Nerfstudio Community** - Training framework and tools
+
+---
+
+**Last Updated**: March 2026
+**Main Branch**: `main` (consolidated from `main2` and `main3`)

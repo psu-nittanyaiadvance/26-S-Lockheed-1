@@ -1,0 +1,37 @@
+
+================================================================================
+SONAR DATASET ANALYSIS - FINAL REPORT
+================================================================================
+
+Dataset Location: C:\Users\aarav\Downloads\archive
+Analysis Date: 2026-02-09 23:30:32
+
+OVERVIEW:
+---------
+Total Surveys: 14
+  - Canyons: 5
+  - Red Sea: 9
+
+FILE COUNTS:
+------------
+Total Files: 91,300
+  - Images: 22,877
+  - Depth Files: 22,451
+  - SeaErra Files: 45,972
+
+STORAGE:
+--------
+Total Size: 1.7 MB (0.00 GB)
+
+DATA QUALITY:
+-------------
+Complete Surveys (100%): 12 / 14
+Average Completeness: 92.9%
+
+TOP 3 SURVEYS BY FILE COUNT:
+----------------------------
+  big_dice_loop (red_sea): 12,636 files
+  u_canyon (canyons): 11,580 files
+  flatiron (canyons): 9,899 files
+
+================================================================================
