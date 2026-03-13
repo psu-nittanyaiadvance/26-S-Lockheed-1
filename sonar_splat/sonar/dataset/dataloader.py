@@ -40,6 +40,8 @@ def initialize_gs_range_azimuth(return_threshold: float,
     """
 
     #filter the image first 
+    if image.ndim == 3:
+        image = image[0]
     H, W = image.shape
     image = np.array(image)
     return_mask = image > return_threshold
@@ -104,6 +106,8 @@ def sample_points_in_elevation(return_threshold: float,
     """
 
     #filter the image first 
+    if image.ndim == 3:
+        image = image[0]
     H, W = image.shape
     image = np.array(image)
     return_mask = image > return_threshold
@@ -250,6 +254,8 @@ class SonarSensorDataParser:
                         # image = image[:, ::-1]
                         image = image.transpose(1, 0) #turn into a azimuth, range image
                         image[np.isnan(image)] = 0.0
+                        if image.ndim == 3:
+                            image = image[0]
                         H, W = image.shape
 
                         if H > num_azimuth_bins: 

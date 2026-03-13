@@ -908,7 +908,8 @@ class Runner:
                 self.splats["shN"].grad *= 0.0
             else: #period A
                 desc += "| reg opt |"
-                self.splats["sat_probability"].grad *= 0.0
+                if self.splats["sat_probability"].grad is not None:
+                    self.splats["sat_probability"].grad *= 0.0
                 
 
             

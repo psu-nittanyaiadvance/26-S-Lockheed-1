@@ -7,10 +7,10 @@ if [ $# -lt 2 ]; then
 fi
 
 DATA_DIR="$1"
-RESULTS_DIR="$2"
+RESULTS_DIR="$2/monohansett_3D_$(date +%Y%m%d_%H%M%S)"
 
 #python examples/sonar_simple_trainer.py \
-CUDA_VISIBLE_DEVICES=0 /home/apd6062/.conda/envs/sonarsplat/bin/python examples/sonar_simple_trainer.py \
+CUDA_VISIBLE_DEVICES=0 /home/kxg5549/.conda/envs/sonarsplat/bin/python examples/sonar_simple_trainer.py \
 "prune_only" \
 "--batch_size" "1" \
 "--camera_model" "ortho" \
@@ -43,7 +43,7 @@ CUDA_VISIBLE_DEVICES=0 /home/apd6062/.conda/envs/sonarsplat/bin/python examples/
 "--normalize_world_space" \
 "--num_random_points" "2000" \
 "--opacity_prior_weight" "0.0" \
-"--opacity_reg" "0.0" \
+"--opacity_reg" "0.01" \
 "--opacity_supervision_end_step" "10000" \
 "--opacity_supervision_start_step" "0" \
 "--opacity_supervision_thresh" "0.1" \
@@ -69,7 +69,7 @@ CUDA_VISIBLE_DEVICES=0 /home/apd6062/.conda/envs/sonarsplat/bin/python examples/
 "--sh_degree" "3" \
 "--sh_degree_interval" "1000" \
 "--skip_frames" "1" \
-"--ssim_lambda" "0.2" \
+"--ssim_lambda" "0.1" \
 "--start_from_frame" "0" \
 "--steps_scaler" "1.0" \
 "--strategy.grow_grad2d" "0.0002" \
@@ -80,11 +80,11 @@ CUDA_VISIBLE_DEVICES=0 /home/apd6062/.conda/envs/sonarsplat/bin/python examples/
 "--strategy.prune_opa" "0.005" \
 "--strategy.prune_scale2d" "0.15" \
 "--strategy.prune_scale3d" "0.1" \
-"--strategy.refine_every" "500" \
+"--strategy.refine_every" "1000" \
 "--strategy.refine_scale2d_stop_iter" "0" \
 "--strategy.refine_start_iter" "0" \
 "--strategy.refine_stop_iter" "15000" \
-"--strategy.reset_every" "3000" \
+"--strategy.reset_every" "6000" \
 "--strategy.verbose" \
 "--streak_end_step" "3000" \
 "--streak_interval" "1000" \

@@ -920,7 +920,8 @@ def _sonar_rasterization(
     # Use spherical coordinate
     if sph:
         local_means = torch.cat([means, torch.ones_like(means[..., :1])], dim=-1)
-        local_means = torch.matmul(viewmats, local_means.T).T.squeeze(-1)
+        local_means = torch.matmul(viewmats[:, :3, :3], means.T).permute(0, 2, 1) + viewmats[:, :3, 3].unsqueeze(1)
+        local_means = local_means.mean(dim=0)
         local_means = local_means[..., :3]
         
         rae_means, rae_covars = _cartesian_to_spherical(local_means, covars) # [range (m), theta (-pi~pi), phi (-pi~pi)]
