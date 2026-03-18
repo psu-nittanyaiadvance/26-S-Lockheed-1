@@ -133,7 +133,7 @@ def colmap_to_llff(scene_folder):
 
 
 
-convert_images_to_scene("/data/Lockheed1-Spring26/watersplatting_data/FLSEA_data/red_sea/coral_table_loop/imgs", "FLSEA_dataset", "coral_reef")
+convert_images_to_scene("/data/Lockheed1-Spring26/watersplatting_data/FLSEA_data/canyons/horse_canyon/imgs", "FLSEA_dataset", "horse_canyon")
 
     
 
