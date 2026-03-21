@@ -307,10 +307,10 @@ def create_splats_with_optimizers(
     scales = torch.ones_like(points) #0.5
     scales = torch.log(scales * init_scale)
     
-    # Distribute the GSs to different ranks (also works for single rank)
-    points = points[world_rank::world_size]
-    rgbs = rgbs[world_rank::world_size]
-    scales = scales[world_rank::world_size]
+    # GSs are replicated across all ranks - only camera data is sharded
+    # points = points[world_rank::world_size]  # removed - causes rank desync
+    # rgbs = rgbs[world_rank::world_size]
+    # scales = scales[world_rank::world_size]
 
     N = points.shape[0]
     quats = torch.rand((N, 4))  # [N, 4]
@@ -559,7 +559,7 @@ class Runner:
             # sparse_grad=self.cfg.sparse_grad,
             sph=True,
             rasterize_mode=rasterize_mode,
-            distributed=self.world_size > 1,
+            distributed=False,  # GSs are replicated across ranks, not sharded
             camera_model=self.cfg.camera_model,
             **kwargs,
         )
@@ -676,10 +676,17 @@ class Runner:
                 )
             )
 
+        train_sampler = torch.utils.data.distributed.DistributedSampler(
+            self.trainset,
+            num_replicas=world_size,
+            rank=world_rank,
+            shuffle=True,
+        ) if world_size > 1 else None
         trainloader = torch.utils.data.DataLoader(
             self.trainset,
             batch_size=cfg.batch_size,
-            shuffle=True,
+            shuffle=(train_sampler is None),
+            sampler=train_sampler,
             num_workers=4,
             persistent_workers=True,
             pin_memory=True,
@@ -885,6 +892,12 @@ class Runner:
                 )
 
             loss.backward()
+            # Average gradients across GPUs so Gaussian updates are consistent
+            if world_size > 1:
+                import torch.distributed as dist
+                for param in self.splats.values():
+                    if param.grad is not None:
+                        dist.all_reduce(param.grad, op=dist.ReduceOp.AVG)
 
 
 
@@ -1044,7 +1057,7 @@ class Runner:
             #check if gradients are not none: 
             if step >= cfg.elevate_start_step and step <= cfg.elevate_end_step and \
                 step % cfg.elevation_sampling_every < int(cfg.elevation_sampling_every*cfg.elevate_sampling_duty_cycle): 
-                if pixels_for_loss.sum() > 0:
+                if pixels_for_loss.sum() > 0 and world_size == 1:
                     #update pbar with text 
                     desc += "Elevation Sampling"
                     opacity_gt = (pixels > cfg.opacity_supervision_thresh).float()
@@ -1108,10 +1121,32 @@ class Runner:
                         return torch.cat([v, v_new])
 
                     # update the parameters and the state in the optimizers
-                    _update_param_with_optimizer(param_fn, optimizer_fn, self.splats, self.optimizers)
+                    if world_size == 1 or world_rank == 0:
+                        _update_param_with_optimizer(param_fn, optimizer_fn, self.splats, self.optimizers)
+                    # Broadcast updated splats from rank 0 to all ranks
+                    if world_size > 1:
+                        import torch.distributed as dist
+                        # First broadcast the new size so all ranks can allocate
+                        new_size = torch.tensor([len(self.splats["means"])], device=device)
+                        dist.broadcast(new_size, src=0)
+                        n = new_size.item()
+                        # Resize non-rank-0 splats to match, then broadcast
+                        for name, param in self.splats.items():
+                            if len(param) != n:
+                                extra = torch.zeros((n - len(param), *param.shape[1:]), device=device)
+                                new_param = torch.nn.Parameter(
+                                    torch.cat([param.data, extra]),
+                                    requires_grad=param.requires_grad
+                                )
+                                self.splats[name] = new_param
+                            dist.broadcast(self.splats[name].data, src=0)
 
             else:
                 desc += "No Elevation Sampling, normal strategy"
+            # Sync all ranks after potential elevation sampling on rank 0
+            if world_size > 1:
+                import torch.distributed as dist
+                dist.barrier()
 
             if isinstance(self.cfg.strategy, DefaultStrategy):
                 self.cfg.strategy.step_post_backward(
