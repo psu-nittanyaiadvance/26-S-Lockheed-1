@@ -10,7 +10,7 @@ DATA_DIR="$1"
 RESULTS_DIR="$2/monohansett_3D_$(date +%Y%m%d_%H%M%S)"
 
 #python examples/sonar_simple_trainer.py \
-CUDA_VISIBLE_DEVICES=0 /home/kxg5549/.conda/envs/sonarsplat/bin/python examples/sonar_simple_trainer.py \
+CUDA_VISIBLE_DEVICES=0 /home/apd6062/.conda/envs/sonarsplat/bin/python examples/sonar_simple_trainer.py \
 "prune_only" \
 "--batch_size" "1" \
 "--camera_model" "ortho" \

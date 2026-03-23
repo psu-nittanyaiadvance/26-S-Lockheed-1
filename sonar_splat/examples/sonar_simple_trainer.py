@@ -896,8 +896,9 @@ class Runner:
             if world_size > 1:
                 import torch.distributed as dist
                 for param in self.splats.values():
-                    if param.grad is not None:
-                        dist.all_reduce(param.grad, op=dist.ReduceOp.AVG)
+                    if param.grad is None:
+                        param.grad = torch.zeros_like(param.data)
+                    dist.all_reduce(param.grad, op=dist.ReduceOp.AVG)
 
 
 
