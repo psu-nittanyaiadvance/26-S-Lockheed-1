@@ -1058,83 +1058,80 @@ class Runner:
             #check if gradients are not none: 
             if step >= cfg.elevate_start_step and step <= cfg.elevate_end_step and \
                 step % cfg.elevation_sampling_every < int(cfg.elevation_sampling_every*cfg.elevate_sampling_duty_cycle): 
-                # Decide on rank 0 whether to do elevation sampling, broadcast decision
-                should_elevate = pixels_for_loss.sum() > 0
-                if world_size > 1:
-                    import torch.distributed as dist
-                    flag = torch.tensor([1 if (should_elevate and world_rank == 0) else 0], device=device)
-                    dist.broadcast(flag, src=0)
-                    should_elevate = flag.item() > 0
-
-                if should_elevate:
+                if pixels_for_loss.sum() > 0 and world_size == 1:
+                    #update pbar with text 
                     desc += "Elevation Sampling"
+                    opacity_gt = (pixels > cfg.opacity_supervision_thresh).float()
+                    opacity_supervision_loss = F.l1_loss(info["opacity_returns"].squeeze()*opacity_gt, opacity_gt, reduction='none') 
+                    high_loss_region = opacity_supervision_loss 
+                    selection_mask = high_loss_region.bool()
+                    #select random nonzero points 
+                    elevate_loss_select = min(cfg.elevate_loss_select, selection_mask.sum().item())
+                    nonzero_idxs = torch.where(selection_mask.float() > 0.0)
+                    if elevate_loss_select == cfg.elevate_loss_select:
+                        weights = high_loss_region[selection_mask].flatten().detach().cpu().numpy()/high_loss_region[selection_mask].flatten().detach().cpu().numpy().sum()
+                        random_idx = torch.tensor(np.random.choice(range(len(nonzero_idxs[0])), 
+                                                                   size=elevate_loss_select, 
+                                                                   replace=False))
+                    else: 
+                        random_idx = torch.arange(elevate_loss_select)
+                    rand_loss_idxs = nonzero_idxs[0][random_idx], nonzero_idxs[1][random_idx]
+                    #create a enw image and set the values at the top loss indices to 1
+                    top_loss_mask = torch.zeros_like(selection_mask)    
+                    top_loss_mask[rand_loss_idxs[0], rand_loss_idxs[1]] = 1.0
 
+                    total_new_gaussians = int(elevate_loss_select*cfg.elevate_num_samples)
+                    #initialize the gaussians in the top loss regions 
+                    initial_points = sample_points_in_elevation(return_threshold=0.0, 
+                                                                        c2w=camtoworlds.squeeze().cpu().detach().numpy(), 
+                                                                        image=top_loss_mask.cpu().numpy().squeeze(), 
+                                                                        num_range_bins=width, 
+                                                                        num_azimuth_bins=height, 
+                                                                        max_range=self.parser.max_range, 
+                                                                        hfov=self.parser.hfov_deg, vfov=self.parser.vfov_deg, 
+                                                                        num_samples=cfg.elevate_num_samples)
+                    
+                    viz_means = torch.tensor(self.splats["means"])
+                    sampled_idxs = torch.randint(0, len(self.splats["means"]), (total_new_gaussians,)).to(device)
+                    new_opacities = torch.logit(torch.full((total_new_gaussians,), cfg.init_opa)).float().to(device)
+                    new_scales = torch.log(torch.full((total_new_gaussians, 3), cfg.init_scale)).float().to(device)
+                    new_sat_probability = torch.full((total_new_gaussians,), -10).float().to(device)
+                    new_quats = torch.rand((total_new_gaussians, 4)).float().to(device)
+                    new_means = torch.tensor(initial_points).float().to(device)
+
+                    assert len(sampled_idxs) == total_new_gaussians
+
+                    def param_fn(name: str, p: Tensor) -> Tensor:
+                        if name == "opacities":
+                            new_p = new_opacities
+                        elif name == "scales":
+                            new_p = new_scales
+                        elif name == "sat_probability":
+                            new_p = new_sat_probability
+                        elif name == "means":
+                            new_p = new_means
+                        elif name == "quats":
+                            new_p = new_quats
+                        else: 
+                            new_p = p[sampled_idxs] #keep other stuff the same 
+                        p_new = torch.cat([p, new_p])
+                        return torch.nn.Parameter(p_new, requires_grad=p.requires_grad)
+
+                    def optimizer_fn(key: str, v: Tensor) -> Tensor:
+                        v_new = torch.zeros((len(sampled_idxs), *v.shape[1:]), device=v.device)
+                        return torch.cat([v, v_new])
+
+                    # update the parameters and the state in the optimizers
                     if world_size == 1 or world_rank == 0:
-                        # Only rank 0 computes sampling (random ops would desync ranks)
-                        opacity_gt = (pixels > cfg.opacity_supervision_thresh).float()
-                        opacity_supervision_loss = F.l1_loss(info["opacity_returns"].squeeze()*opacity_gt, opacity_gt, reduction='none')
-                        high_loss_region = opacity_supervision_loss
-                        selection_mask = high_loss_region.bool()
-                        elevate_loss_select = min(cfg.elevate_loss_select, selection_mask.sum().item())
-                        nonzero_idxs = torch.where(selection_mask.float() > 0.0)
-                        if elevate_loss_select == cfg.elevate_loss_select:
-                            weights = high_loss_region[selection_mask].flatten().detach().cpu().numpy()/high_loss_region[selection_mask].flatten().detach().cpu().numpy().sum()
-                            random_idx = torch.tensor(np.random.choice(range(len(nonzero_idxs[0])),
-                                                                       size=elevate_loss_select,
-                                                                       replace=False))
-                        else:
-                            random_idx = torch.arange(elevate_loss_select)
-                        rand_loss_idxs = nonzero_idxs[0][random_idx], nonzero_idxs[1][random_idx]
-                        top_loss_mask = torch.zeros_like(selection_mask)
-                        top_loss_mask[rand_loss_idxs[0], rand_loss_idxs[1]] = 1.0
-
-                        total_new_gaussians = int(elevate_loss_select*cfg.elevate_num_samples)
-                        initial_points = sample_points_in_elevation(return_threshold=0.0,
-                                                                            c2w=camtoworlds.squeeze().cpu().detach().numpy(),
-                                                                            image=top_loss_mask.cpu().numpy().squeeze(),
-                                                                            num_range_bins=width,
-                                                                            num_azimuth_bins=height,
-                                                                            max_range=self.parser.max_range,
-                                                                            hfov=self.parser.hfov_deg, vfov=self.parser.vfov_deg,
-                                                                            num_samples=cfg.elevate_num_samples)
-
-                        sampled_idxs = torch.randint(0, len(self.splats["means"]), (total_new_gaussians,)).to(device)
-                        new_opacities = torch.logit(torch.full((total_new_gaussians,), cfg.init_opa)).float().to(device)
-                        new_scales = torch.log(torch.full((total_new_gaussians, 3), cfg.init_scale)).float().to(device)
-                        new_sat_probability = torch.full((total_new_gaussians,), -10).float().to(device)
-                        new_quats = torch.rand((total_new_gaussians, 4)).float().to(device)
-                        new_means = torch.tensor(initial_points).float().to(device)
-
-                        assert len(sampled_idxs) == total_new_gaussians
-
-                        def param_fn(name: str, p: Tensor) -> Tensor:
-                            if name == "opacities":
-                                new_p = new_opacities
-                            elif name == "scales":
-                                new_p = new_scales
-                            elif name == "sat_probability":
-                                new_p = new_sat_probability
-                            elif name == "means":
-                                new_p = new_means
-                            elif name == "quats":
-                                new_p = new_quats
-                            else:
-                                new_p = p[sampled_idxs]
-                            p_new = torch.cat([p, new_p])
-                            return torch.nn.Parameter(p_new, requires_grad=p.requires_grad)
-
-                        def optimizer_fn(key: str, v: Tensor) -> Tensor:
-                            v_new = torch.zeros((len(sampled_idxs), *v.shape[1:]), device=v.device)
-                            return torch.cat([v, v_new])
-
                         _update_param_with_optimizer(param_fn, optimizer_fn, self.splats, self.optimizers)
-
                     # Broadcast updated splats from rank 0 to all ranks
                     if world_size > 1:
                         import torch.distributed as dist
+                        # First broadcast the new size so all ranks can allocate
                         new_size = torch.tensor([len(self.splats["means"])], device=device)
                         dist.broadcast(new_size, src=0)
                         n = new_size.item()
+                        # Resize non-rank-0 splats to match, then broadcast
                         for name, param in self.splats.items():
                             if len(param) != n:
                                 extra = torch.zeros((n - len(param), *param.shape[1:]), device=device)
