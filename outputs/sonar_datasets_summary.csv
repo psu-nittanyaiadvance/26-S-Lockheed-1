@@ -1,0 +1,15 @@
+name,location,survey,sonar,annotation,num_samples,depth_files,seaerra_files,total_files,completeness_score
+canyons_flatiron,canyons,flatiron,MBES,SLAM,2474,2475,4950,9899,100.0
+canyons_horse_canyon,canyons,horse_canyon,MBES,SLAM,1520,2230,4460,8210,100.0
+canyons_u_canyon,canyons,u_canyon,MBES,SLAM,2895,2895,5790,11580,100.0
+canyons_tiny_canyon,canyons,tiny_canyon,MBES,SLAM,958,1012,2024,3994,100.0
+red_sea_big_dice_loop,red_sea,big_dice_loop,SSS,SLAM,3159,3159,6318,12636,100.0
+red_sea_coral_table_loop,red_sea,coral_table_loop,SSS,SLAM,1017,1017,2034,4068,100.0
+red_sea_pier_path,red_sea,pier_path,SSS,SLAM,1336,1695,3390,6421,100.0
+red_sea_cross_pyramid_loop,red_sea,cross_pyramid_loop,SSS,SLAM,1652,1652,3304,6608,100.0
+red_sea_dice_path,red_sea,dice_path,SSS,SLAM,1428,1428,2856,5712,100.0
+red_sea_landward_path,red_sea,landward_path,SSS,SLAM,1204,1204,2408,4816,100.0
+red_sea_sub_pier,red_sea,sub_pier,SSS,SLAM,1091,1091,2182,4364,100.0
+red_sea_northeast_path,red_sea,northeast_path,SSS,SLAM,1759,2593,5186,9538,100.0
+canyons_calibration,canyons,calibration,MBES,SLAM,535,0,1070,1605,66.7
+red_sea_calibration,red_sea,calibration,SSS,SLAM,1849,0,0,1849,33.3
