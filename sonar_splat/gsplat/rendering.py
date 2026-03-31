@@ -836,6 +836,10 @@ def _sonar_rasterization(
     packed=False, # not used
     camera_model: Literal["pinhole", "ortho", "fisheye"] = "pinhole",
     sph: bool = False,
+    r_n: Optional[Tensor] = None,
+    N_elements: int = 32,
+    d_over_lambda: float = 0.5,
+    use_beam_pattern: bool = True,
 ) -> Tuple[Tensor, Tensor, Dict]:
     """A version of rasterization() that utilies on PyTorch's autograd.
 
@@ -925,8 +929,18 @@ def _sonar_rasterization(
         
         rae_means, rae_covars = _cartesian_to_spherical(local_means, covars) # [range (m), theta (-pi~pi), phi (-pi~pi)]
 
+    # Compute ULA beam pattern weights per Gaussian
+    from sonar.beam_pattern import ula_beam_pattern
+    if use_beam_pattern:
+        theta_n = rae_means[:, 1]   # azimuth in sensor frame  [N]
+        phi_n   = rae_means[:, 2]   # elevation in sensor frame [N]
+        beam_weights_N = ula_beam_pattern(theta_n, phi_n, N_elements, d_over_lambda)  # [N]
+        beam_weights_CN = beam_weights_N.unsqueeze(0).expand(C, -1)  # [C, N]
+    else:
+        beam_weights_CN = None
 
-    
+    r_n_CN = r_n.unsqueeze(0).expand(C, -1) if r_n is not None else None
+
     i_view_mats = torch.eye(4, device=device).repeat(C, 1, 1)
 
  
@@ -1199,6 +1213,8 @@ def _sonar_rasterization(
         isect_offsets=isect_offsets,
         flatten_ids=flatten_ids,
         batch_per_iter=batch_per_iter,
+        reflectivities=r_n_CN,
+        beam_weights=beam_weights_CN,
     )
 
 

@@ -62,6 +62,7 @@ from sonar.utils import (visualize_gaussians,
                         )
 
 from sonar.img_metrics import calculate_niqe, total_variation, compute_icv
+from sonar.sonar_loss import gamma_nll_loss, elevation_loss_metric, reflectivity_reg
 
 from sonar.dataset.dataloader import (
                                     SonarSensorDataParser, 
@@ -233,8 +234,25 @@ class Config:
 
     # Scanning sonar config
     intermediate_azimuth_resolution: float = 0.1
-    
+
     init_scale: float = 0.5 # (m)
+
+    # ---- SonarSplat: ULA beam pattern ----
+    use_beam_pattern: bool = True
+    ula_n_elements: int = 32
+    ula_d_over_lambda: float = 0.5
+
+    # ---- SonarSplat: loss weights ----
+    w_camera: float = 0.1
+    w_elevation: float = 1.0
+    w_elevation_end: float = 0.1
+    elevation_anneal_start: int = 0
+    elevation_anneal_end: int = 10000
+    w_reg: float = 0.01
+    gamma_nll_k_looks: int = 1
+    refl_reg_lambda: float = 0.01
+    refl_knn_k: int = 5
+    r_tilde_lr: float = 5e-3
 
     def adjust_steps(self, factor: float):
         self.eval_steps = [int(i * factor) for i in self.eval_steps]
@@ -325,6 +343,7 @@ def create_splats_with_optimizers(
         ("quats", torch.nn.Parameter(quats), 1e-3),
         ("opacities", torch.nn.Parameter(opacities), 5e-2),
         ("sat_probability", torch.nn.Parameter(sat_probability), 2e-2),
+        ("r_tilde", torch.nn.Parameter(torch.zeros((N,))), 5e-3),
     ]
 
     # color is SH coefficients.
@@ -533,9 +552,10 @@ class Runner:
         scales = torch.exp(self.splats["scales"])  # [N, 3]
         opacities = torch.sigmoid(self.splats["opacities"])  # [N,]
         sat_probability = torch.nn.functional.sigmoid(self.splats["sat_probability"]) # [N,]
+        r_n = torch.sigmoid(self.splats["r_tilde"])  # [N,]
         image_ids = kwargs.pop("image_ids", None)
         colors = torch.cat([self.splats["sh0"], self.splats["shN"]], 1)  # [N, K, 3]
-    
+
 
         rasterize_mode = "antialiased" if self.cfg.antialiased else "classic"
         render_powers, info = _sonar_rasterization(
@@ -561,6 +581,10 @@ class Runner:
             rasterize_mode=rasterize_mode,
             distributed=self.world_size > 1,
             camera_model=self.cfg.camera_model,
+            r_n=r_n,
+            N_elements=self.cfg.ula_n_elements,
+            d_over_lambda=self.cfg.ula_d_over_lambda,
+            use_beam_pattern=self.cfg.use_beam_pattern,
             **kwargs,
         )
 
@@ -809,21 +833,14 @@ class Runner:
 
             free_space_mask = pixels_for_loss < 0.1
 
-            l1loss = F.l1_loss(pred_for_loss_l1, pixels_for_loss_l1)
-            
-            ############################################################################## max size loss ##############################################################################
-            max_size_loss = torch.mean(torch.relu(torch.exp(self.splats['scales']) - cfg.init_scale))
-
             opacity_pred_for_loss_img = info["opacity_returns"].squeeze()
             opacity_gt_img = (pixels_for_loss > cfg.opacity_supervision_thresh).float()
 
             if step >= cfg.opacity_supervision_start_step and step <= cfg.opacity_supervision_end_step:
                 free_space_mask = pixels_for_loss < 0.1
                 opacity_gt_for_loss = opacity_gt_img
-
                 opacity_pred_for_loss = opacity_pred_for_loss_img
-
-                opacity_supervision_loss = F.l1_loss(opacity_pred_for_loss, opacity_gt_for_loss) #increase only areas where there is certain return
+                opacity_supervision_loss = F.l1_loss(opacity_pred_for_loss, opacity_gt_for_loss)
             else:
                 opacity_supervision_loss = torch.tensor(0.0)
 
@@ -833,44 +850,80 @@ class Runner:
                 os.makedirs(f'{output_folder}/tmp/polar', exist_ok=True)
                 os.makedirs(f'{output_folder}/tmp/cart', exist_ok=True)
 
-                #repeat the sat mask in dim 1 
                 sat_mask_viz = sat_mask.repeat(1, pixels.shape[0], 1, 1)
 
                 opacity_viz = opacity_pred_for_loss_img.permute(1, 0)
                 opacity_gt_viz = opacity_gt_img.permute(1, 0)
                 opacity_viz = torch.cat((opacity_viz, opacity_gt_viz), dim=1)
 
-                img = torch.cat((out_img, info["unsaturated_returns"].squeeze(), pixels),dim=0)
+                img = torch.cat((out_img, info["unsaturated_returns"].squeeze(), pixels), dim=0)
 
-                #log to wandb 
                 if cfg.wandb:
                     wandb.log({f"train/Image_{data['image_id'].item()}": wandb.Image(img.permute(1,0).detach().cpu().numpy())}, step=step)
                     wandb.log({f"train/opacity_viz": wandb.Image(opacity_viz.detach().cpu().numpy())}, step=step)
 
-            ##############################################################################saturation probability priors ##############################################################################
-
+            # ---- saturation probability priors ----
             all_sats = torch.sigmoid(self.splats["sat_probability"])
             sat_region_prior = 0.0
-
             sat_bg_prior = 0.0
-            sat_sparsity_prior = ((torch.abs(all_sats))*(torch.abs(1 - all_sats))).mean()
-                                                                                                 
+            sat_sparsity_prior = ((torch.abs(all_sats)) * (torch.abs(1 - all_sats))).mean()
 
-            ############################################################################## photometric losses ##############################################################################
             all_opacities = torch.sigmoid(self.splats["opacities"])
-            opacity_prior = (((torch.abs(all_opacities))*(torch.abs(1 - all_opacities)))).mean()
-            ssimloss = 1.0 - fused_ssim(
-                pred_for_loss[None, None].repeat(1,3,1,1), pixels[None, None].repeat(1,3,1,1), padding="valid"
+            opacity_prior = (((torch.abs(all_opacities)) * (torch.abs(1 - all_opacities)))).mean()
+
+            # ---- SonarSplat losses ----
+            # 1. Gamma NLL (sonar primary)
+            Z_hat = pred_for_loss.squeeze()
+            Z     = pixels_for_loss.squeeze()
+            l_sonar = gamma_nll_loss(
+                Z_hat, Z,
+                K_looks=cfg.gamma_nll_k_looks,
+                mask=sat_mask.squeeze().bool() if sat_mask is not None else None,
             )
 
-            ############################################################################## max size loss ##############################################################################
-            
-            loss = l1loss * (1.0 - cfg.ssim_lambda) + ssimloss * cfg.ssim_lambda \
-                                + cfg.max_size_prior_weight * max_size_loss \
-                                + cfg.opacity_supervision_weight * opacity_supervision_loss
-            
-            
-    
+            # 2. Camera loss (placeholder until RGB cameras are integrated)
+            l_camera = torch.tensor(0.0, device=device)
+
+            # 3. Elevation loss (annealed)
+            anneal_frac = min(1.0, max(0.0, (step - cfg.elevation_anneal_start)
+                                       / max(1, cfg.elevation_anneal_end - cfg.elevation_anneal_start)))
+            we = cfg.w_elevation + anneal_frac * (cfg.w_elevation_end - cfg.w_elevation)
+            l_elevation = elevation_loss_metric(
+                means=self.splats["means"],
+                sonar_image=pixels.squeeze().detach(),
+                viewmat=torch.linalg.inv(camtoworlds[0]),
+                max_range=self.parser.max_range,
+            )
+
+            # 4. Reflectivity spatial regularizer
+            r_n_all = torch.sigmoid(self.splats["r_tilde"])
+            l_reg = reflectivity_reg(
+                r_n_all,
+                self.splats["means"].detach(),
+                cfg.refl_knn_k,
+                cfg.refl_reg_lambda,
+            )
+
+            # 5. Max size prior (preserved)
+            max_size_loss = torch.mean(torch.relu(torch.exp(self.splats['scales']) - cfg.init_scale))
+
+            # 6. Total loss (sonar-primary)
+            loss = (
+                l_sonar
+                + cfg.w_camera * l_camera
+                + we * l_elevation
+                + cfg.w_reg * l_reg
+                + cfg.max_size_prior_weight * max_size_loss
+            )
+
+            # Legacy comparison metrics (kept for logging/comparison)
+            l1loss = F.l1_loss(pred_for_loss_l1, pixels_for_loss_l1)
+            ssimloss = 1.0 - fused_ssim(
+                pred_for_loss[None, None].repeat(1, 3, 1, 1),
+                pixels[None, None].repeat(1, 3, 1, 1),
+                padding="valid",
+            )
+
             # regularizations
             if cfg.opacity_reg > 0.0:
                 loss = (
@@ -945,26 +998,47 @@ class Runner:
                     wandb.log({"train/color_histogram": wandb.Image(fig)})
                     plt.close(fig)
 
-                    wandb.log({"train/loss": loss.item(), 
-                               "train/l1loss": l1loss.item() * (1.0 - cfg.ssim_lambda), 
-                               "train/pose_err": pose_err.item() if cfg.pose_opt and cfg.pose_noise else 0.0,
-                               "train/opacity_supervision_loss": cfg.opacity_supervision_weight * opacity_supervision_loss.item(),
-                               "train/sat_sparsity_prior": sat_sparsity_prior.mean() * cfg.sat_sparsity_prior_weight,
-                               "train/ssimloss": ssimloss.item() * cfg.ssim_lambda,
-                               "train/max_size_loss": max_size_loss.item() * cfg.max_size_prior_weight,
-                               "train/num_GS": len(self.splats["means"]), 
-                               "train/average_max_scale": torch.exp(self.splats['scales']).max(dim=1).values.mean(), 
-                               "train/average_opacity": torch.sigmoid(self.splats["opacities"]).mean(), 
-                               "train/average_dist": torch.norm(self.splats["means"][:,:2],dim=1).mean(), 
-                               "train/mem": mem})
-                    
+                    avg_r_n = torch.sigmoid(self.splats["r_tilde"]).mean().item()
+                    wandb.log({
+                        # ---- total loss ----
+                        "train/loss": loss.item(),
+                        # ---- SonarSplat components ----
+                        "sonarsplat/l_sonar_gamma_nll": l_sonar.item(),
+                        "sonarsplat/l_elevation": l_elevation.item(),
+                        "sonarsplat/l_elevation_weighted": (we * l_elevation).item(),
+                        "sonarsplat/l_reg_reflectivity": l_reg.item(),
+                        "sonarsplat/elevation_anneal_weight": we,
+                        "sonarsplat/avg_reflectivity": avg_r_n,
+                        # ---- baseline comparison metrics (old method) ----
+                        "baseline/l1loss": l1loss.item() * (1.0 - cfg.ssim_lambda),
+                        "baseline/ssimloss": ssimloss.item() * cfg.ssim_lambda,
+                        # ---- shared diagnostics ----
+                        "train/max_size_loss": max_size_loss.item() * cfg.max_size_prior_weight,
+                        "train/opacity_supervision_loss": cfg.opacity_supervision_weight * opacity_supervision_loss.item(),
+                        "train/sat_sparsity_prior": sat_sparsity_prior.mean() * cfg.sat_sparsity_prior_weight,
+                        "train/pose_err": pose_err.item() if cfg.pose_opt and cfg.pose_noise else 0.0,
+                        "train/num_GS": len(self.splats["means"]),
+                        "train/average_max_scale": torch.exp(self.splats['scales']).max(dim=1).values.mean(),
+                        "train/average_opacity": torch.sigmoid(self.splats["opacities"]).mean(),
+                        "train/average_dist": torch.norm(self.splats["means"][:, :2], dim=1).mean(),
+                        "train/mem": mem,
+                    })
+
                 self.writer.add_scalar("train/loss", loss.item(), step)
-                self.writer.add_scalar("train/l1loss", l1loss.item(), step)
-                # self.writer.add_scalar("train/ssimloss", ssimloss.item(), step)
+                # SonarSplat metrics
+                self.writer.add_scalar("sonarsplat/l_sonar_gamma_nll", l_sonar.item(), step)
+                self.writer.add_scalar("sonarsplat/l_elevation", l_elevation.item(), step)
+                self.writer.add_scalar("sonarsplat/l_reg_reflectivity", l_reg.item(), step)
+                self.writer.add_scalar("sonarsplat/elevation_anneal_weight", we, step)
+                self.writer.add_scalar("sonarsplat/avg_reflectivity", torch.sigmoid(self.splats["r_tilde"]).mean().item(), step)
+                # Baseline comparison metrics
+                self.writer.add_scalar("baseline/l1loss", l1loss.item(), step)
+                self.writer.add_scalar("baseline/ssimloss", ssimloss.item(), step)
+                # Shared
                 self.writer.add_scalar("train/num_GS", len(self.splats["means"]), step)
                 self.writer.add_scalar("train/average_max_scale", torch.exp(self.splats['scales']).max(dim=1).values.mean(), step)
                 self.writer.add_scalar("train/average_opacity", torch.sigmoid(self.splats["opacities"]).mean(), step)
-                self.writer.add_scalar("train/average_dist", torch.norm(self.splats["means"][:,:2],dim=1).mean(), step)
+                self.writer.add_scalar("train/average_dist", torch.norm(self.splats["means"][:, :2], dim=1).mean(), step)
                 self.writer.add_scalar("train/mem", mem, step)
                 if cfg.tb_save_image:
                     canvas = torch.cat([pixels, out_img.squeeze()], dim=0).detach().cpu().numpy()
@@ -1093,6 +1167,8 @@ class Runner:
                             new_p = new_scales
                         elif name == "sat_probability":
                             new_p = new_sat_probability
+                        elif name == "r_tilde":
+                            new_p = torch.zeros(total_new_gaussians, device=device)
                         elif name == "means":
                             new_p = new_means
                         elif name == "quats":

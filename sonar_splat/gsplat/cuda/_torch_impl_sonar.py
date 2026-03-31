@@ -134,6 +134,8 @@ def accumulate(
     camera_ids: Tensor,  # [M]
     image_width: int,
     image_height: int,
+    reflectivities: Optional[Tensor] = None,  # [C, N]
+    beam_weights: Optional[Tensor] = None,    # [C, N]
 ) -> Tuple[Tensor, Tensor]:
     """Alpah compositing of 2D Gaussians in Pure Pytorch.
 
@@ -193,8 +195,10 @@ def accumulate(
         0.5 * (c[:, 0] * deltas[:, 0] ** 2 + c[:, 2] * deltas[:, 1] ** 2)
         + c[:, 1] * deltas[:, 0] * deltas[:, 1]
     )  # [M]
+    r = reflectivities[camera_ids, gaussian_ids] if reflectivities is not None else refl[:, 0]
+    B = beam_weights[camera_ids, gaussian_ids] if beam_weights is not None else torch.ones_like(r)
     alpha_weights = torch.clamp_max(
-        refl[:, 0] * opacities[camera_ids, gaussian_ids] * T * torch.exp(-sigmas), 0.999
+        r * B * opacities[camera_ids, gaussian_ids] * T * torch.exp(-sigmas), 0.999
     )
 
     opacity_weights = torch.clamp_max(
@@ -529,6 +533,8 @@ def _rasterize_to_sonar_pixels(
     isect_offsets: Tensor,  # [C, tile_height, tile_width]
     flatten_ids: Tensor,  # [n_isects]
     batch_per_iter: int = 100,
+    reflectivities: Optional[Tensor] = None,  # [C, N]
+    beam_weights: Optional[Tensor] = None,    # [C, N]
 ):
     """Pytorch implementation of `gsplat.cuda._wrapper.rasterize_to_pixels()`.
 
@@ -600,7 +606,7 @@ def _rasterize_to_sonar_pixels(
         summed_weights_step, summed_sat_weights_step, summed_opacity_weights_step, counts_step = accumulate(
             means2d=means2d,
             conics=conics,
-            colors=colors, 
+            colors=colors,
             opacities=opacities,
             per_gaussian_transmittance=per_gaussian_transmittance,
             sat_probability=sat_probability,
@@ -609,6 +615,8 @@ def _rasterize_to_sonar_pixels(
             camera_ids=camera_ids,
             image_width=image_width,
             image_height=image_height,
+            reflectivities=reflectivities,
+            beam_weights=beam_weights,
         )
 
         
