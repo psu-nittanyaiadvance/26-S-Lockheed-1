@@ -26,7 +26,12 @@ from torch import Tensor
 from torch.nn.parallel import DistributedDataParallel as DDP
 from torch.utils.tensorboard import SummaryWriter
 from torchmetrics.image import PeakSignalNoiseRatio, StructuralSimilarityIndexMeasure
-from fused_ssim import fused_ssim
+try:
+    from fused_ssim import fused_ssim
+except ImportError:
+    from torchmetrics.functional import structural_similarity_index_measure as _ssim_fn
+    def fused_ssim(pred, target, padding="valid"):
+        return _ssim_fn(pred, target, data_range=1.0)
 from torchmetrics.image.lpip import LearnedPerceptualImagePatchSimilarity
 from typing_extensions import Literal, assert_never
 from utils import AppearanceOptModule, CameraOptModule, knn, rgb_to_sh, set_random_seed
