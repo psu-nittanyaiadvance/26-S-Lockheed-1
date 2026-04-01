@@ -11,7 +11,38 @@ import math
 try:
     from nerfacc import accumulate_along_rays, render_weight_from_alpha
 except ImportError:
-        raise ImportError("Please install nerfacc package: pip install nerfacc")
+    # Pure PyTorch fallback — nerfacc editable install was lost or CUDA mismatch
+    def render_weight_from_alpha(alphas, ray_indices, n_rays):
+        """Compute transmittance and weights from alpha values per ray segment."""
+        log_1ma = torch.log((1.0 - alphas).clamp(min=1e-10))
+        cumsum = torch.cumsum(log_1ma, dim=0)
+        prev_cumsum = torch.cat([torch.zeros(1, device=alphas.device, dtype=alphas.dtype),
+                                  cumsum[:-1]])
+        M = alphas.shape[0]
+        is_start = torch.zeros(M, dtype=torch.bool, device=alphas.device)
+        is_start[0] = True
+        if M > 1:
+            is_start[1:] = ray_indices[1:] != ray_indices[:-1]
+        seg_id = torch.cumsum(is_start.long(), dim=0) - 1
+        n_segs = int(seg_id[-1].item()) + 1 if M > 0 else 1
+        seg_offset = torch.zeros(n_segs, device=alphas.device, dtype=alphas.dtype)
+        seg_offset.scatter_(0, seg_id[is_start], prev_cumsum[is_start])
+        excl_cumsum = prev_cumsum - seg_offset[seg_id]
+        trans = torch.exp(excl_cumsum)
+        weights = trans * alphas
+        return weights, trans
+
+    def accumulate_along_rays(weights, values, ray_indices, n_rays):
+        """Scatter-accumulate weighted values into per-ray outputs."""
+        if values is None:
+            values = weights.unsqueeze(-1)
+        elif values.dim() == 1:
+            values = values.unsqueeze(-1)
+        D = values.shape[-1]
+        out = torch.zeros(n_rays, D, device=weights.device, dtype=weights.dtype)
+        out.scatter_add_(0, ray_indices.unsqueeze(-1).expand_as(values),
+                         weights.unsqueeze(-1) * values)
+        return out
 
 
 def accumulate_transmittance(
