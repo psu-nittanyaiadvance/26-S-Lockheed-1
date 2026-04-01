@@ -880,10 +880,18 @@ class Runner:
             # 1. Gamma NLL (sonar primary)
             Z_hat = pred_for_loss.squeeze()
             Z     = pixels_for_loss.squeeze()
+            # sat_mask may be [1,W,1] (NHWC squeeze→[W]) while Z_hat is [H,W];
+            # expand to match so boolean indexing in gamma_nll_loss works.
+            if sat_mask is not None:
+                _mask = sat_mask.squeeze().bool()
+                if _mask.dim() < Z_hat.dim():
+                    _mask = _mask.unsqueeze(0).expand(Z_hat.shape)
+            else:
+                _mask = None
             l_sonar = gamma_nll_loss(
                 Z_hat, Z,
                 K_looks=cfg.gamma_nll_k_looks,
-                mask=sat_mask.squeeze().bool() if sat_mask is not None else None,
+                mask=_mask,
             )
 
             # 2. Camera loss (placeholder until RGB cameras are integrated)

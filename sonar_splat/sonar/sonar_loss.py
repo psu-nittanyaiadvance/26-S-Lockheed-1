@@ -82,10 +82,10 @@ def elevation_loss_metric(
     az_idx = ((theta_n.detach() / math.pi + 0.5) * H_az).long().clamp(0, H_az - 1)  # [N]
 
     # 5. Peak range from sonar image along each azimuth bin
+    # Precompute per-az peak to avoid allocating [N, W_range] tensor.
     with torch.no_grad():
-        r_sonar_n = (
-            sonar_image[az_idx, :].argmax(dim=-1).float() / W_range * max_range
-        )  # [N]
+        peak_per_az = sonar_image.argmax(dim=-1).float() / W_range * max_range  # [H_az]
+        r_sonar_n = peak_per_az[az_idx]  # [N]
 
     # 6. Mean squared error between predicted and observed range
     return ((r_n - r_sonar_n) ** 2).mean()
@@ -113,7 +113,7 @@ def reflectivity_reg(
         scalar regularisation loss
     """
     N = means.shape[0]
-    chunk_size = 4096
+    chunk_size = 512
 
     smoothness = torch.tensor(0.0, device=means.device, dtype=means.dtype)
 
