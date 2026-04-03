@@ -6,3 +6,8 @@ build/
 *results/
 sonar_splat/tmp/
 .vscode-server/
+*.png
+*.jpg
+*.jpeg
+*.log
+*.csv
