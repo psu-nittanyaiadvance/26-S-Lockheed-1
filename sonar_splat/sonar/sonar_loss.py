@@ -113,9 +113,14 @@ def reflectivity_reg(
         scalar regularisation loss
     """
     N = means.shape[0]
-    chunk_size = 512
-
-    smoothness = torch.tensor(0.0, device=means.device, dtype=means.dtype)
+    chunk_size = 256
+    # Cap at 4096 Gaussians to keep cdist memory bounded regardless of N.
+    max_n = 4096
+    if N > max_n:
+        sub_idx = torch.randperm(N, device=means.device)[:max_n]
+        r_n = r_n[sub_idx]
+        means = means[sub_idx]
+        N = max_n
 
     with torch.no_grad():
         # Build kNN graph in chunks to avoid OOM

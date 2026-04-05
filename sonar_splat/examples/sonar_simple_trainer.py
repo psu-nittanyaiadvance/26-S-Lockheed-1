@@ -1602,6 +1602,27 @@ if __name__ == "__main__":
                 strategy=PruneOnlyStrategy(verbose=True),
             ),
         ),
+        "zsplat": (
+            "Z-Splat: gamma NLL loss + ULA beam pattern + elevation constraint + sigmoid reflectivity.",
+            Config(
+                init_num_pts=30_000,
+                init_scale=0.01,
+                init_type="predefined",
+                max_steps=40_000,
+                normalize_world_space=True,
+                disable_viewer=True,
+                render_eval=True,
+                use_beam_pattern=True,
+                gamma_nll_k_looks=1,
+                w_elevation=1.0,
+                camera_model="ortho",
+                strategy=PruneOnlyStrategy(
+                    verbose=True,
+                    refine_start_iter=0,
+                    refine_every=500,
+                ),
+            ),
+        ),
     }
     cfg = tyro.extras.overridable_config_cli(configs)
     cfg.adjust_steps(cfg.steps_scaler)
