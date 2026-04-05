@@ -397,7 +397,12 @@ class Runner:
         self.world_rank = world_rank
         self.local_rank = local_rank
         self.world_size = world_size
-        self.device = f"cuda:{local_rank}"
+        if torch.cuda.is_available():
+            self.device = f"cuda:{local_rank}"
+        elif torch.backends.mps.is_available():
+            self.device = "mps"
+        else:
+            self.device = "cpu"
 
         # Where to dump results.
         os.makedirs(cfg.result_dir, exist_ok=True)
@@ -979,7 +984,7 @@ class Runner:
 
             
             if world_rank == 0 and cfg.tb_every > 0 and step % cfg.tb_every == 0:
-                mem = torch.cuda.max_memory_allocated() / 1024**3
+                mem = torch.cuda.max_memory_allocated() / 1024**3 if torch.cuda.is_available() else 0.0
                 if cfg.wandb:
                     fig, ax = plt.subplots()
                     ax.hist(torch.sigmoid(self.splats["opacities"]).cpu().detach().numpy(), bins=100)
@@ -1060,7 +1065,7 @@ class Runner:
 
             # save checkpoint before updating the model
             if step in [i - 1 for i in cfg.save_steps] or step == max_steps - 1:
-                mem = torch.cuda.max_memory_allocated() / 1024**3
+                mem = torch.cuda.max_memory_allocated() / 1024**3 if torch.cuda.is_available() else 0.0
                 stats = {
                     "mem": mem,
                     "ellipse_time": time.time() - global_tic,
@@ -1283,7 +1288,7 @@ class Runner:
                 far_plane = data["far_plane"].to(device)
                 height, width = pixels.shape[1:3]
 
-                torch.cuda.synchronize()
+                if torch.cuda.is_available(): torch.cuda.synchronize()
                 tic = time.time()
                 colors, info, = self.rasterize_splats(
                     camtoworlds=camtoworlds,
@@ -1295,7 +1300,7 @@ class Runner:
                     far_plane=far_plane,
                     masks=masks,
                 )  # [1, H, W, 3]
-                torch.cuda.synchronize()
+                if torch.cuda.is_available(): torch.cuda.synchronize()
                 ellipse_time += time.time() - tic
 
                 colors = torch.clamp(colors, 0.0, 1.0)

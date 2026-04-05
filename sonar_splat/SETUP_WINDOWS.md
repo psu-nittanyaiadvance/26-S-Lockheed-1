@@ -100,16 +100,12 @@ Note: `fused_ssim` from examples/requirements.txt may fail via pip (needs CUDA b
 
 ## Step 8: Fix Code Issues
 
-### 8a. Comment out unused pycolmap import
-
-In `sonar/dataset/dataloader.py`, line 11:
+**Comment out unused pycolmap import** in `sonar/dataset/dataloader.py`, line 11:
 ```python
 # from pycolmap import SceneManager  # unused import
 ```
 
-### 8b. Fix opacity_pred_for_loss_img bug
-
-In `examples/sonar_simple_trainer.py`, around line 817: move `opacity_pred_for_loss_img` and `opacity_gt_img` assignments BEFORE the `if step >= cfg.opacity_supervision_start_step` block so they're always defined when the logging code at line 839 references them.
+> **Note:** If you are on the `zplat` branch, the `fused_ssim` and `nerfacc` import fixes are already committed — no manual patching needed.
 
 ## Step 9: Initialize GLM Submodule
 
@@ -120,42 +116,40 @@ git submodule update --init --recursive
 
 This pulls the GLM math library needed by CUDA kernels into `gsplat/cuda/csrc/third_party/glm/`.
 
-## Step 10: Run Training
+## Step 10: Switch to the zplat branch
 
-Use `run_training.bat` from a standard Command Prompt, or run manually:
+```bash
+git checkout zplat
+```
+
+## Step 11: Run Training
+
+Run from a standard Command Prompt (so the `.bat` environment is active):
 
 ```
 run_training.bat
 ```
 
-Example training command:
+Or manually:
 ```bash
-python examples/sonar_simple_trainer.py prune_only \
-    --batch_size 1 \
-    --camera_model ortho \
-    --data_dir data/sonarsplat_dataset/concrete_piling_3D \
-    --result_dir results/test_run \
-    --data_factor 1 \
-    --disable_viewer \
-    --init_type predefined \
-    --init_num_pts 100000 \
-    --init_opa 0.9 \
-    --init_scale 0.01 \
-    --max_steps 100 \
-    --near_plane -10 \
-    --far_plane 10 \
-    --test_every 8 \
-    --train \
-    --render_eval \
-    --sh_degree 3 \
-    --tb_every 50 \
-    --tb_save_image \
-    --skip_frames 1 \
-    --start_from_frame 0 \
-    --end_at_frame 10000
+set PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True
+python examples/sonar_simple_trainer.py zsplat ^
+    --data_dir C:\path\to\your\dataset ^
+    --result_dir C:\path\to\your\results ^
+    --train
 ```
 
-**Important:** Use `--skip_frames 1` (not 0, which causes a division-by-zero error).
+For a quick 2000-step sanity check:
+```bash
+set PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True
+python examples/sonar_simple_trainer.py zsplat ^
+    --data_dir C:\path\to\your\dataset ^
+    --result_dir C:\path\to\your\results ^
+    --max_steps 2000 ^
+    --train
+```
+
+Results (PSNR, SSIM, LPIPS) are saved to `result_dir\stats\`. Rendered test images are saved to `result_dir\test\sonar_images\`.
 
 ## Batch Files Reference
 

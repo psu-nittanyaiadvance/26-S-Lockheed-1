@@ -89,7 +89,7 @@ pip install nerfacc
 # from pycolmap import SceneManager
 ```
 
-**Fix opacity_pred_for_loss_img bug** in `examples/sonar_simple_trainer.py` around line 817: move `opacity_pred_for_loss_img` and `opacity_gt_img` assignments before the `if step >= cfg.opacity_supervision_start_step` block.
+> **Note:** If you are on the `zplat` branch, the `fused_ssim` and `nerfacc` import fixes are already committed — no manual patching needed.
 
 ## Step 9: Initialize GLM Submodule
 
@@ -97,39 +97,35 @@ pip install nerfacc
 git submodule update --init --recursive
 ```
 
-## Step 10: Run Training
+## Step 10: Switch to the zplat branch
+
+```bash
+git checkout zplat
+```
+
+## Step 11: Run Training
 
 ```bash
 export CUDA_HOME=$CONDA_PREFIX
 export PATH=$CUDA_HOME/bin:$PATH
 export LD_LIBRARY_PATH=$CUDA_HOME/lib:$LD_LIBRARY_PATH
 
-python examples/sonar_simple_trainer.py prune_only \
-    --batch_size 1 \
-    --camera_model ortho \
-    --data_dir data/sonarsplat_dataset/concrete_piling_3D \
-    --result_dir results/test_run \
-    --data_factor 1 \
-    --disable_viewer \
-    --init_type predefined \
-    --init_num_pts 100000 \
-    --init_opa 0.9 \
-    --init_scale 0.01 \
-    --max_steps 100 \
-    --near_plane -10 \
-    --far_plane 10 \
-    --test_every 8 \
-    --train \
-    --render_eval \
-    --sh_degree 3 \
-    --tb_every 50 \
-    --tb_save_image \
-    --skip_frames 1 \
-    --start_from_frame 0 \
-    --end_at_frame 10000
+PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True python examples/sonar_simple_trainer.py zsplat \
+    --data_dir /path/to/your/dataset \
+    --result_dir /path/to/your/results \
+    --train
 ```
 
-**Use `--skip_frames 1`, not 0** — 0 causes a division-by-zero error.
+For a quick 2000-step sanity check before a full run:
+```bash
+PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True python examples/sonar_simple_trainer.py zsplat \
+    --data_dir /path/to/your/dataset \
+    --result_dir /path/to/your/results \
+    --max_steps 2000 \
+    --train
+```
+
+Results (PSNR, SSIM, LPIPS) are saved to `result_dir/stats/`. Rendered test images are saved to `result_dir/test/sonar_images/`.
 
 ## Optional: Persist Environment Variables
 
