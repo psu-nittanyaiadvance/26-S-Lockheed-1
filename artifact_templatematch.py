@@ -1,31 +1,29 @@
 """
-Sunboat Camera Mount Detection and Cropping
+Template-Matching Artifact Boundary Detection and Cropping.
 
-Detects the camera mount boundary across an entire dataset of underwater images
-using template matching (cv2.TM_CCOEFF_NORMED) against a pre-cropped reference
-image of the camera mount corner, restricted to the bottom-right region of each
-frame where the mount always appears.
+This script locates a recurring border artifact by matching a reference template
+inside a configurable image corner/edge search region, then derives a global
+crop row from the highest confident match.
 
-Pipeline:
-  1. Load the template image (pre-cropped mount corner reference)
-  2. Recursively scan the dataset for all images
-  3. For each image, restrict search to the bottom-right corner region
-  4. Run cv2.matchTemplate() — the top-left Y of the best match is the detected row
-  5. Reject matches below MATCH_THRESHOLD (normalised cross-correlation score)
-  6. Collect all detected rows; take the global minimum (highest point)
-     and subtract CROP_PADDING pixels for a safety margin
-  7. Generate a 3-panel preview (original | match heatmap | cropped)
-  8. Optionally crop all images at that row
+Method summary:
+    1. Load a template image that represents the artifact pattern.
+    2. Recursively discover dataset images.
+    3. Run template matching in a restricted border region.
+    4. Keep matches above MATCH_THRESHOLD.
+    5. Apply edge-proximity checks to reduce false positives.
+    6. Select a global crop row from valid detections.
+    7. Save preview visualizations and optionally crop all images.
 
 Usage:
-  python sunboat_crop.py              # Preview only
-  python sunboat_crop.py --crop       # Preview + crop all images
+    python artifact_templatematch.py
+    python artifact_templatematch.py --crop
 
 Configuration:
-  Edit INPUT_DIR, TEMPLATE_PATH, PREVIEW_DIR, OUTPUT_DIR at the top of this file
+    Update INPUT_DIR, TEMPLATE_PATH, PREVIEW_DIR, OUTPUT_DIR, and threshold values
+    in the config section below.
 
 Requirements:
-  pip install opencv-python numpy tqdm pillow matplotlib
+    pip install opencv-python numpy tqdm pillow matplotlib
 """
 
 import cv2
@@ -472,11 +470,11 @@ def crop_and_save(args):
 
 def main():
     parser = argparse.ArgumentParser(
-        description='Sunboat Camera Mount Detection and Cropping',
+          description='Template-matching artifact boundary detection and cropping',
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""Examples:
-  python sunboat_crop.py              # Preview only (top 1 + 4 samples)
-  python sunboat_crop.py --crop       # Preview + crop all images
+      python artifact_templatematch.py              # Preview only
+      python artifact_templatematch.py --crop       # Preview + crop all images
         """)
     parser.add_argument('--crop', action='store_true', 
                        help='Crop all images based on highest detection (default: preview only)')
@@ -573,7 +571,7 @@ def main():
 
     if not args.crop:
         print(f'\nPreview complete. Check {PREVIEW_DIR}/ for results.')
-        print(f'\nTo crop all images, re-run with: python sunboat_crop.py --crop')
+        print(f'\nTo crop all images, re-run with: python artifact_templatematch.py --crop')
         return
 
     # ── Phase 3: Crop all images ──────────────────────────────────────────────

@@ -1,29 +1,25 @@
 #!/usr/bin/env python3
 """
-preprocess_datasets.py - Underwater dataset preprocessing for Gaussian splatting.
+Preprocess underwater image datasets with analysis and cleanup phases.
 
-This script provides a two-phase pipeline for preparing underwater image datasets
-for use with 3D Gaussian splatting reconstruction. The goal is to filter out
-low-quality or irrelevant images and remove camera housing artifacts so that
-only clean, useful frames are fed into the reconstruction pipeline.
+This script provides a two-phase workflow for dataset quality control before
+downstream training, mapping, reconstruction, or inspection tasks.
 
-Phase 1 ("analyze"):
-  - Uses OpenAI's CLIP model for zero-shot image classification to categorize
-    each image (e.g., fish, coral, shipwreck, open water, blurry, etc.)
-  - Detects static border artifacts (e.g., camera housing, ROV frame) by
-    comparing border regions across many images to find unchanging pixels
-  - Outputs per-image classification CSVs and a JSON summary
+Phase 1 (analyze):
+    - Runs CLIP-based zero-shot categorization for each image.
+    - Detects persistent border artifacts using cross-image consistency.
+    - Writes per-image CSV outputs and run summaries.
 
-Phase 2 ("clean"):
-  - Reads the analysis results from Phase 1
-  - Removes images classified as "empty" (open water, murky, dark, blurry)
-  - Crops detected border artifacts from the remaining useful images
-  - Converts TIFF images to PNG for smaller file sizes
-  - Exports the cleaned dataset preserving the original directory structure
+Phase 2 (clean):
+    - Loads Phase 1 outputs.
+    - Removes low-value/empty frames based on configured categories.
+    - Crops detected border artifacts from retained images.
+    - Optionally normalizes formats (for example TIFF to PNG).
+    - Exports cleaned images while preserving relative structure.
 
 Usage:
-  python preprocess_datasets.py analyze [--outdir DIR] [--device auto] [--batch-size 16]
-  python preprocess_datasets.py clean [--analysis-dir DIR] [--outdir cleaned_datasets]
+    python preprocess_datasets.py analyze [--outdir DIR] [--device auto] [--batch-size 16]
+    python preprocess_datasets.py clean [--analysis-dir DIR] [--outdir cleaned_datasets]
 """
 
 # --- Standard library imports ---

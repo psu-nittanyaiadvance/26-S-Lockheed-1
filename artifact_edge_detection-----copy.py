@@ -1,28 +1,18 @@
 """
-Edge Object Detector
-====================
-Detects the innermost boundary of an object protruding from any edge
-of an image. Returns detection points and an overlay for human verification.
+Edge-Based Artifact Boundary Detector.
 
-Dependencies: opencv-python, numpy, scipy, matplotlib
+Detects the inner boundary of a border-connected object (artifact or structure)
+protruding from one side of an image. The detector returns boundary points and
+supports overlay generation for visual verification.
 
-Usage:
-    import cv2
-    from edge_detection import detect_edge_object
+Dependencies:
+    opencv-python, numpy, scipy, matplotlib
 
-    img = cv2.imread('image.png')
-    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+Library usage:
+    Import detect_edge_object(gray_image) and consume result['edge_points'].
 
-    result = detect_edge_object(gray)
-
-    # Detection points in original image coordinates
-    xs, ys = result['edge_points']
-
-    # Save overlay for human verification
-    save_overlay(cv2.cvtColor(img, cv2.COLOR_BGR2RGB), result, 'overlay.png')
-
-CLI:
-    python edge_detection.py --image path/to/mean_image.png
+CLI usage:
+    python artifact_edge_detection-----copy.py --image path/to/image.png
 """
 
 import argparse

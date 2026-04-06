@@ -1,16 +1,13 @@
 #!/usr/bin/env python3
 """
-rank_images.py - Production-grade image ranking for underwater autonomy datasets.
+Rank underwater images by relevance and quality.
 
-Ranks images by "usefulness" for training/validation of sonar + surround perception
-using a combination of vision model embeddings (CLIP-like) and cheap CV heuristics.
+This script scores images using a hybrid of semantic signals (CLIP prompt
+similarity) and lightweight visual heuristics, then retains a top-K subset.
 
 Two-pass approach:
-  Pass 1: Stream all images, compute scores, maintain top-K min-heap.
-  Pass 2: Stream again with rolling window to attach prev/next 5 neighbors
-          for images that made it into the final top-K.
-
-Author: ML Engineering Team
+    Pass 1: Stream images, compute scores, maintain a top-K min-heap.
+    Pass 2: Stream again to attach neighbor context around selected items.
 """
 
 import argparse

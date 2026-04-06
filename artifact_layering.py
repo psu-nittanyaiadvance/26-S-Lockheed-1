@@ -1,27 +1,23 @@
 """
-Sunboat Persistent Bar Detection (Median Mask + Threshold)
+Persistent Artifact Region Analysis (Median + Variance).
 
-Strategy:
-    1) Load every image and resize to a consistent shape
-    2) Stack images as float32 and compute:
-             median_image = median(all_images, axis=0)
-    3) Compute variance map:
-             variance_map = var(all_images, axis=0)
-    4) Threshold the variance map:
-             persistent_mask = variance_map < threshold
-         Low variance -> visually consistent across dataset (persistent object)
-         High variance -> transient content (fish/debris/water motion)
-    5) Save median_image, variance_map, and persistent_mask overlay for
-         visual verification before any cropping decisions
+Builds a statistical composite from a dataset to highlight stable image regions
+that likely represent camera/platform artifacts or other persistent structures.
+
+Method summary:
+    1. Load and normalize image sizes.
+    2. Stack images and compute median image.
+    3. Compute per-pixel variance map across the stack.
+    4. Threshold low-variance regions as persistent-mask candidates.
+    5. Export median image, variance visualization, and overlays for review.
 
 Important:
-    - This script does NOT crop images.
-    - No shape filtering, boundary logic, or cropping heuristics are used.
+    - This script is analysis-only and does not crop files.
 
 Usage:
-    python sunboat_robust.py
-    python sunboat_robust.py --variance-threshold 0.0025
-    python sunboat_robust.py --input-dir path/to/images --output-dir out_dir
+    python artifact_layering.py
+    python artifact_layering.py --variance-threshold 0.0025
+    python artifact_layering.py --input-dir path/to/images --output-dir out_dir
 """
 
 import argparse

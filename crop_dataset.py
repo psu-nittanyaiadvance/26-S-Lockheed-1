@@ -1,33 +1,30 @@
 """
-Sunboat Camera Mount Detection and Cropping
+Color-Band Artifact Boundary Detection and Cropping.
 
-Detects the camera mount boundary across an entire dataset of underwater images
-using connected component analysis on the yellow-green hue band (hue 25-75),
-restricted to the right side of the image where the mount always appears.
+This script scans an image dataset for a persistent color-band artifact near
+the image border (for example, camera housing or platform structure), then
+derives a global crop row from the highest valid detection.
 
-The largest connected component in this hue range corresponds to the camera
-mount bar. The highest point of this component defines the crop row.
-
-Pipeline:
-  1. Recursively scan the dataset for all images
-  2. For each image, find the largest yellow-green connected component
-     in the bottom-right region and record the highest row
-  3. Filter out false positives: highest point must be within proximity
-     threshold of the right edge (camera mount always touches right side)
-  4. Identify the single highest crop row (most aggressive detection)
-  5. Generate a 3-panel preview showing top 1 + 4 additional sample images
-     (original, hue analysis, cropped)
-  6. Optionally crop all images using the single highest detected row
+Method summary:
+    1. Recursively discover images from INPUT_DIR.
+    2. Restrict detection to a configurable border region.
+    3. Build a hue-range mask and run connected-components.
+    4. Keep the largest component and validate it with:
+             - proximity to the expected border
+             - cluster concentration (dominant component check)
+    5. Aggregate detections and choose a single crop row.
+    6. Save a preview panel, and optionally crop all images.
 
 Usage:
-  python sunboat_crop.py              # Preview only (top 1 + 4 samples)
-  python sunboat_crop.py --crop       # Preview + crop all images
+    python crop_dataset.py
+    python crop_dataset.py --crop
 
 Configuration:
-  Edit INPUT_DIR, PREVIEW_DIR, OUTPUT_DIR at the top of this file
+    Update INPUT_DIR, PREVIEW_DIR, OUTPUT_DIR, and detection thresholds in the
+    config section below.
 
 Requirements:
-  pip install opencv-python numpy tqdm pillow matplotlib
+    pip install opencv-python numpy tqdm pillow matplotlib
 """
 
 import cv2
@@ -481,11 +478,11 @@ def crop_and_save(args):
 
 def main():
     parser = argparse.ArgumentParser(
-        description='Sunboat Camera Mount Detection and Cropping',
+          description='Color-band artifact boundary detection and cropping',
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""Examples:
-  python sunboat_crop.py              # Preview only (top 1 + 4 samples)
-  python sunboat_crop.py --crop       # Preview + crop all images
+      python crop_dataset.py              # Preview only
+      python crop_dataset.py --crop       # Preview + crop all images
         """)
     parser.add_argument('--crop', action='store_true', 
                        help='Crop all images based on highest detection (default: preview only)')
@@ -566,7 +563,7 @@ def main():
 
     if not args.crop:
         print(f'\nPreview complete. Check {PREVIEW_DIR}/ for results.')
-        print(f'\nTo crop all images, re-run with: python sunboat_crop.py --crop')
+        print(f'\nTo crop all images, re-run with: python crop_dataset.py --crop')
         return
 
     # ── Phase 3: Crop all images ──────────────────────────────────────────────

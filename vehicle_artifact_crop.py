@@ -1,34 +1,27 @@
 #!/usr/bin/env python3
 """
-vehicle_artifact_crop.py - Detect and crop vehicle/camera housing artifacts from
-underwater image datasets.
+Detect and crop platform/camera artifacts from underwater image datasets.
 
-Underwater cameras mounted on ROVs/AUVs often have visible housing edges (white
-bars, dark fins, instrument overlays) that appear in every frame. This script
-detects those static artifacts using brightness profiling and gradient analysis
-of a median composite image, then crops them out.
+This script targets persistent border structures that appear in most frames
+(camera housing, vehicle body, mounts, or overlays). It detects these regions
+from cross-image statistics and edge profiles, then supports review and batch
+cropping through explicit subcommands.
 
-Unlike preprocess_datasets.py, this script does NOT do CLIP classification or
-image filtering — it focuses solely on artifact detection and cropping.
-
-Detection strategy (3 complementary signals):
-  1. Median image analysis — sample ~50 images, compute pixel-wise median.
-     Static artifacts persist while scene content washes out.
-  2. Brightness profile analysis — detect rows/columns near edges that are
-     significantly brighter or darker than the adjacent scene region.
-  3. Gradient-based boundary detection — find the sharpest brightness transition
-     moving inward from each edge (where housing meets scene).
-  4. Cross-image consistency — verify low variance at detected artifact positions.
+Detection strategy:
+    1. Build a median composite from sampled frames.
+    2. Analyze edge-adjacent brightness profiles.
+    3. Detect strong inward transitions with gradient cues.
+    4. Validate candidates with cross-image consistency checks.
 
 Subcommands:
-  detect   — Analyze sampled images, detect crop regions, save verification images
-  preview  — Show before/after crop on sample images (auto or manual crop)
-  apply    — Apply crop to all images, export to output directory
+    detect   - Analyze sampled images and write diagnostic outputs.
+    preview  - Show before/after crop previews (auto or manual crop values).
+    apply    - Apply crop settings to all images and export results.
 
 Usage:
-  python vehicle_artifact_crop.py detect [--datasets sunboat shipwreck flsea_vi]
-  python vehicle_artifact_crop.py preview --datasets sunboat --crop bottom=80
-  python vehicle_artifact_crop.py apply --datasets sunboat --output-dir cropped_datasets
+    python vehicle_artifact_crop.py detect --datasets dataset_name
+    python vehicle_artifact_crop.py preview --datasets dataset_name --crop bottom=80
+    python vehicle_artifact_crop.py apply --datasets dataset_name --output-dir cropped_datasets
 """
 
 import argparse

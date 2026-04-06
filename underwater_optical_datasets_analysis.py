@@ -1,5 +1,13 @@
-# Underwater Optical Datasets Analysis for Nittany AI Project
-# Source: https://github.com/ddz16/UnderwaterDataset
+"""
+Underwater optical dataset catalog and summary script.
+
+Maintains curated metadata tables for multiple underwater dataset task types
+(enhancement, detection, segmentation, tracking, classification) and prints a
+summary report for quick comparison.
+
+Data values in this file are static references and can be edited directly as
+the catalog evolves.
+"""
 
 import pandas as pd
 

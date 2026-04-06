@@ -1,7 +1,12 @@
 #!/usr/bin/env python
 """
-Script to download all files from a Harvard Dataverse dataset
-Dataset: https://dataverse.harvard.edu/dataset.xhtml?persistentId=doi:10.7910/DVN/VZD5S6
+Download all files from a Dataverse dataset.
+
+This script queries dataset metadata by DOI, downloads each file through the
+Dataverse access API, and stores results in organized local subdirectories.
+
+Defaults are configured for one dataset DOI, but DATASET_DOI and DOWNLOAD_DIR
+can be updated for other Dataverse sources.
 """
 
 import requests

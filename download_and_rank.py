@@ -1,21 +1,21 @@
 #!/usr/bin/env python3
 """
-download_and_rank.py - Incremental download, rank, and prune pipeline.
+Incremental download, ranking, and pruning pipeline.
+
+This script processes remote dataset files in streaming fashion to keep local
+disk usage bounded while preserving only the highest-value images.
 
 Workflow:
-  1. Fetch dataset metadata from Harvard Dataverse
-  2. For each downloadable archive/file:
-     a. Download it
-     b. Extract images (if archive)
-     c. Score all images using CLIP + CV heuristics
-     d. Update global top-K heap
-     e. Delete images NOT in top-K to free disk space
-     f. Move to next file
-  3. After all files processed, finalize with neighbor context
+    1. Fetch dataset metadata from a Dataverse source.
+    2. For each downloadable file/archive:
+         a. Download it
+         b. Extract images when needed
+         c. Score images with CLIP + lightweight CV heuristics
+         d. Update a global top-K heap
+         e. Prune files that are not in the retained top-K
+    3. Finalize ranked outputs with neighbor-context metadata.
 
-This approach keeps disk usage bounded by only retaining top-K images globally.
-
-Dataset: Harvard Dataverse DOI: doi:10.7910/DVN/VZD5S6
+The default DOI is configurable via constants/CLI options.
 """
 
 import argparse
