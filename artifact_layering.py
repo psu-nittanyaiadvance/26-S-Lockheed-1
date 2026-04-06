@@ -1,18 +1,18 @@
 """
-Persistent Artifact Region Analysis (Median + Variance).
+Sunboat Persistent Structure Detection (Median Mask + Threshold)
 
-Builds a statistical composite from a dataset to highlight stable image regions
-that likely represent camera/platform artifacts or other persistent structures.
-
-Method summary:
-    1. Load and normalize image sizes.
-    2. Stack images and compute median image.
-    3. Compute per-pixel variance map across the stack.
-    4. Threshold low-variance regions as persistent-mask candidates.
-    5. Export median image, variance visualization, and overlays for review.
+Strategy:
+    1) Load every image and resize it to a consistent shape.
+    2) Stream images into a disk-backed uint8 memmap so the full stack does
+       not have to live in RAM.
+    3) Compute the exact per-pixel/channel median in row chunks.
+    4) Compute a variance map from streaming sum and sum-of-squares moments.
+    5) Threshold the variance map to build a persistent mask for visual
+       verification before any cropping decisions.
 
 Important:
-    - This script is analysis-only and does not crop files.
+    - This script does NOT crop images.
+    - No shape filtering, boundary logic, or cropping heuristics are used.
 
 Usage:
     python artifact_layering.py
@@ -21,10 +21,12 @@ Usage:
 """
 
 import argparse
+import concurrent.futures
 import os
+import shutil
 import sys
 from datetime import datetime
-from typing import Generator, Optional, Set, Tuple
+from typing import Generator, List, Optional, Set, Tuple
 
 import cv2
 import matplotlib
@@ -39,11 +41,11 @@ ImageFile.LOAD_TRUNCATED_IMAGES = True
 
 # ── Config ────────────────────────────────────────────────────────────────────
 
-INPUT_DIR = "watersplatting_data/Sunboat_03-09-2023"
-OUTPUT_DIR = "artifact_analysis/sunboat/median_variance"
+INPUT_DIR = "artifact_analysis/dc_train/median_variance_overlay_20260325_154032.png"
+OUTPUT_DIR = "artifact_analysis/dc_train"
 
 STACK_COLOR_SPACE = "LAB"
-VARIANCE_THRESHOLD = 0.0025
+VARIANCE_THRESHOLD = 0.0075 
 
 IMG_EXTENSIONS = {".png", ".jpg", ".jpeg", ".PNG", ".JPG", ".JPEG"}
 
@@ -218,6 +220,135 @@ def save_visualizations(
     print(f"  - {os.path.join(output_dir, f'persistent_mask_{timestamp}.npy')}")
 
 
+def compute_exact_median_from_memmap(
+    images_memmap: np.memmap,
+    num_images: int,
+    ref_h: int,
+    ref_w: int,
+    chunk_rows: int,
+) -> np.ndarray:
+    """Compute exact per-pixel/channel median using row chunks from a disk-backed memmap."""
+    if num_images <= 0:
+        raise ValueError("num_images must be > 0")
+
+    median_image = np.empty((ref_h, ref_w, 3), dtype=np.float32)
+    chunk_rows = max(1, int(chunk_rows))
+
+    for row_start in tqdm(range(0, ref_h, chunk_rows), desc="Median chunks", unit="chunk"):
+        row_end = min(ref_h, row_start + chunk_rows)
+
+        # Materialize only the current row band in RAM.
+        block = np.array(images_memmap[:num_images, row_start:row_end, :, :], dtype=np.uint8, copy=True)
+
+        if num_images % 2 == 1:
+            mid = num_images // 2
+            part = np.partition(block, mid, axis=0)
+            median_block = part[mid].astype(np.float32) / 255.0
+        else:
+            mid_hi = num_images // 2
+            mid_lo = mid_hi - 1
+            part = np.partition(block, (mid_lo, mid_hi), axis=0)
+            lo = part[mid_lo].astype(np.float32)
+            hi = part[mid_hi].astype(np.float32)
+            median_block = (lo + hi) * (0.5 / 255.0)
+
+        median_image[row_start:row_end, :, :] = median_block
+
+    return median_image
+
+
+def parse_gpu_devices(devices_arg: str, available_count: int) -> List[int]:
+    """Parse comma-separated GPU ids and keep only valid device indices."""
+    if not devices_arg.strip():
+        return []
+
+    parsed = []
+    seen = set()
+    for raw in devices_arg.split(","):
+        token = raw.strip()
+        if not token:
+            continue
+        try:
+            dev = int(token)
+        except ValueError:
+            continue
+        if 0 <= dev < available_count and dev not in seen:
+            parsed.append(dev)
+            seen.add(dev)
+    return parsed
+
+
+def _torch_median_block(block_u8: np.ndarray, num_images: int, device_id: int) -> np.ndarray:
+    """Compute exact per-pixel/channel median for one block on a specific CUDA device."""
+    import torch
+
+    with torch.cuda.device(device_id):
+        t_block = torch.from_numpy(block_u8).to(device=f"cuda:{device_id}", dtype=torch.uint8)
+
+        if num_images % 2 == 1:
+            k = (num_images // 2) + 1
+            values = torch.kthvalue(t_block, k=k, dim=0).values
+            out = values.to(dtype=torch.float32) / 255.0
+        else:
+            k_lo = num_images // 2
+            k_hi = k_lo + 1
+            lo = torch.kthvalue(t_block, k=k_lo, dim=0).values.to(dtype=torch.float32)
+            hi = torch.kthvalue(t_block, k=k_hi, dim=0).values.to(dtype=torch.float32)
+            out = (lo + hi) * (0.5 / 255.0)
+
+        out_np = out.detach().cpu().numpy().astype(np.float32, copy=False)
+        del t_block, out
+        return out_np
+
+
+def compute_exact_median_from_memmap_torch(
+    images_memmap: np.memmap,
+    num_images: int,
+    ref_h: int,
+    ref_w: int,
+    chunk_rows: int,
+    device_ids: List[int],
+) -> np.ndarray:
+    """Compute exact median using torch CUDA, dispatching chunks across GPUs."""
+    if num_images <= 0:
+        raise ValueError("num_images must be > 0")
+    if not device_ids:
+        raise ValueError("device_ids must not be empty")
+
+    median_image = np.empty((ref_h, ref_w, 3), dtype=np.float32)
+    chunk_rows = max(1, int(chunk_rows))
+    row_ranges = [(row_start, min(ref_h, row_start + chunk_rows)) for row_start in range(0, ref_h, chunk_rows)]
+
+    def worker(row_start: int, row_end: int, device_id: int) -> Tuple[int, np.ndarray]:
+        block = np.array(images_memmap[:num_images, row_start:row_end, :, :], dtype=np.uint8, copy=True)
+        median_block = _torch_median_block(block, num_images, device_id)
+        return row_start, median_block
+
+    futures = []
+    with concurrent.futures.ThreadPoolExecutor(max_workers=len(device_ids)) as executor:
+        for idx, (row_start, row_end) in enumerate(row_ranges):
+            device_id = device_ids[idx % len(device_ids)]
+            futures.append(executor.submit(worker, row_start, row_end, device_id))
+
+        for fut in tqdm(concurrent.futures.as_completed(futures), total=len(futures), desc="Median chunks (GPU)", unit="chunk"):
+            row_start, median_block = fut.result()
+            row_end = row_start + median_block.shape[0]
+            median_image[row_start:row_end, :, :] = median_block
+
+    return median_image
+
+
+def format_bytes(num_bytes: int) -> str:
+    """Human-readable byte formatter."""
+    size = float(max(0, num_bytes))
+    units = ["B", "KiB", "MiB", "GiB", "TiB"]
+    idx = 0
+    while size >= 1024.0 and idx < len(units) - 1:
+        size /= 1024.0
+        idx += 1
+    return f"{size:.2f} {units[idx]}"
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(
         description="Detect persistent dataset structure via median image and variance thresholding",
@@ -243,11 +374,63 @@ def main() -> None:
         default=None,
         help="Optional limit for debugging; process only first N images",
     )
+    parser.add_argument(
+        "--median-chunk-rows",
+        type=int,
+        default=8,
+        help="Row chunk size for exact median computation (smaller uses less RAM, slower)",
+    )
+    parser.add_argument(
+        "--work-dir",
+        type=str,
+        default=None,
+        help="Directory for memmap storage (default: output-dir to avoid small /tmp filesystems)",
+    )
+    parser.add_argument(
+        "--keep-work-files",
+        action="store_true",
+        help="Keep temporary memmap files for inspection/debugging",
+    )
+    parser.add_argument(
+        "--compute-backend",
+        type=str,
+        default="torch",
+        choices=["cpu", "torch"],
+        help="Compute backend for median chunks. 'torch' enables CUDA acceleration if available.",
+    )
+    parser.add_argument(
+        "--gpu-devices",
+        type=str,
+        default="0,1",
+        help="Comma-separated CUDA device ids used when --compute-backend torch (example: 0,1)",
+    )
     args = parser.parse_args()
 
     if args.variance_threshold < 0.0:
         print("Error: --variance-threshold must be >= 0.")
         sys.exit(1)
+    if args.median_chunk_rows <= 0:
+        print("Error: --median-chunk-rows must be >= 1.")
+        sys.exit(1)
+
+    use_torch_gpu = args.compute_backend == "torch"
+    gpu_device_ids: List[int] = []
+
+    if use_torch_gpu:
+        try:
+            import torch
+
+            if not torch.cuda.is_available():
+                print("Warning: torch CUDA not available. Falling back to CPU backend.")
+                use_torch_gpu = False
+            else:
+                gpu_device_ids = parse_gpu_devices(args.gpu_devices, torch.cuda.device_count())
+                if not gpu_device_ids:
+                    print("Warning: no valid CUDA devices selected. Falling back to CPU backend.")
+                    use_torch_gpu = False
+        except Exception as exc:
+            print(f"Warning: torch backend unavailable ({exc}). Falling back to CPU backend.")
+            use_torch_gpu = False
 
     image_paths = list(iter_dataset_images(args.input_dir, IMG_EXTENSIONS))
     if args.max_images is not None:
@@ -258,6 +441,10 @@ def main() -> None:
         sys.exit(1)
 
     print(f"Found {len(image_paths)} images")
+    if use_torch_gpu:
+        print(f"Compute backend: torch CUDA on devices {gpu_device_ids}")
+    else:
+        print("Compute backend: CPU numpy")
     print("Step 1/5: Loading images and resizing to consistent shape...")
 
     # Determine reference shape using first valid image
@@ -269,10 +456,52 @@ def main() -> None:
 
     print(f"Reference shape: {ref_w}x{ref_h} (from {os.path.basename(sample_path)})")
 
-    stacked_images = []
+    # Use a disk-backed array so we do not keep the full image stack in RAM.
+    # Default to output_dir rather than /tmp to avoid small root/tmp filesystems.
+    memmap_dir = args.work_dir if args.work_dir else args.output_dir
+    os.makedirs(memmap_dir, exist_ok=True)
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    memmap_path = os.path.join(memmap_dir, f"sunboat_stack_{timestamp}.dat")
+
+    expected_memmap_bytes = len(image_paths) * ref_h * ref_w * 3
+    free_bytes = shutil.disk_usage(memmap_dir).free
+    safety_margin_bytes = 2 * 1024 * 1024 * 1024
+    required_with_margin = expected_memmap_bytes + safety_margin_bytes
+
+    print("Allocating disk-backed image stack...")
+    print(f"  Memmap path: {memmap_path}")
+    print(f"  Expected memmap size: {format_bytes(expected_memmap_bytes)}")
+    print(f"  Free space in work-dir filesystem: {format_bytes(free_bytes)}")
+
+    if free_bytes < required_with_margin:
+        print("Error: insufficient free space for memmap-backed stack.")
+        print(f"  Needed (with safety margin): {format_bytes(required_with_margin)}")
+        print(f"  Available:                  {format_bytes(free_bytes)}")
+        print("Tip: pass --work-dir to a larger filesystem (example: /data/Lockheed1-Spring26).")
+        sys.exit(1)
+
+    print("Step 1/5: Loading images, resizing, color conversion, and streaming stats...")
+
+    # uint8 memmap keeps storage compact while preserving exact pixel values.
+    try:
+        images_memmap = np.memmap(
+            memmap_path,
+            dtype=np.uint8,
+            mode="w+",
+            shape=(len(image_paths), ref_h, ref_w, 3),
+        )
+    except OSError as exc:
+        print(f"Error: failed to create memmap file at {memmap_path}: {exc}")
+        print("Tip: choose a writable path with enough free space via --work-dir.")
+        sys.exit(1)
+
     processed_count = 0
     failed_count = 0
     resized_count = 0
+
+    # Exact variance from streaming moments on uint8 values.
+    sum_channels = np.zeros((ref_h, ref_w, 3), dtype=np.uint64)
+    sumsq_channels = np.zeros((ref_h, ref_w, 3), dtype=np.uint64)
 
     for image_path in tqdm(image_paths, unit="img"):
         img_bgr, error = load_image_safe(image_path)
@@ -286,31 +515,69 @@ def main() -> None:
             resized_count += 1
 
         img_space = convert_to_color_space(img_bgr, args.color_space)
-        stacked_images.append(img_space.astype(np.float32) / 255.0)
+
+        img_u8 = img_space.astype(np.uint8)
+        images_memmap[processed_count] = img_u8
+
+        img_u64 = img_u8.astype(np.uint64)
+        sum_channels += img_u64
+        sumsq_channels += img_u64 * img_u64
+
         processed_count += 1
 
-    print("\nStep 2/5: Stacking images and computing median image")
+    images_memmap.flush()
+
+    print("\nStep 2/5: Computing exact median image in row chunks")
     if processed_count == 0:
         print("No valid images could be processed.")
+        del images_memmap
+        if not args.keep_work_files and os.path.exists(memmap_path):
+            os.remove(memmap_path)
         sys.exit(1)
 
     try:
-        all_images = np.stack(stacked_images, axis=0).astype(np.float32)
+        if use_torch_gpu:
+            median_image = compute_exact_median_from_memmap_torch(
+                images_memmap=images_memmap,
+                num_images=processed_count,
+                ref_h=ref_h,
+                ref_w=ref_w,
+                chunk_rows=args.median_chunk_rows,
+                device_ids=gpu_device_ids,
+            )
+        else:
+            median_image = compute_exact_median_from_memmap(
+                images_memmap=images_memmap,
+                num_images=processed_count,
+                ref_h=ref_h,
+                ref_w=ref_w,
+                chunk_rows=args.median_chunk_rows,
+            )
     except MemoryError:
-        print("MemoryError: Unable to stack all images in memory. Try --max-images for debugging.")
+        print(
+            "MemoryError during median chunks. Try reducing --median-chunk-rows "
+            "(example: --median-chunk-rows 4)."
+        )
+        del images_memmap
+        if not args.keep_work_files and os.path.exists(memmap_path):
+            os.remove(memmap_path)
         sys.exit(1)
 
-    median_image = np.median(all_images, axis=0).astype(np.float32)
-
-    print("Step 3/5: Computing variance map")
-    variance_volume = np.var(all_images, axis=0)
+    print("Step 3/5: Computing variance map from streaming moments")
+    n = float(processed_count)
+    mean_norm = (sum_channels.astype(np.float64) / n) / 255.0
+    mean_sq_norm = (sumsq_channels.astype(np.float64) / n) / (255.0 * 255.0)
+    variance_volume = np.maximum(0.0, mean_sq_norm - (mean_norm * mean_norm))
     variance_map = variance_volume.mean(axis=2).astype(np.float32)
+
+    del images_memmap
+    if not args.keep_work_files and os.path.exists(memmap_path):
+        os.remove(memmap_path)
 
     print("Step 4/5: Thresholding variance map to build persistent mask")
     persistent_mask = variance_map < float(args.variance_threshold)
 
     print("Step 5/5: Saving verification outputs")
-    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     save_visualizations(
         sample_bgr=sample_bgr if sample_bgr.shape[:2] == (ref_h, ref_w)
         else cv2.resize(sample_bgr, (ref_w, ref_h), interpolation=cv2.INTER_LINEAR),
