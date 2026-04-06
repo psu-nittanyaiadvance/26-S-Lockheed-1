@@ -5,3 +5,5 @@ __pycache__/
 .vscode/
 yolov8m.pt
 venv/
+*.png
+data/
