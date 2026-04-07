@@ -1610,7 +1610,7 @@ if __name__ == "__main__":
         "zsplat": (
             "Z-Splat: gamma NLL loss + ULA beam pattern + elevation constraint + sigmoid reflectivity.",
             Config(
-                init_num_pts=30_000,
+                init_num_pts=20_000,
                 init_scale=0.01,
                 init_type="predefined",
                 max_steps=40_000,
@@ -1621,10 +1621,13 @@ if __name__ == "__main__":
                 gamma_nll_k_looks=1,
                 w_elevation=1.0,
                 camera_model="ortho",
+                skip_frames=1,
                 strategy=PruneOnlyStrategy(
                     verbose=True,
                     refine_start_iter=0,
                     refine_every=500,
+                    grow_grad2d=0.001,
+                    prune_opa=0.01,
                 ),
             ),
         ),

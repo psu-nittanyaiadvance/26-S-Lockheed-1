@@ -374,7 +374,7 @@ class SonarSensorDataParser:
         #     transform = T2 @ T1
         # else:
         #     transform = np.eye(4)
-        visualize_gaussians(xyz=[pcd], poses=camtoworlds, start_size=0.1, end_size=0.1)
+        # visualize_gaussians(xyz=[pcd], poses=camtoworlds, start_size=0.1, end_size=0.1)  # blocks on headless servers
         camera_locations = camtoworlds[:, :3, 3]
         scene_center = np.mean(camera_locations, axis=0)
         dists = np.linalg.norm(camera_locations - scene_center, axis=1)
