@@ -1,5 +1,7 @@
 # import matplotlib
 # matplotlib.use("QtAgg")
+import os
+os.environ.setdefault("PYTORCH_CUDA_ALLOC_CONF", "expandable_segments:True")
 import json
 import math
 import os
@@ -1625,9 +1627,10 @@ if __name__ == "__main__":
                 strategy=PruneOnlyStrategy(
                     verbose=True,
                     refine_start_iter=0,
-                    refine_every=500,
+                    refine_every=1000,
+                    refine_stop_iter=30_000,
                     grow_grad2d=0.001,
-                    prune_opa=0.01,
+                    prune_opa=0.005,
                 ),
             ),
         ),
