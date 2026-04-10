@@ -30,12 +30,11 @@ from typing import Generator, List, Optional, Set, Tuple
 
 import cv2
 import matplotlib
+matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import numpy as np
 from PIL import Image, ImageFile
 from tqdm import tqdm
-
-matplotlib.use("Agg")
 ImageFile.LOAD_TRUNCATED_IMAGES = True
 
 
