@@ -148,6 +148,7 @@ class Config:
     elevate_loss_select: int = 100
     elevate_num_samples: int = 10
     elevate_sampling_duty_cycle: float = 0.5
+    max_gaussians: int = 500_000  # hard cap — skip elevation sampling above this count
 
     # Number of training steps
     max_steps: int = 30_000
@@ -283,6 +284,8 @@ class Config:
             strategy.refine_every = int(strategy.refine_every * factor)
         else:
             assert_never(strategy)
+
+        self.elevate_end_step = int(self.elevate_end_step * factor)
 
 
 def create_splats_with_optimizers(
@@ -936,6 +939,14 @@ class Runner:
                 + cfg.max_size_prior_weight * max_size_loss
             )
 
+            # NaN diagnostic (only on first NaN occurrence)
+            if step < 5 or (torch.isnan(loss) and not getattr(self, '_nan_logged', False)):
+                print(f"[step={step}] l_sonar={l_sonar.item():.4f} l_elevation={l_elevation.item():.4f} "
+                      f"l_reg={l_reg.item():.4f} max_size={max_size_loss.item():.4f} "
+                      f"Z_hat nan={torch.isnan(Z_hat).any().item()} Z nan={torch.isnan(Z).any().item()}")
+                if torch.isnan(loss):
+                    self._nan_logged = True
+
             # Legacy comparison metrics (kept for logging/comparison)
             l1loss = F.l1_loss(pred_for_loss_l1, pixels_for_loss_l1)
             ssimloss = 1.0 - fused_ssim(
@@ -981,7 +992,8 @@ class Runner:
                 self.splats["shN"].grad *= 0.0
             else: #period A
                 desc += "| reg opt |"
-                self.splats["sat_probability"].grad *= 0.0
+                if self.splats["sat_probability"].grad is not None:
+                    self.splats["sat_probability"].grad *= 0.0
                 
 
             
@@ -1136,7 +1148,8 @@ class Runner:
             # Run post-backward steps after backward and optimizer
             #check if gradients are not none: 
             if step >= cfg.elevate_start_step and step <= cfg.elevate_end_step and \
-                step % cfg.elevation_sampling_every < int(cfg.elevation_sampling_every*cfg.elevate_sampling_duty_cycle): 
+                step % cfg.elevation_sampling_every < int(cfg.elevation_sampling_every*cfg.elevate_sampling_duty_cycle) and \
+                len(self.splats["means"]) < cfg.max_gaussians:
                 if pixels_for_loss.sum() > 0:
                     #update pbar with text 
                     desc += "Elevation Sampling"

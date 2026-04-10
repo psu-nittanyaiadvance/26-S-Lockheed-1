@@ -1,0 +1,3 @@
+method,method_key,PSNR_mean,PSNR_std,SSIM_mean,SSIM_std
+"Ours (Z-Splat, sonar-primary)",ours,13.387397449047535,2.0104651767104436,0.6693530050707069,0.11398519604594322
+SonarSplat (Sethuraman RA-L 2025),sonarsplat,16.14166259765625,0.0,0.6291494965553284,0.0

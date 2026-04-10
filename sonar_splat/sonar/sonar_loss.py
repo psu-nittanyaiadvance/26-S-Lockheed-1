@@ -41,7 +41,10 @@ def gamma_nll_loss(
         )
 
     if mask is not None:
-        return per_pixel[mask].mean()
+        masked = per_pixel[mask]
+        if masked.numel() == 0:
+            return torch.tensor(0.0, device=per_pixel.device, dtype=per_pixel.dtype)
+        return masked.mean()
     return per_pixel.mean()
 
 

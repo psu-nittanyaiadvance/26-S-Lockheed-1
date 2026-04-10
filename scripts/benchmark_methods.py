@@ -1,13 +1,13 @@
 """
-Benchmark comparison: our implementation vs Z-Splat vs WaterSplatting vs SonarSplat.
+Benchmark comparison: our Z-Splat vs Z-Splatting (paper) vs WaterSplatting vs SonarSplat.
 
 Four methods:
-  ours           -- our new sonar-primary implementation (this repo, zplat branch)
-                    sonar loss primary; Gamma NLL; beam pattern; per-Gaussian r_n;
-                    camera loss resolves elevation ambiguity only
-  zplat          -- Z-Splat baseline (arXiv 2404.04687, Qu et al. 2024)
-                    camera-primary, sonar used only as a depth regularizer; uses
-                    mu_z (not Euclidean range), no beam pattern, no reflectivity
+  ours           -- our sonar-primary implementation (this repo, zplat branch)
+                    Gamma NLL loss; sigmoid reflectivity; ULA beam pattern;
+                    elevation constraint; reflectivity spatial regularizer
+  z_splatting    -- Z-Splatting paper baseline (arXiv 2404.04687, Qu et al. 2024)
+                    camera-primary with depth; uses gaussian-splatting-with-depth;
+                    mu_z (not Euclidean range); no beam pattern; no reflectivity
   watersplatting -- camera-only optical 3DGS (WaterSplatting)
   sonarsplat     -- SonarSplat (Sethuraman et al., IEEE RA-L 2025)
                     sonar-only novel view synthesis with polar rasterization
@@ -15,18 +15,18 @@ Four methods:
 Usage:
     python scripts/benchmark_methods.py \\
         --ours_dir          /path/to/our_renders \\
-        --zplat_dir         /path/to/zplat_renders \\
+        --z_splatting_dir   /path/to/z_splatting_renders \\
         --watersplat_dir    /path/to/watersplat_renders \\
         --sonarsplat_dir    /path/to/sonarsplat_renders \\
         --output_dir        ./benchmark_results
 
 Or point at a single root directory with sub-folders named
-  ours/, zplat/, watersplatting/, sonarsplat/
+  ours/, z_splatting/, watersplatting/, sonarsplat/
 
 Each method dir contains one sub-folder per scene.  Supported layouts
 (auto-detected per scene):
 
-  Layout A  — Nerfstudio / ZSplat:
+  Layout A  — Z-Splatting paper (gaussian-splatting-with-depth render.py):
       <scene>/test/ours_<iter>/gt/
       <scene>/test/ours_<iter>/renders/
 
@@ -37,6 +37,10 @@ Each method dir contains one sub-folder per scene.  Supported layouts
   Layout C  — simple:
       <scene>/gt/
       <scene>/renders/
+
+  Layout D  — our Z-Splat (sonar_simple_trainer.py):
+      <scene>/test/gt_sonar_images/
+      <scene>/test/sonar_images/
 """
 
 import argparse
@@ -71,8 +75,8 @@ BORDER_CROP = 10   # pixels trimmed on each edge (matches existing eval scripts)
 
 # Display labels for each method key
 METHOD_LABELS = {
-    "ours":          "Ours (sonar-primary)",
-    "zplat":         "Z-Splat (arXiv 2404.04687)",
+    "ours":          "Ours (Z-Splat, sonar-primary)",
+    "z_splatting":   "Z-Splatting (arXiv 2404.04687, Qu et al.)",
     "watersplatting": "WaterSplatting (camera-only)",
     "sonarsplat":    "SonarSplat (Sethuraman RA-L 2025)",
 }
@@ -114,6 +118,14 @@ def _find_gt_pred_dirs(scene_dir: str):
     # Layout C: simple gt/ + renders/
     if (scene_dir / "renders").is_dir() and (scene_dir / "gt").is_dir():
         return str(scene_dir / "gt"), str(scene_dir / "renders")
+
+    # Layout D — zsplat/sonarsplat actual output:
+    #     <scene>/test/gt_sonar_images/
+    #     <scene>/test/sonar_images/
+    d_gt   = scene_dir / "test" / "gt_sonar_images"
+    d_pred = scene_dir / "test" / "sonar_images"
+    if d_gt.is_dir() and d_pred.is_dir():
+        return str(d_gt), str(d_pred)
 
     return None, None
 
@@ -277,7 +289,7 @@ def run_benchmark(method_dirs: dict, output_dir: str, skip_lpips: bool):
     # ── summary CSV ───────────────────────────────────────────────────────────
     summary_rows = []
     # preserve display order: ours first, then baselines
-    for method_key in ["ours", "zplat", "watersplatting", "sonarsplat"]:
+    for method_key in ["ours", "z_splatting", "watersplatting", "sonarsplat"]:
         if method_key not in summary:
             continue
         label = METHOD_LABELS.get(method_key, method_key)
@@ -339,14 +351,14 @@ def parse_args():
     parser.add_argument(
         "--root_dir", type=str, default=None,
         help=(
-            "Root dir containing sub-folders: ours/, zplat/, "
+            "Root dir containing sub-folders: ours/, z_splatting/, "
             "watersplatting/, sonarsplat/. Overrides individual flags."
         ),
     )
     parser.add_argument("--ours_dir",        type=str, default=None,
-                        help="Our sonar-primary implementation renders")
-    parser.add_argument("--zplat_dir",       type=str, default=None,
-                        help="Z-Splat renders (arXiv 2404.04687, camera-primary baseline)")
+                        help="Our Z-Splat sonar-primary renders (zplat branch)")
+    parser.add_argument("--z_splatting_dir", type=str, default=None,
+                        help="Z-Splatting paper renders (arXiv 2404.04687, Qu et al., camera+depth baseline)")
     parser.add_argument("--watersplat_dir",  type=str, default=None,
                         help="WaterSplatting renders (camera-only baseline)")
     parser.add_argument("--sonarsplat_dir",  type=str, default=None,
@@ -368,14 +380,14 @@ def main():
             return str(p) if p.is_dir() else None
         method_dirs = {
             "ours":          _d("ours"),
-            "zplat":         _d("zplat"),
+            "z_splatting":   _d("z_splatting"),
             "watersplatting": _d("watersplatting"),
             "sonarsplat":    _d("sonarsplat"),
         }
     else:
         method_dirs = {
             "ours":          args.ours_dir,
-            "zplat":         args.zplat_dir,
+            "z_splatting":   args.z_splatting_dir,
             "watersplatting": args.watersplat_dir,
             "sonarsplat":    args.sonarsplat_dir,
         }
@@ -383,7 +395,7 @@ def main():
     active = {k: v for k, v in method_dirs.items() if v}
     if not active:
         print("[ERROR] No method directories provided.")
-        print("  Use --root_dir or individual --ours_dir / --zplat_dir / "
+        print("  Use --root_dir or individual --ours_dir / --z_splatting_dir / "
               "--watersplat_dir / --sonarsplat_dir flags.")
         sys.exit(1)
 

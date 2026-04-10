@@ -1,0 +1,7 @@
+method,method_key,scene,PSNR,SSIM
+"Ours (Z-Splat, sonar-primary)",ours,infra_360_1_7k,14.889786107199532,0.8854822700931912
+"Ours (Z-Splat, sonar-primary)",ours,monohansett_3D_7k,9.611193161506158,0.6651599807785703
+"Ours (Z-Splat, sonar-primary)",ours,pole_qual1,14.795004844665527,0.6286004185676575
+"Ours (Z-Splat, sonar-primary)",ours,pole_qual1_full,13.003053188323975,0.5527693331241608
+"Ours (Z-Splat, sonar-primary)",ours,pole_qual1_run2,14.63794994354248,0.6147530227899551
+SonarSplat (Sethuraman RA-L 2025),sonarsplat,pole_qual1,16.14166259765625,0.6291494965553284
