@@ -113,13 +113,6 @@ venv.bak/
 
 # Model weights
 yolov8m.pt
-
-# Data outputs (generated at runtime)
-analysis_output/
-artifact_analysis/
-classification_output/
-cleaned_datasets/
-ranked_dataset/
-
-# Claude
-.claude
+venv/
+*.png
+data/
