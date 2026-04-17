@@ -1,0 +1,23 @@
+{
+  "dataset": "sunboat",
+  "original_image_size": {
+    "width": 1692,
+    "height": 1355
+  },
+  "analysis_resolution": {
+    "width": 640,
+    "height": 480
+  },
+  "crop_at_analysis_res": {
+    "top": 0,
+    "bottom": 11,
+    "left": 0,
+    "right": 0
+  },
+  "crop_at_original_res": {
+    "top": 0,
+    "bottom": 31,
+    "left": 0,
+    "right": 0
+  }
+}

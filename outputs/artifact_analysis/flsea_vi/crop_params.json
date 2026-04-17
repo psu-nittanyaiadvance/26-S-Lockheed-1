@@ -1,0 +1,23 @@
+{
+  "dataset": "flsea_vi",
+  "original_image_size": {
+    "width": 968,
+    "height": 608
+  },
+  "analysis_resolution": {
+    "width": 640,
+    "height": 480
+  },
+  "crop_at_analysis_res": {
+    "top": 0,
+    "bottom": 0,
+    "left": 0,
+    "right": 0
+  },
+  "crop_at_original_res": {
+    "top": 0,
+    "bottom": 0,
+    "left": 0,
+    "right": 0
+  }
+}

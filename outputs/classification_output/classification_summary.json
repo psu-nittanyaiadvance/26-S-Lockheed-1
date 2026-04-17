@@ -1,0 +1,52 @@
+{
+  "run_metadata": {
+    "model": "openai/clip-vit-base-patch32",
+    "categories": [
+      "fish",
+      "coral",
+      "marine_animal",
+      "vegetation",
+      "sand_seafloor",
+      "rocks",
+      "shipwreck_debris",
+      "man_made_structure",
+      "diver",
+      "open_water",
+      "murky_turbid",
+      "dark_overexposed",
+      "blurry_corrupt"
+    ],
+    "empty_categories": [
+      "dark_overexposed",
+      "open_water",
+      "murky_turbid",
+      "blurry_corrupt"
+    ],
+    "device": "mps"
+  },
+  "datasets": {
+    "flsea_vi": {
+      "name": "flsea_vi",
+      "total": 0,
+      "error": "no images found"
+    },
+    "shipwreck": {
+      "name": "shipwreck",
+      "total": 0,
+      "error": "no images found"
+    },
+    "sunboat": {
+      "name": "sunboat",
+      "total": 0,
+      "error": "no images found"
+    }
+  },
+  "aggregate": {
+    "total_images": 0,
+    "total_failed": 0,
+    "total_processed": 0,
+    "total_empty": 0,
+    "empty_percentage": 0,
+    "category_distribution": {}
+  }
+}
