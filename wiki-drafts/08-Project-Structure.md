@@ -19,7 +19,7 @@
 │   ├── artifact_edge_detection.py               Step 2: Sobel edge-based boundary detection
 │   ├── sam.py                                   Step 3: SAM artifact segmentation
 │   ├── crop.py                                  Step 4: Manual image cropping
-│   └── Archived_Preprocessing/                  Previous implementations (not used)
+│   └── Archived_Preprocessing/                  Older versions of the preprocessing pipeline (useful for reference)
 │
 │   ── EDA and Dataset Downloads (Optional) ─────────────────────
 │

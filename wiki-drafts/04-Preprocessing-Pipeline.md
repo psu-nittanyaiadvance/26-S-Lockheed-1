@@ -9,7 +9,8 @@ preprocessing/
 ├── artifact_layering.py         Step 1: Median image + variance map
 ├── artifact_edge_detection.py   Step 2: Edge-based boundary detection
 ├── sam.py                       Step 3: SAM artifact segmentation
-└── crop.py                      Step 4: Manual crop using info from Steps 1-3
+├── crop.py                      Step 4: Manual crop using info from Steps 1-3
+└── Archived_Preprocessing/      Older versions of the preprocessing pipeline (useful for reference)
 ```
 
 ---
