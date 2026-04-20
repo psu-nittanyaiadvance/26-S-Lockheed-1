@@ -16,7 +16,7 @@ from scene.gaussian_model import GaussianModel
 from utils.sh_utils import eval_sh
 import csv
 
-def render(viewpoint_camera, pc : GaussianModel, pipe, bg_color : torch.Tensor, scaling_modifier = 1.0, override_color = None):
+def render(viewpoint_camera, pc : GaussianModel, pipe, bg_color : torch.Tensor, scaling_modifier = 1.0, override_color = None, override_opacity = None):
     """
     Render the scene. 
     
@@ -53,7 +53,7 @@ def render(viewpoint_camera, pc : GaussianModel, pipe, bg_color : torch.Tensor, 
 
     means3D = pc.get_xyz
     means2D = screenspace_points
-    opacity = pc.get_opacity
+    opacity = pc.get_opacity if override_opacity is None else override_opacity
     
 
     # If precomputed 3d covariance is provided, use it. If not, then it will be computed from
@@ -92,8 +92,8 @@ def render(viewpoint_camera, pc : GaussianModel, pipe, bg_color : torch.Tensor, 
     else:
         colors_precomp = override_color
 
-    # Rasterize visible Gaussians to image, obtain their radii (on screen). 
-    rendered_image, radii, z_density_h, z_density_w = rasterizer(
+    # Rasterize visible Gaussians to image, obtain their radii (on screen).
+    raster_out = rasterizer(
         means3D = means3D,
         means2D = means2D,
         shs = shs,
@@ -102,6 +102,13 @@ def render(viewpoint_camera, pc : GaussianModel, pipe, bg_color : torch.Tensor, 
         scales = scales,
         rotations = rotations,
         cov3D_precomp = cov3D_precomp)
+    if len(raster_out) == 4:
+        rendered_image, radii, z_density_h, z_density_w = raster_out
+    else:
+        rendered_image, radii = raster_out
+        H, W = rendered_image.shape[1], rendered_image.shape[2]
+        z_density_h = torch.zeros(1, H, device=rendered_image.device)
+        z_density_w = torch.zeros(1, W, device=rendered_image.device)
 
     # Those Gaussians that were frustum culled or had a radius of 0 were not visible.
     # They will be excluded from value updates used in the splitting criteria.

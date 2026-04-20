@@ -3,11 +3,31 @@ __pycache__/
 *.so
 *.egg-info/
 build/
+
+# Training outputs and results
 *results/
+logs/
 sonar_splat/tmp/
+sonar_splat/output/
+
+# Process output files
+nohup.out
+
+# IDE
 .vscode-server/
+.vscode/
+
+# Media / data files
 *.png
 *.jpg
 *.jpeg
-*.log
 *.csv
+*.log
+
+# ML checkpoints and compiled model artifacts
+*.pt
+*.pth
+*.ckpt
+
+# Submodule that is not registered (build locally instead)
+gaussian-splatting-with-depth/submodules/simple-knn/

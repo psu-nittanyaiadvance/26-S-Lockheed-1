@@ -9,16 +9,15 @@ from PIL import Image
 
 try:
     import pycolmap
-    PYCOLMAP_AVAILABLE = True
+    PYCOLMAP_AVAILABLE = hasattr(pycolmap, 'extract_features')
 except ImportError:
     PYCOLMAP_AVAILABLE = False
-    print("WARNING: pycolmap not installed. Run: pip install pycolmap")
 
 # ─── Paths ────────────────────────────────────────────────────────────────────
-AONEUS_ROOT  = Path("/data/Lockheed1-Spring26/gaussian-splatting-with-depth_data/data")
+AONEUS_ROOT  = Path("/media/priyanshu/2TB SSD/aoneus_dataset/data")
 RGB_FOLDER   = AONEUS_ROOT / "reduced_baseline_0.6x_rgb"
 SONAR_FOLDER = AONEUS_ROOT / "reduced_baseline_0.6x_sonar"
-OUTPUT_ROOT  = Path("/data/Lockheed1-Spring26/gaussian-splatting-with-depth_data/transformed_data")
+OUTPUT_ROOT  = Path("/media/priyanshu/2TB SSD/aoneus_dataset/transformed_data")
 
 SONAR_MAX_RANGE_M = 5.0
 
@@ -296,11 +295,11 @@ def convert():
     print(f"  sparse/0/ : cameras.bin, images.bin, points3D.bin")
     print(f"  depth/    : {len(list(out_depth.glob('*.npy')))} .npy files")
     print("\nTo run Z-Splat training:")
-    print(f"  cd /data/Lockheed1-Spring26/26-S-Lockheed-1/gaussian-splatting-with-depth")
+    print(f"  cd /home/priyanshu/26-S-Lockheed-1/gaussian-splatting-with-depth")
     print(f"  conda activate gaussian_splatting_with_depth")
     print(f"  python train.py \\")
     print(f"    -s {OUTPUT_ROOT} \\")
-    print(f"    -m /data/Lockheed1-Spring26/gaussian-splatting-with-depth_outputs/aoneus \\")
+    print(f"    -m /media/priyanshu/2TB\\ SSD/aoneus_dataset/outputs/aoneus \\")
     print(f"    --depth_loss \\")
     print(f"    --eval \\")
     print(f"    -i images")

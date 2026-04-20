@@ -249,8 +249,11 @@ class SonarSensorDataParser:
                     with open(os.path.join(self.data_dir, "Data", fname), 'rb') as file:  
                         data = pickle.load(file)
                         image = data['ImagingSonar']
+                        # Normalize uint8 [0-255] to float [0,1] (AONeuS stores uint8, monohansett float64)
+                        if image.dtype == np.uint8:
+                            image = image.astype(np.float64) / 255.0
 
-                        #flip the image horizontally 
+                        #flip the image horizontally
                         # image = image[:, ::-1]
                         image = image.transpose(1, 0) #turn into a azimuth, range image
                         image[np.isnan(image)] = 0.0
@@ -380,7 +383,7 @@ class SonarSensorDataParser:
         #     transform = T2 @ T1
         # else:
         #     transform = np.eye(4)
-        visualize_gaussians(xyz=[pcd], poses=camtoworlds, start_size=0.1, end_size=0.1)
+        # visualize_gaussians(xyz=[pcd], poses=camtoworlds, start_size=0.1, end_size=0.1)  # blocks headlessly — keep commented
         camera_locations = camtoworlds[:, :3, 3]
         scene_center = np.mean(camera_locations, axis=0)
         dists = np.linalg.norm(camera_locations - scene_center, axis=1)

@@ -1,0 +1,123 @@
+#!/bin/bash
+
+# Parse command line arguments
+if [ $# -lt 2 ]; then
+    echo "Usage: $0 <data_dir> <results_dir>"
+    exit 1
+fi
+
+DATA_DIR="$1"
+RESULTS_DIR="$2/monohansett_3D_$(date +%Y%m%d_%H%M%S)"
+
+# nerfacc CUDA JIT build needs these headers from the conda CUDA toolkit
+export CPLUS_INCLUDE_PATH="/home/priyanshu/miniconda3/envs/sonarsplat/targets/x86_64-linux/include:${CPLUS_INCLUDE_PATH}"
+export TORCH_CUDA_ARCH_LIST="8.6"
+
+#python examples/sonar_simple_trainer.py \
+CUDA_VISIBLE_DEVICES=0 /home/priyanshu/miniconda3/envs/sonarsplat/bin/python -u examples/sonar_simple_trainer_v2.py \
+"prune_only" \
+"--batch_size" "1" \
+"--camera_model" "ortho" \
+"--color_prior_asym" "0.08" \
+"--color_prior_weight" "0.0" \
+"--data_dir" "$DATA_DIR" \
+"--result_dir" "$RESULTS_DIR" \
+"--data_factor" "1" \
+"--elevate_end_step" "1500" \
+"--elevate_loss_select" "100" \
+"--elevate_num_samples" "5" \
+"--elevate_sampling_duty_cycle" "0.2" \
+"--elevate_start_step" "0" \
+"--elevation_sampling_every" "1000" \
+"--end_at_frame" "10000" \
+"--far_plane" "10" \
+"--global_scale" "1.0" \
+"--img_threshold" "0.0" \
+"--init_extent" "1.0" \
+"--init_num_pts" "100000" \
+"--init_opa" "0.9" \
+"--init_scale" "0.01" \
+"--init_threshold" "0.4" \
+"--init_type" "predefined" \
+"--intermediate_azimuth_resolution" "0.05" \
+"--lpips_net" "alex" \
+"--max_size_prior_weight" "500.0" \
+"--max_steps" "30000" \
+"--near_plane" "-10" \
+"--normalize_world_space" \
+"--num_random_points" "2000" \
+"--opacity_prior_weight" "0.0" \
+"--opacity_reg" "0.0" \
+"--opacity_supervision_end_step" "10000" \
+"--opacity_supervision_start_step" "0" \
+"--opacity_supervision_thresh" "0.1" \
+"--opacity_supervision_weight" "0.0" \
+"--port" "8080" \
+"--pose_noise" "0.0" \
+"--pose_opt_lr" "1.0e-05" \
+"--pose_opt_reg" "1.0e-06" \
+"--random_bkgd" \
+"--randomize_elevation" \
+"--range_clear_end" "0" \
+"--range_clear_start" "800" \
+"--render_eval" \
+"--render_traj_amplitude" "0.25" \
+"--render_traj_freq" "10.0" \
+"--render_traj_interp_val" "1" \
+"--render_traj_path" "unchanged" \
+"--sat_bg_prior_weight" "0.0" \
+"--sat_region_prior_weight" "0.0" \
+"--sat_sparsity_prior_weight" "0.0" \
+"--sat_thresh" "0.03" \
+"--scale_reg" "0.0" \
+"--sh_degree" "3" \
+"--sh_degree_interval" "1000" \
+"--skip_frames" "1" \
+"--ssim_lambda" "0.2" \
+"--start_from_frame" "0" \
+"--steps_scaler" "1.0" \
+"--strategy.grow_grad2d" "0.0002" \
+"--strategy.grow_scale2d" "0.05" \
+"--strategy.grow_scale3d" "0.01" \
+"--strategy.key_for_gradient" "means2d" \
+"--strategy.pause_refine_after_reset" "0" \
+"--strategy.prune_opa" "0.005" \
+"--strategy.prune_scale2d" "0.15" \
+"--strategy.prune_scale3d" "0.1" \
+"--strategy.refine_every" "1000" \
+"--strategy.refine_scale2d_stop_iter" "0" \
+"--strategy.refine_start_iter" "0" \
+"--strategy.refine_stop_iter" "15000" \
+"--strategy.reset_every" "3000" \
+"--strategy.verbose" \
+"--streak_end_step" "3000" \
+"--streak_interval" "1000" \
+"--streak_interval_ratio" "0.6" \
+"--streak_start_step" "2000" \
+"--tb_every" "100" \
+"--tb_save_image" \
+"--test_every" "8" \
+"--disable_viewer" \
+"--train" \
+"--speed_of_sound" "1500.0" \
+"--bandwidth" "30000.0" \
+"--n_array_elements" "64" \
+"--element_spacing" "0.003" \
+"--center_frequency" "1100000.0" \
+"--reflectivity_lr" "0.01" \
+"--w_e" "1.0" \
+"--w_e_final" "0.1" \
+"--w_e_anneal_steps" "10000" \
+"--reflectivity_reg_weight" "0.1" \
+"--lambda_reg" "0.01" \
+"--reflectivity_reg_every" "100" \
+"--mask_threshold" "0.01" \
+"--energy_loss_weight" "0.1" \
+"--reflectivity_warmup_steps" "0" \
+"--reflectivity_floor_start" "0.0" \
+"--reflectivity_floor_anneal_end_step" "0" \
+"--beam_anneal_end_step" "0" \
+"--reflectivity_reg_start_step" "2000" \
+"--reflectivity_reg_full_step" "8000" \
+"--best_ckpt_min_energy_ratio" "0.5" \
+"--best_ckpt_max_energy_ratio" "1.5"

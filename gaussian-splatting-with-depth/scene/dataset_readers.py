@@ -18,7 +18,10 @@ from scene.colmap_loader import read_extrinsics_text, read_intrinsics_text, qvec
 from utils.graphics_utils import getWorld2View2, focal2fov, fov2focal
 import numpy as np
 from scipy import signal
-from scipy.signal import tukey
+try:
+    from scipy.signal import tukey
+except ImportError:
+    from scipy.signal.windows import tukey
 import json
 from pathlib import Path
 from plyfile import PlyData, PlyElement
@@ -131,13 +134,26 @@ def readColmapCameras(cam_extrinsics, cam_intrinsics, images_folder, sonar_wave_
             bin_edges = np.linspace(0, 8, num=201)
             hist_h = np.zeros((h_res, len(bin_edges)-1))
             for i in range(h_res):
-                hist_h[i], _ = np.histogram(depth[i * h_res_window: (i + 1) * h_res_window], bins=bin_edges)
-            hist_h = hist_h / hist_h.max(axis=1, keepdims=True)
+                # Filter zeros: zero-depth pixels are sonar "no echo" (background),
+                # not real returns at 0 m.  Including them creates a spurious spike
+                # at bin 0 that the model can never match, keeping Z loss constant.
+                strip = depth[i * h_res_window: (i + 1) * h_res_window].ravel()
+                valid = strip[strip > 0]
+                if len(valid) > 0:
+                    hist_h[i], _ = np.histogram(valid, bins=bin_edges)
+            row_max_h = hist_h.max(axis=1, keepdims=True)
+            row_max_h = np.where(row_max_h == 0, 1.0, row_max_h)
+            hist_h = hist_h / row_max_h
             hist_h = hist_h.T
             hist_w = np.zeros((w_res, len(bin_edges)-1))
             for i in range(w_res):
-                hist_w[i], _ = np.histogram(depth[:, i * w_res_window : (i + 1) * w_res_window], bins=bin_edges)
-            hist_w = hist_w / hist_w.max(axis=1, keepdims=True)
+                strip = depth[:, i * w_res_window : (i + 1) * w_res_window].ravel()
+                valid = strip[strip > 0]
+                if len(valid) > 0:
+                    hist_w[i], _ = np.histogram(valid, bins=bin_edges)
+            row_max_w = hist_w.max(axis=1, keepdims=True)
+            row_max_w = np.where(row_max_w == 0, 1.0, row_max_w)
+            hist_w = hist_w / row_max_w
             hist_w = hist_w.T
 
         cam_info = CameraInfo(uid=uid, R=R, T=T, FovY=FovY, FovX=FovX, image=image,
