@@ -39,8 +39,8 @@ The upstream model used L1 loss and no beam physics. v2 replaces L1 with Gamma N
 - **Upstream:** Z-Axis Gaussian Splatting (standard 3DGS codebase, diff-gaussian-rasterization)
 - **Input:** RGB images + sonar depth maps (AONeuS format)
 - **Purpose:** Fuse camera appearance with sonar geometry
-- **Trainer:** `gaussian-splatting-with-depth/train_v2.py`
-- **Launcher:** `gaussian-splatting-with-depth/scripts/run_aoneus_v2.sh`
+- **Trainer:** `z_splatting/train_v2.py`
+- **Launcher:** `z_splatting/scripts/run_aoneus_v2.sh`
 
 Z-Splat adds a depth-histogram Z-loss on top of the standard photometric loss. v2 replaces the static zero-density output (non-differentiable CUDA path) with a fully differentiable Python scatter-add histogram, so `r_tilde` receives real gradients from the sonar loss. When `--sonar_data_dir` is provided, the full 2D sonar render path (`render_sonar_image`) is used instead.
 

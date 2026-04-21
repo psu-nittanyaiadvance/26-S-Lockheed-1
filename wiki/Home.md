@@ -25,7 +25,7 @@ cd sonar_splat
 bash scripts/run_v2.sh <dataset_name> <results_dir> <steps>
 
 # Z-Splat v2 — AONeuS
-cd gaussian-splatting-with-depth
+cd z_splatting
 bash scripts/run_aoneus_v2.sh <results_dir> <steps>
 ```
 

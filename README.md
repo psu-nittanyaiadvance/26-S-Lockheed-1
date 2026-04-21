@@ -23,7 +23,7 @@ cd sonar_splat
 bash scripts/run_v2.sh monohansett_3D "/media/priyanshu/2TB SSD/results" 30000
 
 # Z-Splat v2 — AONeuS RGB+sonar
-cd gaussian-splatting-with-depth
+cd z_splatting
 bash scripts/run_aoneus_v2.sh "/media/priyanshu/2TB SSD/results" 30000
 ```
 
@@ -87,7 +87,7 @@ AONeuS: `/media/priyanshu/2TB SSD/aoneus_dataset/`
 │   └── scripts/
 │       ├── run_v2.sh                    # general launcher (any dataset/steps)
 │       └── run_3D_monohansett_v2.sh     # dataset-specific legacy script
-├── gaussian-splatting-with-depth/       # Z-Splat model (3DGS-based)
+├── z_splatting/       # Z-Splat model (3DGS-based)
 │   ├── train_v2.py                      # v2 trainer — main entry point
 │   ├── train.py                         # upstream baseline
 │   ├── gaussian_renderer/__init__.py    # patched: handles 2 or 4 rasterizer outputs
@@ -148,7 +148,7 @@ cd /workspace/sonar_splat
 bash scripts/run_v2.sh monohansett_3D /results 30000
 
 # Z-Splat v2
-cd /workspace/gaussian-splatting-with-depth
+cd /workspace/z_splatting
 bash scripts/run_aoneus_v2.sh /results 30000
 ```
 

@@ -295,7 +295,7 @@ def convert():
     print(f"  sparse/0/ : cameras.bin, images.bin, points3D.bin")
     print(f"  depth/    : {len(list(out_depth.glob('*.npy')))} .npy files")
     print("\nTo run Z-Splat training:")
-    print(f"  cd /home/priyanshu/26-S-Lockheed-1/gaussian-splatting-with-depth")
+    print(f"  cd /home/priyanshu/26-S-Lockheed-1/z_splatting")
     print(f"  conda activate gaussian_splatting_with_depth")
     print(f"  python train.py \\")
     print(f"    -s {OUTPUT_ROOT} \\")

@@ -64,7 +64,7 @@ Valid only when `best_ckpt_min_energy_ratio ≤ energy_ratio ≤ best_ckpt_max_e
 
 ## Z-Splat v2
 
-### File: `gaussian-splatting-with-depth/train_v2.py`
+### File: `z_splatting/train_v2.py`
 
 ~956 lines. Uses standard 3DGS codebase classes (`GaussianModelV2`, `Scene`, `Camera`).
 

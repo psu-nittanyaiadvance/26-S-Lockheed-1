@@ -30,4 +30,4 @@ nohup.out
 *.ckpt
 
 # Submodule that is not registered (build locally instead)
-gaussian-splatting-with-depth/submodules/simple-knn/
+z_splatting/submodules/simple-knn/

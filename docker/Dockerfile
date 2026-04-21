@@ -3,7 +3,7 @@
 # =============================================================================
 # Covers both sub-projects in this repo:
 #   • SonarSplat   (sonar_splat/)                   — gsplat CUDA extension
-#   • Z-Splat v2   (gaussian-splatting-with-depth/)  — diff-gaussian-rasterization
+#   • Z-Splat v2   (z_splatting/)  — diff-gaussian-rasterization
 #                                                      + simple-knn CUDA extensions
 #
 # Build:  bash docker/build.sh              (from repo root)
@@ -134,11 +134,11 @@ RUN cd /workspace/sonar_splat && \
 # Note: rasterizer_impl.h already has `#include <cstdint>` applied (CUDA 12+ fix).
 # The rasterizer returns only (color, radii) — z_density is computed by
 # compute_z_density_diff() in train_v2.py, not here.
-RUN cd /workspace/gaussian-splatting-with-depth/submodules/diff-gaussian-rasterization && \
+RUN cd /workspace/z_splatting/submodules/diff-gaussian-rasterization && \
     python3 -m pip install --no-build-isolation -e .
 
 # ---------- Z-Splat: simple-knn ----------------------------------------------
-RUN cd /workspace/gaussian-splatting-with-depth/submodules/simple-knn && \
+RUN cd /workspace/z_splatting/submodules/simple-knn && \
     python3 -m pip install --no-build-isolation -e .
 
 # ---------- Non-root user (matches host UID for volume file permissions) -----

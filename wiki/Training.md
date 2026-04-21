@@ -81,7 +81,7 @@ Usage: bash scripts/run_aoneus_v2.sh <results_dir> [steps] [extra args...]
 ```
 
 ```bash
-cd gaussian-splatting-with-depth
+cd z_splatting
 
 # Standard 30K run
 bash scripts/run_aoneus_v2.sh "/media/priyanshu/2TB SSD/results" 30000
@@ -180,7 +180,7 @@ bash scripts/run_3D_monohansett.sh \
 **Z-Splat baseline (L1 + static depth):**
 
 ```bash
-cd gaussian-splatting-with-depth
+cd z_splatting
 python train.py \
   -s "/media/priyanshu/2TB SSD/aoneus_dataset/transformed_data" \
   -m "/media/priyanshu/2TB SSD/aoneus_dataset/outputs/aoneus" \

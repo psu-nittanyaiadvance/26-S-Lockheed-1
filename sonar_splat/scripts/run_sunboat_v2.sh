@@ -20,7 +20,7 @@
 #   python convert_sunboat.py --subsample 10
 #
 # Usage:
-#   cd gaussian-splatting-with-depth  (or sonar_splat)
+#   cd z_splatting  (or sonar_splat)
 #   cd sonar_splat
 #   bash scripts/run_sunboat_v2.sh <results_dir>
 

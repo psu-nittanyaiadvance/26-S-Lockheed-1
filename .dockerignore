@@ -20,7 +20,7 @@ logs/
 **/outputs*/
 **/results*/
 sonar_splat/tmp/
-gaussian-splatting-with-depth/output/
+z_splatting/output/
 
 # Dataset directories (mounted as /data volume at runtime)
 "Download Datasets/data/"
@@ -30,10 +30,10 @@ sonar_splat/build/
 sonar_splat/gsplat.egg-info/
 sonar_splat/gsplat/**/*.so
 sonar_splat/gsplat/cuda/csrc/*.o
-gaussian-splatting-with-depth/submodules/diff-gaussian-rasterization/build/
-gaussian-splatting-with-depth/submodules/diff-gaussian-rasterization/*.egg-info/
-gaussian-splatting-with-depth/submodules/simple-knn/build/
-gaussian-splatting-with-depth/submodules/simple-knn/*.egg-info/
+z_splatting/submodules/diff-gaussian-rasterization/build/
+z_splatting/submodules/diff-gaussian-rasterization/*.egg-info/
+z_splatting/submodules/simple-knn/build/
+z_splatting/submodules/simple-knn/*.egg-info/
 
 # IDE and editor files
 .vscode/

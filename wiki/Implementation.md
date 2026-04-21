@@ -132,7 +132,7 @@ Two patches: tukey import fix + zero-depth filter in histogram extraction. The d
 
 ### `diff-gaussian-rasterization`
 
-Submodule at `gaussian-splatting-with-depth/submodules/diff-gaussian-rasterization`. The `cstdint` fix is the only patch — no functional changes to the rasterizer logic.
+Submodule at `z_splatting/submodules/diff-gaussian-rasterization`. The `cstdint` fix is the only patch — no functional changes to the rasterizer logic.
 
 ---
 

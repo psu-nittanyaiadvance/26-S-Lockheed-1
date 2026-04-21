@@ -1,6 +1,6 @@
 # =============================================================================
 # Unified pip requirements for 26-S-Lockheed-1
-# Covers both SonarSplat (sonar_splat/) and Z-Splat (gaussian-splatting-with-depth/)
+# Covers both SonarSplat (sonar_splat/) and Z-Splat (z_splatting/)
 #
 # NOT listed here (installed separately in Dockerfile with --no-build-isolation):
 #   torch / torchvision / torchaudio  — installed via PyTorch cu124 wheel index
