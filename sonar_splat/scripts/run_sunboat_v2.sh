@@ -98,6 +98,13 @@ CUDA_VISIBLE_DEVICES=0 $CONDA_PYTHON -u "$SCRIPT_DIR/examples/sonar_simple_train
     "--w_e_anneal_steps" "10000" \
     "--reflectivity_reg_weight" "0.1" \
     "--lambda_reg" "0.01" \
-    "--reflectivity_reg_every" "100"
+    "--reflectivity_reg_every" "100" \
+    "--energy_loss_weight" "0.1" \
+    "--reflectivity_warmup_steps" "3000" \
+    "--reflectivity_floor_start" "0.2" \
+    "--reflectivity_floor_anneal_end_step" "8000" \
+    "--beam_anneal_end_step" "5000" \
+    "--reflectivity_reg_start_step" "2000" \
+    "--reflectivity_reg_full_step" "8000"
 
 echo "Done. Results at $RESULTS_DIR"

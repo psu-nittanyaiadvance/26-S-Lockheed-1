@@ -887,12 +887,27 @@ class Runner:
 
         
 
+        # patch_3: Print reflectivity warmup schedule at start
+        if cfg.reflectivity_warmup_steps > 0:
+            print(f"[patch_3] Reflectivity LR frozen for first {cfg.reflectivity_warmup_steps} steps", flush=True)
+        # patch_4: Print r_floor schedule
+        if cfg.reflectivity_floor_start > 0.0 and cfg.reflectivity_floor_anneal_end_step > 0:
+            print(f"[patch_4] r_floor annealing: {cfg.reflectivity_floor_start:.2f}→0.0 over {cfg.reflectivity_floor_anneal_end_step} steps", flush=True)
+        # patch_5: Print beam anneal schedule
+        if cfg.beam_anneal_end_step > 0:
+            print(f"[patch_5] Beam anneal: isotropic→full over {cfg.beam_anneal_end_step} steps", flush=True)
+        # patch_6: Print reg ramp-in schedule
+        if cfg.reflectivity_reg_start_step > 0:
+            print(f"[patch_6] Refl-reg ramp-in: 0@{cfg.reflectivity_reg_start_step}→1.0@{cfg.reflectivity_reg_full_step}", flush=True)
+        # patch_2: Print energy loss
+        if cfg.energy_loss_weight > 0.0:
+            print(f"[patch_2] Energy preservation loss weight: {cfg.energy_loss_weight}", flush=True)
+
         # Training loop.
         global_tic = time.time()
         pbar = tqdm.tqdm(range(init_step, max_steps))
         for step in pbar:
-            # patch_3/4/5: keep _current_step in sync so rasterize_splats anneals progress
-            self._current_step = step
+            self._current_step = step  # patch_4/5: expose step to rasterize_splats
 
             if not cfg.disable_viewer:
                 while self.viewer.state.status == "paused":
