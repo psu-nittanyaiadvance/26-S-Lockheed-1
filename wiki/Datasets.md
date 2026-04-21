@@ -1,6 +1,17 @@
 # Datasets
 
-All data lives on the 2TB SSD at `/media/priyanshu/2TB SSD/`.
+Data lives in a directory you specify at container launch time via `DATASET_PATH`.
+Inside the container it is always mounted at `/data`.
+
+**Before running the container, set `DATASET_PATH` to your local dataset root:**
+
+```bash
+export DATASET_PATH="/path/to/your/data"   # e.g. /media/priyanshu/2TB SSD
+bash docker/run.sh
+```
+
+All training scripts reference `/data/...` paths inside the container, so as long as
+your directory mirrors the structure below the scripts work unchanged.
 
 ---
 

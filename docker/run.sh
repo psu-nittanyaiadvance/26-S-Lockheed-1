@@ -13,7 +13,18 @@ set -euo pipefail
 REPO_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 IMAGE_TAG="$(whoami)_lockheed1"
 CONTAINER_NAME="lockheed1_$(whoami)"
-DATASET_PATH="/media/priyanshu/2TB SSD"
+
+# Allow callers to override the dataset root via env var.
+# Example:  DATASET_PATH="/mnt/my_drive/data" bash docker/run.sh
+DATASET_PATH="${DATASET_PATH:-}"
+
+if [ -z "$DATASET_PATH" ]; then
+    echo "ERROR: DATASET_PATH is not set."
+    echo "  Export the path to your dataset directory before running, e.g.:"
+    echo '    export DATASET_PATH="/path/to/your/data"'
+    echo '    bash docker/run.sh'
+    exit 1
+fi
 
 DOCKER_OPTIONS=(
     -it
