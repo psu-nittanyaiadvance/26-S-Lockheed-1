@@ -1,0 +1,4 @@
+dataset,total_images,images_with_objects,images_with_no_objects,empty_image_ratio,total_detections,top_10_classes
+Shipwreck,43721,43721,0,0.000000,568373,"shipwreck:43721; boat:43721; propeller:43721; anchor:43721; chain:43721; pipeline:43721; cable:43721; debris:43721; vehicle:43721; aircraft:43721"
+flsea-vi,68314,68314,0,0.000000,888082,"shipwreck:68314; boat:68314; propeller:68314; anchor:68314; chain:68314; pipeline:68314; cable:68314; debris:68314; vehicle:68314; aircraft:68314"
+Sunboat_03-09-2023,8838,8838,0,0.000000,114894,"shipwreck:8838; boat:8838; propeller:8838; anchor:8838; chain:8838; pipeline:8838; cable:8838; debris:8838; vehicle:8838; aircraft:8838"
