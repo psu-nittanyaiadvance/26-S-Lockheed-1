@@ -25,13 +25,17 @@
 set -e
 
 if [ $# -lt 1 ]; then
-    echo "Usage: $0 <results_dir>"
+    echo "Usage: $0 <results_dir> [steps] [extra args...]"
+    echo "  steps defaults to 30000"
+    echo "  extra args passed through, e.g.: --z_loss_weight 0.0 --camera_loss_weight 0.3"
     exit 1
 fi
 
 DATA_DIR="/media/priyanshu/2TB SSD/aoneus_dataset/transformed_data"
 SONAR_DIR="/media/priyanshu/2TB SSD/aoneus_dataset/data/reduced_baseline_0.6x_sonar"
 RESULTS_DIR="$1/aoneus_v2_$(date +%Y%m%d_%H%M%S)"
+STEPS="${2:-30000}"
+shift 2 2>/dev/null || shift $#   # remaining args passed through
 
 CONDA_PYTHON="/home/priyanshu/miniconda3/envs/sonarsplat/bin/python"
 SCRIPT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
@@ -40,6 +44,20 @@ export PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True
 
 echo "Results → $RESULTS_DIR"
 echo "Data    → $DATA_DIR"
+echo "Steps   → $STEPS"
+[ $# -gt 0 ] && echo "Extra   → $*"
+
+# Compute test/save checkpoints evenly across STEPS
+# Every ~10% of steps for tests, every 20% for saves
+python3 -c "
+n=$STEPS
+tests = sorted(set([int(n*f) for f in [0.17,0.27,0.37,0.47,0.57,0.67,0.77,0.87,1.0]]))
+saves = sorted(set([int(n*f) for f in [0.17,0.33,0.5,0.67,0.83,1.0]]))
+print('TEST', *tests)
+print('SAVE', *saves)
+" > /tmp/_aoneus_iters.txt
+TEST_ITERS=$(grep TEST /tmp/_aoneus_iters.txt | cut -d' ' -f2-)
+SAVE_ITERS=$(grep SAVE /tmp/_aoneus_iters.txt | cut -d' ' -f2-)
 
 CUDA_VISIBLE_DEVICES=0 $CONDA_PYTHON -u "$SCRIPT_DIR/train_v2.py" \
     -s "$DATA_DIR"                       \
@@ -47,9 +65,9 @@ CUDA_VISIBLE_DEVICES=0 $CONDA_PYTHON -u "$SCRIPT_DIR/train_v2.py" \
     --eval                               \
     -i images                            \
     --depth_loss                         \
-    --iterations 30000                   \
-    --test_iterations 5000 8000 11000 14000 17000 20000 23000 26000 30000 \
-    --save_iterations 5000 10000 15000 20000 25000 30000 \
+    --iterations $STEPS                  \
+    --test_iterations $TEST_ITERS        \
+    --save_iterations $SAVE_ITERS        \
     --speed_of_sound 1500.0              \
     --bandwidth 30000.0                  \
     --n_array_elements 64                \
@@ -68,6 +86,7 @@ CUDA_VISIBLE_DEVICES=0 $CONDA_PYTHON -u "$SCRIPT_DIR/train_v2.py" \
     --sonar_data_dir "$SONAR_DIR"        \
     --use_rl_controller                  \
     --rl_target_ratio 1.0               \
-    --rl_adapt_every 200
+    --rl_adapt_every 200                 \
+    "$@"
 
 echo "Done. Results at $RESULTS_DIR"

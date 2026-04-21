@@ -36,3 +36,16 @@ attridict
 pybind11[global]
 open3d
 trimesh
+
+# ---------- Z-Splat-specific ------------------------------------------------
+ConfigArgParse
+lpipsPyTorch
+scikit-image
+colorlog
+
+# ---------- Dataset utilities -----------------------------------------------
+pycolmap
+
+# ---------- Hyperparameter search / RL controller ---------------------------
+optuna
+roma
