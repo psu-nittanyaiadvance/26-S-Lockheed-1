@@ -114,3 +114,11 @@ yolov8m.pt
 venv/
 *.png
 data/
+
+# Runtime artifacts
+nohup.out
+logs/
+.claude/scheduled_tasks.lock
+
+# Training outputs
+sonar_splat/output/
