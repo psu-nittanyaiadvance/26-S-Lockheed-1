@@ -282,7 +282,7 @@ class SonarDataCache:
 def render_sonar_image(gaussians, viewpoint_cam, sonar_Ks: torch.Tensor,
                        n_az: int, n_range: int, max_range_wu: float,
                        n_array_elements: int, element_spacing: float,
-                       wavelength: float) -> torch.Tensor:
+                       wavelength: float, beam_alpha: float = 1.0) -> torch.Tensor:
     """Render a sonar intensity image via _sonar_rasterization (gsplat).
 
     Uses the COLMAP camera pose so Gaussian positions (in COLMAP world space)
@@ -303,8 +303,9 @@ def render_sonar_image(gaussians, viewpoint_cam, sonar_Ks: torch.Tensor,
 
     # Beam pattern × r_tilde × opacity — the effective sonar opacity per Gaussian
     viewmat = viewpoint_cam.world_view_transform.T             # (4, 4)
-    beam_w  = compute_beam_pattern(gaussians.get_xyz.detach(), viewmat,
-                                   n_array_elements, element_spacing, wavelength)
+    beam_w_physics = compute_beam_pattern(gaussians.get_xyz.detach(), viewmat,
+                                          n_array_elements, element_spacing, wavelength)
+    beam_w = beam_alpha * beam_w_physics + (1.0 - beam_alpha)
     opacities = (gaussians.get_opacity.squeeze(-1)              # (N,) — ∇L_sonar reaches opacity ✓
                  * gaussians.get_r_tilde.squeeze(-1)           # (N,) — ∇L_sonar reaches r_tilde ✓
                  * beam_w)                                     # (N,) no_grad (beam is deterministic)
@@ -358,6 +359,7 @@ def training(dataset, opt, pipe, testing_iterations, saving_iterations,
     w_e              = args.w_e
     w_e_final        = args.w_e_final
     w_e_anneal_steps = args.w_e_anneal_steps
+    beam_anneal_steps = getattr(args, 'beam_anneal_steps', 0)  # 0 = no annealing (full beam from start)
     refl_reg_weight  = args.reflectivity_reg_weight
     lambda_reg       = args.lambda_reg
     refl_reg_every   = args.reflectivity_reg_every
@@ -479,6 +481,7 @@ def training(dataset, opt, pipe, testing_iterations, saving_iterations,
     print(f"SONAR_PATH={sonar_path_mode}")
     print(f"Loss weights: L_sonar(1.0) + w_c({camera_loss_weight:.2f})*L_camera "
           f"+ w_e({w_e:.1f}→{w_e_final:.1f}@{w_e_anneal_steps})*L_elev "
+          f"[beam_anneal={beam_anneal_steps}] "
           f"+ w_r({refl_reg_weight})*L_reg")
 
     if checkpoint:
@@ -528,11 +531,15 @@ def training(dataset, opt, pipe, testing_iterations, saving_iterations,
         # ---- beam-weighted effective opacity (sonar Z path only) --------
         # world_view_transform = W2C.T  →  .T gives W2C row-major
         viewmat = viewpoint_cam.world_view_transform.T   # (4,4)
+        # Beam annealing: interpolate flat→physics over beam_anneal_steps.
+        # Prevents near-zero opacities from a very narrow beam (large N) starving gradients.
+        beam_alpha = 1.0 if beam_anneal_steps == 0 else min(1.0, iteration / max(beam_anneal_steps, 1))
         with torch.no_grad():
-            beam_w = compute_beam_pattern(
+            beam_w_physics = compute_beam_pattern(
                 gaussians.get_xyz, viewmat,
                 n_array_elements, element_spacing, wavelength
             )  # (N,)
+            beam_w = beam_alpha * beam_w_physics + (1.0 - beam_alpha)  # flat=1 when beam_alpha=0
         # Sonar effective opacity for histogram fallback: opacity × r_tilde × beam
         # Both opacity and r_tilde receive ∇L_sonar so the sonar loss can adapt
         # which Gaussians are acoustically visible (opacity) as well as their
@@ -552,7 +559,11 @@ def training(dataset, opt, pipe, testing_iterations, saving_iterations,
 
         # ---- L_camera (geometric/photometric regularizer; sonar is primary) --
         Ll1  = l1_loss(image, gt_image)
-        L_cam = (1.0 - opt.lambda_dssim) * Ll1 + opt.lambda_dssim * (1.0 - ssim(image, gt_image))
+        # Skip SSIM when camera_loss_weight=0 — avoids GPU crash if sonar NaN corrupts memory
+        if camera_loss_weight > 0 and opt.lambda_dssim > 0:
+            L_cam = (1.0 - opt.lambda_dssim) * Ll1 + opt.lambda_dssim * (1.0 - ssim(image, gt_image))
+        else:
+            L_cam = Ll1
 
         # ---- L_s: sonar image render (spec Eq. 28, primary sonar loss) ----
         # Prefer the proper sonar alpha-compositing render when sonar_data_dir
@@ -570,8 +581,13 @@ def training(dataset, opt, pipe, testing_iterations, saving_iterations,
                 gaussians, viewpoint_cam, sonar_Ks,
                 n_az, n_range, max_range_wu,
                 n_array_elements, element_spacing, wavelength,
+                beam_alpha=beam_alpha,
             )
-            ZL = gamma_nll_loss(sonar_gt, sonar_pred)
+            if torch.isnan(sonar_pred).any() or torch.isinf(sonar_pred).any():
+                print(f"[WARNING] NaN/Inf in sonar_pred at iter {iteration} — skipping sonar loss", flush=True)
+                ZL = torch.zeros(1, dtype=torch.float32, device="cuda")
+            else:
+                ZL = gamma_nll_loss(sonar_gt, sonar_pred)
         elif gt_density_h is not None and gt_density_w is not None and opt.depth_loss:
             # Fallback: Z-density histogram (no sonar images available)
             z_density_h, z_density_w = compute_z_density_diff(
@@ -650,14 +666,13 @@ def training(dataset, opt, pipe, testing_iterations, saving_iterations,
         loss.backward()
 
         nan_grad = False
-        for name, param in [("xyz", gaussians._xyz),
-                              ("opacity", gaussians._opacity),
-                              ("r_tilde", gaussians._r_tilde)]:
-            if param.grad is not None and torch.isnan(param.grad).any():
-                param.grad.zero_()
-                nan_grad = True
+        for pg in gaussians.optimizer.param_groups:
+            for param in pg["params"]:
+                if param.grad is not None and (torch.isnan(param.grad).any() or torch.isinf(param.grad).any()):
+                    param.grad.zero_()
+                    nan_grad = True
         if nan_grad:
-            print(f"[WARNING] NaN gradient zeroed at iter {iteration}", flush=True)
+            print(f"[WARNING] NaN/Inf gradient zeroed at iter {iteration}", flush=True)
 
         # Gradient connectivity check — iteration 1 fast-fail + every 500 iters
         # Expected: r_tilde grad nonzero when ZL > 0, color grad nonzero from camera path.
@@ -733,6 +748,7 @@ def training(dataset, opt, pipe, testing_iterations, saving_iterations,
                         sp = render_sonar_image(
                             gaussians, vc, sonar_Ks, n_az, n_range, max_range_wu,
                             n_array_elements, element_spacing, wavelength,
+                            beam_alpha=1.0,  # always use full beam at eval time
                         )
                         sonar_nll_frames.append(gamma_nll_loss(sg, sp).item())
                         if sonar_pred_0 is None:
@@ -889,6 +905,10 @@ if __name__ == "__main__":
     parser.add_argument("--w_e",                   type=float, default=1.0)
     parser.add_argument("--w_e_final",             type=float, default=0.1)
     parser.add_argument("--w_e_anneal_steps",      type=int,   default=10_000)
+    parser.add_argument("--beam_anneal_steps",     type=int,   default=0,
+                        help="Anneal beam from flat (no directivity) → full physics ULA over N steps. "
+                             "Use >0 for large arrays (N>64) where narrow beam starves gradients early. "
+                             "0 = full physics beam from iter 0 (default, safe for N<=64).")
     parser.add_argument("--reflectivity_reg_weight", type=float, default=0.1)
     parser.add_argument("--lambda_reg",            type=float, default=0.01)
     parser.add_argument("--reflectivity_reg_every",type=int,   default=100)

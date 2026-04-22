@@ -8,7 +8,7 @@ __pycache__/
 *.so
 .clangd
 compile_commands.json
-
+*.pt
 # Distribution / packaging
 .Python
 build/
@@ -31,7 +31,6 @@ MANIFEST
 # PyInstaller
 *.manifest
 *.spec
-
 # Installer logs
 pip-log.txt
 pip-delete-this-directory.txt
@@ -51,7 +50,6 @@ coverage.xml
 # Translations
 *.mo
 *.pot
-
 # Django / Flask
 *.log
 local_settings.py

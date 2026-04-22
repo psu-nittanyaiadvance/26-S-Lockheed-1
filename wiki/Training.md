@@ -74,28 +74,64 @@ bash scripts/run_v2.sh /my/custom/dataset "/media/priyanshu/2TB SSD/results" 300
 
 ---
 
-## Z-Splat v2 — AONeuS
+## Z-Splat v2 — any sonar-only dataset
 
+Two-step workflow: convert once, then train.
+
+### Step 1 — Convert (one-time per dataset)
+
+```bash
+conda activate sonarsplat
+cd "Download Datasets"
+
+# Any SonarSplat PKL dataset — output auto-named ~/datasets/<name>_zsplat
+python convert_to_zsplat.py --data_dir "/media/priyanshu/2TB SSD/sonarsplat_dataset/monohansett_3D"
+python convert_to_zsplat.py --data_dir "/media/priyanshu/2TB SSD/sonarsplat_dataset/concrete_piling_3D"
+python convert_to_zsplat.py --data_dir "/media/priyanshu/2TB SSD/sunboat_dataset/processed_session1"
+
+# Optional flags:
+#   --output_dir /custom/path   (override default ~/datasets/<name>_zsplat)
+#   --skip_frames 2             (every other frame, for large datasets)
+#   --img_threshold 0.02        (suppress pixels below this intensity)
 ```
-Usage: bash scripts/run_aoneus_v2.sh <results_dir> [steps] [extra args...]
-```
+
+The converter reads `Config.json` automatically — no need to specify sonar params.
+Output: `images/` (sonar PNGs) + `sparse/0/` (cameras.bin, images.bin, points3D.bin).
+
+### Step 2 — Train
+
+### Step 2 — Train
 
 ```bash
 cd z_splatting
 
-# Standard 30K run
-bash scripts/run_aoneus_v2.sh "/media/priyanshu/2TB SSD/results" 30000
+# Run the interactive wrapper
+python run.py
 
-# 40K run with logging
-nohup bash scripts/run_aoneus_v2.sh "/media/priyanshu/2TB SSD/results" 40000 \
-  > ../logs/aoneus_v2_$(date +%Y%m%d_%H%M%S).log 2>&1 &
+# Or use Docker to safely wrap the interactive session
+export DATASET_PATH="/media/priyanshu/2TB SSD"
+bash docker_run.sh
+```
 
-# Disable Z loss (camera-only ablation)
-bash scripts/run_aoneus_v2.sh "/media/priyanshu/2TB SSD/results" 30000 --z_loss_weight 0.0
+**What the wrapper queries:**
+- Dataset path (e.g. `~/datasets/monohansett_3D_zsplat` or `/media/.../aoneus_dataset`)
+- Z-Splat Version (v1 standard vs. v2 sonar/depth enhanced)
+- Number of iterations (defaults to 30000)
 
-# Custom loss weights
-bash scripts/run_aoneus_v2.sh "/media/priyanshu/2TB SSD/results" 30000 \
-  --z_loss_weight 0.5 --camera_loss_weight 0.3
+**What the scripts set automatically:**
+- For v2, Sonar parameters are detected or fallback to AONeuS standards.
+- Sonar max range is automatically matched to configuration if present.
+
+---
+
+## Modifying training parameters
+
+While `run.py` prompts for iterations, you can still test baseline ablations by manually passing flags if needed, though the interactive wrapper abstracts away most path-related complications.
+
+```bash
+cd z_splatting
+# Manual run bypassing interactive questions
+python train_v2.py -s /path/to/dataset --iterations 30000 --z_loss_weight 0.0
 ```
 
 Checkpoint iterations are computed automatically as even fractions of whatever step count you pass.

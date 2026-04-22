@@ -85,6 +85,41 @@ This is required before the first Z-Splat run. The `transformed_data/` output is
 
 ---
 
+## Converting SonarSplat PKL datasets for Z-Splat v2
+
+Any PKL dataset can be converted to COLMAP format for `train_v2.py` using the universal converter.
+
+```bash
+conda activate sonarsplat
+cd "Download Datasets"
+
+# Output auto-named ~/datasets/<dataset_name>_zsplat
+python convert_to_zsplat.py --data_dir "<data_dir>"
+
+# Options:
+#   --output_dir /path    override output location
+#   --skip_frames N       subsample (N=1 = all frames, default)
+#   --img_threshold 0.02  suppress low-intensity pixels (default 0.02)
+#   --max_seed_pts 200    seed points per sampled frame for points3D.bin
+```
+
+The converter reads `Config.json` automatically to extract `RangeBins`, `AzimuthBins`, `RangeMax`, and `Azimuth`. It works with all datasets that follow the standard SonarSplat layout (`Data/*.pkl` + `Config.json`).
+
+After conversion, train with:
+
+```bash
+cd ../gaussian-splatting-with-depth
+bash scripts/run_sonar_v2.sh \
+    ~/datasets/<name>_zsplat \
+    "<original_pkl_dir>" \
+    "<results_dir>" \
+    30000
+```
+
+See [Training](Training.md) for full examples and hardware presets.
+
+---
+
 ## Sunboat dataset
 
 Root: `/media/priyanshu/2TB SSD/sunboat_dataset/processed_session1/`

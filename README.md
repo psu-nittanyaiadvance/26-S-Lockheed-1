@@ -22,19 +22,28 @@ conda activate sonarsplat
 cd sonar_splat
 bash scripts/run_v2.sh monohansett_3D "/media/priyanshu/2TB SSD/results" 30000
 
-# Z-Splat v2 — AONeuS RGB+sonar
-cd z_splatting
-bash scripts/run_aoneus_v2.sh "/media/priyanshu/2TB SSD/results" 30000
+# Z-Splat v2 — any sonar-only PKL dataset (one-time conversion, then train)
+cd "Download Datasets"
+python convert_to_zsplat.py --data_dir "/media/priyanshu/2TB SSD/sonarsplat_dataset/monohansett_3D"
+
+cd ../z_splatting
+# We provide an interactive runner that asks for dataset path and version (v1/v2).
+python run.py
+
+# Alternatively, run interactively via Docker:
+export DATASET_PATH="/media/priyanshu/2TB SSD"
+bash docker_run.sh
 ```
 
-Both scripts accept extra flags at the end to override any hyperparameter:
+All scripts accept extra flags at the end to override any hyperparameter:
 
 ```bash
-# L1 baseline ablation (disable all physics losses)
+# L1 baseline ablation
 bash scripts/run_v2.sh monohansett_3D /tmp/test 5000 --z_loss_weight 0.0
 
-# Z-Splat with custom loss weights
-bash scripts/run_aoneus_v2.sh /tmp/test 30000 --z_loss_weight 0.5 --camera_loss_weight 0.3
+# Sunboat (Oculus M1200d hardware)
+bash scripts/run_sonar_v2.sh ~/datasets/sunboat_zsplat "/media/.../sunboat_pkl" /tmp/results 30000 \
+    --n_array_elements 256 --element_spacing 0.000625 --center_frequency 1200000.0
 ```
 
 All results land in a timestamped subdirectory; logs go to `logs/`.
@@ -93,10 +102,14 @@ AONeuS: `/media/priyanshu/2TB SSD/aoneus_dataset/`
 │   ├── gaussian_renderer/__init__.py    # patched: handles 2 or 4 rasterizer outputs
 │   ├── scene/dataset_readers.py         # patched: depth histogram + zero-filter
 │   └── scripts/
-│       └── run_aoneus_v2.sh             # AONeuS launcher (steps + passthrough args)
+│       ├── run_sonar_v2.sh              # Universal sonar-only launcher (any PKL dataset)
+│       ├── run_aoneus_v2.sh             # AONeuS launcher (RGB+sonar)
+│       └── run_monohansett_v2.sh        # Monohansett-specific launcher (legacy)
 ├── Download Datasets/
+│   ├── convert_to_zsplat.py             # Universal PKL → COLMAP converter (any dataset)
 │   ├── create_valid_z_splat_scene.py    # AONeuS → COLMAP converter (one-time)
-│   └── convert_sunboat.py              # Sunboat dataset converter
+│   ├── convert_monohansett_zsplat.py    # Monohansett-specific converter (legacy)
+│   └── convert_sunboat.py              # Sunboat → SonarSplat PKL converter
 ├── docker/
 │   ├── Dockerfile                       # unified image (both models)
 │   ├── requirements.txt                 # all pip deps
