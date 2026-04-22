@@ -122,3 +122,4 @@ logs/
 
 # Training outputs
 sonar_splat/output/
+.claude/
