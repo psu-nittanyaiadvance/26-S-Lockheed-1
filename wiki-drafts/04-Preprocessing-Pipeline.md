@@ -69,7 +69,7 @@ This script does **not** crop images. It produces visualizations for you to revi
 
 ---
 
-## Step 2: artifact_edge_detection.py
+## Step 2.1: artifact_edge_detection.py
 
 Detects the inner boundary of border-connected artifacts using Sobel edge detection.
 
@@ -118,7 +118,7 @@ Use this overlay to visually confirm the boundary looks correct before choosing 
 
 ---
 
-## Step 3: sam.py
+## Step 2.2: sam.py
 
 Uses the Segment Anything Model (SAM) to produce precise artifact masks.
 
@@ -189,7 +189,7 @@ These parameters control how aggressively the script filters masks. You may need
 
 ---
 
-## Step 4: crop.py
+## Step 3: crop.py
 
 A manual image crop utility. Using the visual evidence from Steps 1-3, you choose a crop line and apply it to every image in the dataset.
 
@@ -235,8 +235,8 @@ python preprocessing/crop.py \
 ### How to choose the crop line
 
 1. Look at the **median image** from Step 1 — the artifacts are clearly visible
-2. Look at the **edge detection overlay** from Step 2 — it shows exactly where the artifact boundary is
-3. Look at the **SAM mask overlay** from Step 3 — it shows the precise artifact shape
+2. Look at the **edge detection overlay** from Step 2.1 — it detects exactly where the artifact boundary is
+3. Look at the **SAM mask overlay** from Step 2.2 — it masks the precise artifact shape
 4. Pick a crop line that removes the entire artifact region. It's better to be slightly aggressive (remove a few pixels of scene) than to leave artifact remnants
 
 ### Output
@@ -259,13 +259,15 @@ python preprocessing/artifact_layering.py \
 # Review the outputs in artifact_analysis/my_dataset/
 # Look at the median image and overlay to confirm artifact locations
 
-# Step 2: Detect artifact boundary
+# Step 2 (Choose ONE): Identify artifact boundary
+
+## Option A: Edge-based detection
 python preprocessing/artifact_edge_detection.py \
     --image artifact_analysis/my_dataset/median_image.png
 
 # Review the edge detection overlay
 
-# Step 3: Generate SAM artifact masks
+## Option B: SAM-based segmentation
 python preprocessing/sam.py \
     --median-image artifact_analysis/my_dataset/median_image.png \
     --variance-map artifact_analysis/my_dataset/variance_map.npy \
@@ -273,7 +275,7 @@ python preprocessing/sam.py \
 
 # Review the SAM mask overlays
 
-# Step 4: Preview the crop, then apply
+# Step 3: Preview the crop, then apply
 python preprocessing/crop.py --line 420 --axis horizontal --keep top
 # If the preview looks good:
 python preprocessing/crop.py --line 420 --axis horizontal --keep top --apply
