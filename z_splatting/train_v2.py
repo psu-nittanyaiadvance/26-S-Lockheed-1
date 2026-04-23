@@ -674,17 +674,9 @@ def training(dataset, opt, pipe, testing_iterations, saving_iterations,
         if nan_grad:
             print(f"[WARNING] NaN/Inf gradient zeroed at iter {iteration}", flush=True)
 
-        # Gradient connectivity check — iteration 1 fast-fail + every 500 iters
-        # Expected: r_tilde grad nonzero when ZL > 0, color grad nonzero from camera path.
+        # Gradient diagnostics — log gradient norms every 500 iterations.
+        # r_tilde should receive nonzero gradient whenever ZL > 0.
         def _gn(p): return p.grad.norm().item() if (p.grad is not None) else 0.0
-        if iteration == 1 and ZL.item() != 0.0:
-            r_tilde_gn = _gn(gaussians._r_tilde)
-            if r_tilde_gn == 0.0:
-                print("[GRAD WARNING] r_tilde gradient is ZERO at iter 1 despite ZL > 0. "
-                      "Sonar loss is not reaching r_tilde — check gradient path.", flush=True)
-            else:
-                print(f"[GRAD CHECK] r_tilde gradient confirmed nonzero at iter 1: "
-                      f"{r_tilde_gn:.3e}  ZL={ZL.item():.4f}", flush=True)
         if iteration % 500 == 0:
             print(f"[iter {iteration}] ∇norms: "
                   f"xyz={_gn(gaussians._xyz):.3e}  "
@@ -692,7 +684,6 @@ def training(dataset, opt, pipe, testing_iterations, saving_iterations,
                   f"opacity={_gn(gaussians._opacity):.3e}  "
                   f"f_dc={_gn(gaussians._features_dc):.3e}  "
                   f"| r_tilde.mean={gaussians.get_r_tilde.mean().item():.4f}", flush=True)
-        # Per-500-iter sonar GT diagnostic (Bug 3 ongoing check)
         if iteration % 500 == 0 and sonar_gt is not None:
             print(f"[iter {iteration}] sonar_gt: shape={tuple(sonar_gt.shape)}  "
                   f"max={sonar_gt.max().item():.4f}  nonzero={sonar_gt.nonzero().shape[0]}", flush=True)

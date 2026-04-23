@@ -90,8 +90,7 @@ def LFM(f_start=0, f_stop=30e3, Fs=100000, T=0.001, V_peak=1, alpha=0.1):
 def readColmapCameras(cam_extrinsics, cam_intrinsics, images_folder, sonar_wave_folder=None, depth_folder=None, h_res=1, w_res=1):
     cam_infos = []
 
-    # #TODO: change this for the next time
-    # list_to_pop = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,35,36,43,44,45]
+    # list_to_pop = [1,2,3,...] — can be used to exclude specific frame indices for ablations
 
     for idx, key in enumerate(cam_extrinsics):
 

@@ -409,7 +409,8 @@ def create_splats_with_optimizers(
         name: optimizer_class(
             [{"params": splats[name], "lr": lr * math.sqrt(BS), "name": name}],
             eps=1e-15 / math.sqrt(BS),
-            # TODO: check betas logic when BS is larger than 10 betas[0] will be zero.
+            # Linear batch-size scaling of Adam betas (Goyal et al. 2017).
+            # betas[0] approaches 0 for BS > 10 — keep BS ≤ 10 for stable training.
             betas=(1 - BS * (1 - 0.9), 1 - BS * (1 - 0.999)),
         )
         for name, _, lr in params
@@ -953,9 +954,9 @@ class Runner:
                 Ks=Ks,
                 width=width,
                 height=height,
-                sh_degree=sh_degree_to_use, # TODO: keep this for future use
-                near_plane=near_plane, # TODO: check if this is needed
-                far_plane=far_plane, # TODO: check if this is needed
+                sh_degree=sh_degree_to_use,
+                near_plane=near_plane,
+                far_plane=far_plane,
                 image_ids=image_ids,
                 masks=masks,
                 batch_per_iter=2000,

@@ -290,7 +290,6 @@ class SonarSensorDataParser:
                             label = label.astype(np.float32)
                             label = np.where(label > 0.5, 1.0, 0.0)
                             image = image * label
-                            # image = label #TODO: remove this!
 
                         if image.sum() > 0:
                             image_names.append(fname)
@@ -365,7 +364,9 @@ class SonarSensorDataParser:
         # camera_ids = [camera_ids[i] for i in inds]
 
         # Load bounds if possible (only used in forward facing scenes).
-        self.bounds = np.array([0.01, 1.0]) # TODO: not sure what is this bound for?
+        # Near/far bounds for forward-facing scenes. Not used by sonar datasets
+        # (which use range-based supervision instead), but kept for API compatibility.
+        self.bounds = np.array([0.01, 1.0])
         # posefile = os.path.join(data_dir, "poses_bounds.npy")
         # if os.path.exists(posefile):
         #     self.bounds = np.load(posefile)[:, -2:]

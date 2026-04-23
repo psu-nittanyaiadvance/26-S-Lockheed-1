@@ -123,3 +123,6 @@ logs/
 # Training outputs
 sonar_splat/output/
 .claude/
+
+# Wiki (local documentation, not versioned)
+wiki/
