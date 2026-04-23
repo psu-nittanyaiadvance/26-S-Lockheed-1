@@ -259,7 +259,7 @@ python preprocessing/artifact_layering.py \
 # Review the outputs in artifact_analysis/my_dataset/
 # Look at the median image and overlay to confirm artifact locations
 
-#Step 2 (Choose ONE): Identify artifact boundar
+# Step 2 (Choose ONE): Identify artifact boundary
 
 ## Option A: Edge-based detection
 python preprocessing/artifact_edge_detection.py \
