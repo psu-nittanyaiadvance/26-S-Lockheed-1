@@ -1,16 +1,25 @@
 #!/bin/bash
+# Diagnostic ablation for sonar_simple_trainer_v2 on infra_360_1.
+# Pass --z_loss_weight 0 to use L1 baseline (no gamma NLL / physics losses).
+# Pass --z_loss_weight 1 (default) to use full v2 physics.
+#
+# Usage: bash scripts/run_infra_360_1_v2.sh <results_dir> [z_loss_weight]
+#   results_dir   : base output dir (timestamped subdir is created)
+#   z_loss_weight : 0.0 = L1 ablation, 1.0 = full v2 (default: 0.0)
 
-# Parse command line arguments
-if [ $# -lt 2 ]; then
-    echo "Usage: $0 <data_dir> <results_dir>"
+if [ $# -lt 1 ]; then
+    echo "Usage: $0 <results_dir> [z_loss_weight]"
     exit 1
 fi
 
-DATA_DIR="$1"
-RESULTS_DIR="$2/monohansett_3D_$(date +%Y%m%d_%H%M%S)"
+RESULTS_DIR="$1/infra_360_1_v2_$(date +%Y%m%d_%H%M%S)"
+Z_LOSS_WEIGHT="${2:-0.0}"
+DATA_DIR="/media/priyanshu/2TB SSD/sonarsplat_dataset/infra_360_1"
 
-#python examples/sonar_simple_trainer.py \
-CUDA_VISIBLE_DEVICES=0 /home/apd6062/.conda/envs/sonarsplat/bin/python examples/sonar_simple_trainer.py \
+export CPLUS_INCLUDE_PATH="/home/priyanshu/miniconda3/envs/sonarsplat/targets/x86_64-linux/include:${CPLUS_INCLUDE_PATH}"
+export TORCH_CUDA_ARCH_LIST="8.6"
+
+CUDA_VISIBLE_DEVICES=0 /home/priyanshu/miniconda3/envs/sonarsplat/bin/python -u examples/sonar_simple_trainer_v2.py \
 "prune_only" \
 "--batch_size" "1" \
 "--camera_model" "ortho" \
@@ -26,7 +35,7 @@ CUDA_VISIBLE_DEVICES=0 /home/apd6062/.conda/envs/sonarsplat/bin/python examples/
 "--elevate_start_step" "0" \
 "--elevation_sampling_every" "1000" \
 "--end_at_frame" "10000" \
-"--far_plane" "10" \
+"--far_plane" "5" \
 "--global_scale" "1.0" \
 "--img_threshold" "0.0" \
 "--init_extent" "1.0" \
@@ -39,7 +48,7 @@ CUDA_VISIBLE_DEVICES=0 /home/apd6062/.conda/envs/sonarsplat/bin/python examples/
 "--lpips_net" "alex" \
 "--max_size_prior_weight" "500.0" \
 "--max_steps" "40000" \
-"--near_plane" "-10" \
+"--near_plane" "-5" \
 "--normalize_world_space" \
 "--num_random_points" "2000" \
 "--opacity_prior_weight" "0.0" \
@@ -94,4 +103,27 @@ CUDA_VISIBLE_DEVICES=0 /home/apd6062/.conda/envs/sonarsplat/bin/python examples/
 "--tb_save_image" \
 "--test_every" "8" \
 "--disable_viewer" \
-"--train"
+"--train" \
+"--speed_of_sound" "1500.0" \
+"--bandwidth" "30000.0" \
+"--n_array_elements" "64" \
+"--element_spacing" "0.003" \
+"--center_frequency" "1100000.0" \
+"--reflectivity_lr" "0.01" \
+"--w_e" "1.0" \
+"--w_e_final" "0.1" \
+"--w_e_anneal_steps" "10000" \
+"--reflectivity_reg_weight" "0.1" \
+"--lambda_reg" "0.01" \
+"--reflectivity_reg_every" "100" \
+"--mask_threshold" "0.01" \
+"--energy_loss_weight" "0.0" \
+"--reflectivity_warmup_steps" "0" \
+"--reflectivity_floor_start" "0.0" \
+"--reflectivity_floor_anneal_end_step" "0" \
+"--beam_anneal_end_step" "0" \
+"--reflectivity_reg_start_step" "2000" \
+"--reflectivity_reg_full_step" "8000" \
+"--best_ckpt_min_energy_ratio" "0.5" \
+"--best_ckpt_max_energy_ratio" "1.5" \
+"--z_loss_weight" "$Z_LOSS_WEIGHT"

@@ -1,0 +1,51 @@
+# =============================================================================
+# Unified pip requirements for 26-S-Lockheed-1
+# Covers both SonarSplat (sonar_splat/) and Z-Splat (z_splatting/)
+#
+# NOT listed here (installed separately in Dockerfile with --no-build-isolation):
+#   torch / torchvision / torchaudio  — installed via PyTorch cu124 wheel index
+#   nerfacc                           — needs --no-build-isolation
+#   fused-ssim                        — needs --no-build-isolation
+#   nerfview                          — installed after nerfacc
+#   gsplat (SonarSplat extension)     — built from sonar_splat/ via pip install -e .
+#   diff-gaussian-rasterization       — built from submodules/ via pip install -e .
+#   simple-knn                        — built from submodules/ via pip install -e .
+# =============================================================================
+
+# ---------- Shared (both pipelines) -----------------------------------------
+numpy<2.0.0
+scipy
+Pillow
+tqdm
+scikit-learn
+matplotlib
+tensorboard
+pyyaml
+opencv-python
+plyfile
+
+# ---------- SonarSplat-specific ---------------------------------------------
+viser
+splines
+imageio[ffmpeg]
+torchmetrics[image]
+tyro>=0.8.8
+scikit-build-core
+tensorly
+attridict
+pybind11[global]
+open3d
+trimesh
+
+# ---------- Z-Splat-specific ------------------------------------------------
+ConfigArgParse
+lpipsPyTorch
+scikit-image
+colorlog
+
+# ---------- Dataset utilities -----------------------------------------------
+pycolmap
+
+# ---------- Hyperparameter search / RL controller ---------------------------
+optuna
+roma

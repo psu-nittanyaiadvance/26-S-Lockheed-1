@@ -1,16 +1,24 @@
 #!/bin/bash
 
-# Parse command line arguments
-if [ $# -lt 2 ]; then
-    echo "Usage: $0 <data_dir> <results_dir>"
+# Run sonar_simple_trainer_v2.py (Priyanshu's math) on AONeuS sonar-only data
+# Baseline to beat: Z-Splat RGB+depth, Test PSNR=36.94 at 30K steps
+#
+# Usage: bash scripts/run_aoneus_sonar_v2.sh <results_dir>
+# Data dir is hardcoded to AONeuS sonar path (only one AONeuS dataset)
+
+if [ $# -lt 1 ]; then
+    echo "Usage: $0 <results_dir>"
     exit 1
 fi
 
-DATA_DIR="$1"
-RESULTS_DIR="$2/monohansett_3D_$(date +%Y%m%d_%H%M%S)"
+DATA_DIR="/media/priyanshu/2TB SSD/aoneus_dataset/data/reduced_baseline_0.6x_sonar"
+RESULTS_DIR="$1/aoneus_sonar_v2_$(date +%Y%m%d_%H%M%S)"
 
-#python examples/sonar_simple_trainer.py \
-CUDA_VISIBLE_DEVICES=0 /home/apd6062/.conda/envs/sonarsplat/bin/python examples/sonar_simple_trainer.py \
+# nerfacc CUDA JIT build needs these headers from the conda CUDA toolkit
+export CPLUS_INCLUDE_PATH="/home/priyanshu/miniconda3/envs/sonarsplat/targets/x86_64-linux/include:${CPLUS_INCLUDE_PATH}"
+export TORCH_CUDA_ARCH_LIST="8.6"
+
+CUDA_VISIBLE_DEVICES=0 /home/priyanshu/miniconda3/envs/sonarsplat/bin/python -u examples/sonar_simple_trainer_v2.py \
 "prune_only" \
 "--batch_size" "1" \
 "--camera_model" "ortho" \
@@ -94,4 +102,20 @@ CUDA_VISIBLE_DEVICES=0 /home/apd6062/.conda/envs/sonarsplat/bin/python examples/
 "--tb_save_image" \
 "--test_every" "8" \
 "--disable_viewer" \
-"--train"
+"--train" \
+"--speed_of_sound" "1500.0" \
+"--bandwidth" "30000.0" \
+"--n_array_elements" "64" \
+"--element_spacing" "0.003" \
+"--center_frequency" "1100000.0" \
+"--reflectivity_lr" "0.01" \
+"--w_e" "1.0" \
+"--w_e_final" "0.1" \
+"--w_e_anneal_steps" "10000" \
+"--reflectivity_reg_weight" "0.1" \
+"--lambda_reg" "0.01" \
+"--reflectivity_reg_every" "100" \
+"--reflectivity_warmup_steps" "0" \
+"--reflectivity_floor_start" "0.0" \
+"--reflectivity_floor_anneal_end_step" "0" \
+"--beam_anneal_end_step" "0"

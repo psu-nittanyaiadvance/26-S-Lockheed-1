@@ -9,8 +9,12 @@ fi
 DATA_DIR="$1"
 RESULTS_DIR="$2/monohansett_3D_$(date +%Y%m%d_%H%M%S)"
 
+# nerfacc CUDA JIT build needs these headers from the conda CUDA toolkit
+export CPLUS_INCLUDE_PATH="/home/priyanshu/miniconda3/envs/sonarsplat/targets/x86_64-linux/include:${CPLUS_INCLUDE_PATH}"
+export TORCH_CUDA_ARCH_LIST="8.6"
+
 #python examples/sonar_simple_trainer.py \
-CUDA_VISIBLE_DEVICES=0 /home/apd6062/.conda/envs/sonarsplat/bin/python examples/sonar_simple_trainer.py \
+CUDA_VISIBLE_DEVICES=0 /home/priyanshu/miniconda3/envs/sonarsplat/bin/python -u examples/sonar_simple_trainer_v2.py \
 "prune_only" \
 "--batch_size" "1" \
 "--camera_model" "ortho" \
@@ -38,7 +42,7 @@ CUDA_VISIBLE_DEVICES=0 /home/apd6062/.conda/envs/sonarsplat/bin/python examples/
 "--intermediate_azimuth_resolution" "0.05" \
 "--lpips_net" "alex" \
 "--max_size_prior_weight" "500.0" \
-"--max_steps" "40000" \
+"--max_steps" "30000" \
 "--near_plane" "-10" \
 "--normalize_world_space" \
 "--num_random_points" "2000" \
@@ -94,4 +98,26 @@ CUDA_VISIBLE_DEVICES=0 /home/apd6062/.conda/envs/sonarsplat/bin/python examples/
 "--tb_save_image" \
 "--test_every" "8" \
 "--disable_viewer" \
-"--train"
+"--train" \
+"--speed_of_sound" "1500.0" \
+"--bandwidth" "30000.0" \
+"--n_array_elements" "64" \
+"--element_spacing" "0.003" \
+"--center_frequency" "1100000.0" \
+"--reflectivity_lr" "0.01" \
+"--w_e" "1.0" \
+"--w_e_final" "0.1" \
+"--w_e_anneal_steps" "10000" \
+"--reflectivity_reg_weight" "0.1" \
+"--lambda_reg" "0.01" \
+"--reflectivity_reg_every" "100" \
+"--mask_threshold" "0.01" \
+"--energy_loss_weight" "0.1" \
+"--reflectivity_warmup_steps" "0" \
+"--reflectivity_floor_start" "0.0" \
+"--reflectivity_floor_anneal_end_step" "0" \
+"--beam_anneal_end_step" "0" \
+"--reflectivity_reg_start_step" "2000" \
+"--reflectivity_reg_full_step" "8000" \
+"--best_ckpt_min_energy_ratio" "0.5" \
+"--best_ckpt_max_energy_ratio" "1.5"

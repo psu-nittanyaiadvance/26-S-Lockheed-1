@@ -21,7 +21,7 @@ from utils.sh_utils import SH2RGB
 
 import matplotlib.pyplot as plt
 import matplotlib 
-matplotlib.use("TkAgg")
+matplotlib.use("Agg")
 
 CHUNK_SIZE = 600
 

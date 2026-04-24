@@ -1,0 +1,56 @@
+# =============================================================================
+# .dockerignore for 26-S-Lockheed-1
+# Keeps the Docker build context lean by excluding large / irrelevant paths.
+# =============================================================================
+
+# Git internals (large, not needed at build time)
+.git
+.gitmodules
+
+# Python caches
+**/__pycache__
+**/*.pyc
+**/*.pyo
+**/*.pyd
+**/.pytest_cache
+
+# Training outputs and logs (too large, should be on mounted volume)
+logs/
+**/output*/
+**/outputs*/
+**/results*/
+sonar_splat/tmp/
+z_splatting/output/
+
+# Dataset directories (mounted as /data volume at runtime)
+"Download Datasets/data/"
+
+# CUDA extension build artifacts (rebuilt inside container)
+sonar_splat/build/
+sonar_splat/gsplat.egg-info/
+sonar_splat/gsplat/**/*.so
+sonar_splat/gsplat/cuda/csrc/*.o
+z_splatting/submodules/diff-gaussian-rasterization/build/
+z_splatting/submodules/diff-gaussian-rasterization/*.egg-info/
+z_splatting/submodules/simple-knn/build/
+z_splatting/submodules/simple-knn/*.egg-info/
+
+# IDE and editor files
+.vscode/
+.vscode-server/
+.idea/
+*.swp
+*.swo
+
+# Claude AI tooling
+.claude/
+CLAUDE.md
+
+# Docker scripts (not needed inside the image; requirements.txt IS needed)
+docker/*.sh
+docker/*.Dockerfile
+
+# Misc
+*.log
+.DS_Store
+Thumbs.db

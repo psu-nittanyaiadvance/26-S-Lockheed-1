@@ -40,6 +40,8 @@ def initialize_gs_range_azimuth(return_threshold: float,
     """
 
     #filter the image first 
+    if image.ndim == 3:
+        image = image[0]
     H, W = image.shape
     image = np.array(image)
     return_mask = image > return_threshold
@@ -104,6 +106,8 @@ def sample_points_in_elevation(return_threshold: float,
     """
 
     #filter the image first 
+    if image.ndim == 3:
+        image = image[0]
     H, W = image.shape
     image = np.array(image)
     return_mask = image > return_threshold
@@ -245,11 +249,16 @@ class SonarSensorDataParser:
                     with open(os.path.join(self.data_dir, "Data", fname), 'rb') as file:  
                         data = pickle.load(file)
                         image = data['ImagingSonar']
+                        # Normalize uint8 [0-255] to float [0,1] (AONeuS stores uint8, monohansett float64)
+                        if image.dtype == np.uint8:
+                            image = image.astype(np.float64) / 255.0
 
-                        #flip the image horizontally 
+                        #flip the image horizontally
                         # image = image[:, ::-1]
                         image = image.transpose(1, 0) #turn into a azimuth, range image
                         image[np.isnan(image)] = 0.0
+                        if image.ndim == 3:
+                            image = image[0]
                         H, W = image.shape
 
                         if H > num_azimuth_bins: 
@@ -281,7 +290,6 @@ class SonarSensorDataParser:
                             label = label.astype(np.float32)
                             label = np.where(label > 0.5, 1.0, 0.0)
                             image = image * label
-                            # image = label #TODO: remove this!
 
                         if image.sum() > 0:
                             image_names.append(fname)
@@ -356,7 +364,9 @@ class SonarSensorDataParser:
         # camera_ids = [camera_ids[i] for i in inds]
 
         # Load bounds if possible (only used in forward facing scenes).
-        self.bounds = np.array([0.01, 1.0]) # TODO: not sure what is this bound for?
+        # Near/far bounds for forward-facing scenes. Not used by sonar datasets
+        # (which use range-based supervision instead), but kept for API compatibility.
+        self.bounds = np.array([0.01, 1.0])
         # posefile = os.path.join(data_dir, "poses_bounds.npy")
         # if os.path.exists(posefile):
         #     self.bounds = np.load(posefile)[:, -2:]
@@ -374,7 +384,7 @@ class SonarSensorDataParser:
         #     transform = T2 @ T1
         # else:
         #     transform = np.eye(4)
-        visualize_gaussians(xyz=[pcd], poses=camtoworlds, start_size=0.1, end_size=0.1)
+        # visualize_gaussians(xyz=[pcd], poses=camtoworlds, start_size=0.1, end_size=0.1)  # blocks headlessly — keep commented
         camera_locations = camtoworlds[:, :3, 3]
         scene_center = np.mean(camera_locations, axis=0)
         dists = np.linalg.norm(camera_locations - scene_center, axis=1)

@@ -145,9 +145,9 @@ class Config:
     max_steps: int = 30_000
     # Number of training steps to start saving
     # Steps to evaluate the model
-    eval_steps: List[int] = field(default_factory=lambda: list(range(100, 30_000, 1000)))
+    eval_steps: List[int] = field(default_factory=lambda: list(range(100, 50_001, 1000)))
     # Steps to save the model
-    save_steps: List[int] = field(default_factory=lambda: list(range(100, 30_000, 1000)))
+    save_steps: List[int] = field(default_factory=lambda: list(range(100, 50_001, 1000)))
 
     # Initialization strategy
     init_type: str = "random" # "predefined" or "random"
@@ -236,6 +236,55 @@ class Config:
     
     init_scale: float = 0.5 # (m)
 
+    # Change 1: hardware constants for range resolution
+    speed_of_sound: float = 1500.0   # m/s
+    bandwidth: float = 30_000.0      # Hz (pulse bandwidth)
+
+    # Change 2: ULA beam pattern parameters
+    n_array_elements: int = 64
+    element_spacing: float = 0.003      # d (metres, ≈ λ/2)
+    center_frequency: float = 1.1e6    # Hz
+
+    # Change 3: per-Gaussian reflectivity learning rate
+    reflectivity_lr: float = 0.01
+
+    # Change 5: elevation constraint loss weights
+    w_e: float = 1.0
+    w_e_final: float = 0.1
+    w_e_anneal_steps: int = 10000
+
+    # Change 6: reflectivity regularizer
+    reflectivity_reg_weight: float = 0.1
+    lambda_reg: float = 0.01
+    reflectivity_reg_every: int = 100
+
+    # patch_2: sonar energy preservation loss
+    energy_loss_weight: float = 0.0
+
+    # patch_3: reflectivity LR warmup (freeze r_tilde for this many steps)
+    reflectivity_warmup_steps: int = 0
+
+    # patch_4: reflectivity floor annealing (r_floor decays 0.2→0.0 by anneal_end_step)
+    reflectivity_floor_start: float = 0.0
+    reflectivity_floor_anneal_end_step: int = 0
+
+    # patch_5: beam pattern anneal from isotropic→full by beam_anneal_end_step
+    beam_anneal_end_step: int = 0
+
+    # patch_6: delayed reflectivity regularizer ramp-in
+    reflectivity_reg_start_step: int = 0
+    reflectivity_reg_full_step: int = 0
+
+    # patch_1: foreground mask threshold for eval metrics
+    mask_threshold: float = 0.01
+    # patch_8: best checkpoint selection energy ratio bounds
+    best_ckpt_min_energy_ratio: float = 0.5
+    best_ckpt_max_energy_ratio: float = 1.5
+
+    # ablation: 0.0 = L1 baseline (disables gamma NLL + all physics terms)
+    #           1.0 = full v2 (gamma NLL + elevation + reflectivity reg + energy)
+    z_loss_weight: float = 1.0
+
     def adjust_steps(self, factor: float):
         self.eval_steps = [int(i * factor) for i in self.eval_steps]
         self.save_steps = [int(i * factor) for i in self.save_steps]
@@ -275,6 +324,7 @@ def create_splats_with_optimizers(
     device: str = "cuda",
     world_rank: int = 0,
     world_size: int = 1,
+    reflectivity_lr: float = 0.01,  # Change 3
 ) -> Tuple[torch.nn.ParameterDict, Dict[str, torch.optim.Optimizer]]:
     if init_type == "predefined":
         points = torch.from_numpy(parser.points).float()
@@ -318,6 +368,11 @@ def create_splats_with_optimizers(
     # quats[...,:] = quats[0,:]
     opacities = torch.logit(torch.full((N,), init_opacity))  # [N,]
 
+    # Change 3: per-Gaussian reflectivity (r_tilde)
+    # Init to 4.0 → sigmoid(4.0)≈0.982 so effective opacity≈base×beam from the start.
+    # sigmoid(0)=0.5 caused scene to build around r_n=0.5; unfreeze at 3K then crashed -5dB.
+    r_tilde = torch.full((N, 1), 4.0)
+
     params = [
         # name, value, lr
         ("means", torch.nn.Parameter(points), 1.6e-4 * scene_scale),
@@ -325,6 +380,7 @@ def create_splats_with_optimizers(
         ("quats", torch.nn.Parameter(quats), 1e-3),
         ("opacities", torch.nn.Parameter(opacities), 5e-2),
         ("sat_probability", torch.nn.Parameter(sat_probability), 2e-2),
+        ("r_tilde", torch.nn.Parameter(r_tilde), reflectivity_lr),
     ]
 
     # color is SH coefficients.
@@ -353,12 +409,89 @@ def create_splats_with_optimizers(
         name: optimizer_class(
             [{"params": splats[name], "lr": lr * math.sqrt(BS), "name": name}],
             eps=1e-15 / math.sqrt(BS),
-            # TODO: check betas logic when BS is larger than 10 betas[0] will be zero.
+            # Linear batch-size scaling of Adam betas (Goyal et al. 2017).
+            # betas[0] approaches 0 for BS > 10 — keep BS ≤ 10 for stable training.
             betas=(1 - BS * (1 - 0.9), 1 - BS * (1 - 0.999)),
         )
         for name, _, lr in params
     }
     return splats, optimizers
+
+
+# Change 2: ULA beam pattern B(θ,φ) = B_a(θ) × B_e(φ)
+def compute_beam_pattern(
+    means: Tensor,
+    viewmat: Tensor,      # (4,4) world→camera
+    n_elements: int,
+    d: float,
+    wavelength: float,
+) -> Tensor:
+    """Per-Gaussian beam weight in [0,1], shape (N,)."""
+    means_cam = (viewmat[:3, :3] @ means.T + viewmat[:3, 3:4]).T  # (N,3)
+    # Safe norm: clamp inside sqrt to avoid NaN gradient at zero vectors
+    r_n = torch.sqrt((means_cam ** 2).sum(dim=-1).clamp(min=1e-12))
+    theta_n = torch.atan2(means_cam[:, 1], means_cam[:, 0])
+    phi_n   = torch.asin((means_cam[:, 2] / r_n).clamp(-1.0, 1.0))
+
+    u = (d / wavelength) * torch.sin(theta_n)
+    # Use sinc formulation: B_a = sinc(N*u)/sinc(u) squared (normalised sinc avoids NaN grad)
+    # torch.sinc(x) = sin(pi*x)/(pi*x), handles x=0 correctly with gradient
+    B_a_sinc_u  = torch.sinc(u)                      # sin(pi*u)/(pi*u), =1 at u=0
+    B_a_sinc_Nu = torch.sinc(n_elements * u)          # sin(N*pi*u)/(N*pi*u)
+    # ratio = sinc(N*u)/sinc(u); clamp denominator for numerical safety
+    B_a = (B_a_sinc_Nu / B_a_sinc_u.clamp(min=1e-8)) ** 2
+
+    B_e = torch.cos(phi_n) ** 2
+    return (B_a * B_e).clamp(0.0, 1.0)
+
+
+# patch_2: sonar energy preservation loss
+def sonar_energy_loss(pred_sonar: Tensor, gt_sonar: Tensor, eps: float = 1e-8) -> Tensor:
+    """Energy preservation loss: penalises global energy collapse.
+    L_energy = ((sum(pred) - sum(gt)) / (sum(gt) + eps))^2
+    Weak stabilisation term — prevents the optimizer winning by shrinking returns.
+    Weight this with --energy_loss_weight (default 0.1).
+    """
+    pred_e = pred_sonar.sum()
+    gt_e = gt_sonar.sum()
+    return ((pred_e - gt_e) / (gt_e + eps)) ** 2
+
+
+# Change 4: Gamma NLL loss for multiplicative sonar speckle noise
+def gamma_nll_loss(S_measured: Tensor, S_predicted: Tensor, eps: float = 0.01) -> Tensor:
+    """MLE loss for multiplicative exponential sonar noise.
+    eps=0.01 keeps S_measured/S_hat ≤ 100, preventing gradient explosion when
+    predictions are near-zero early in training (eps=1e-6 caused loss~94k → NaN).
+    """
+    S_hat = S_predicted.clamp(min=eps)
+    return (S_measured / S_hat + torch.log(S_hat)).mean()
+
+
+# Change 5: Elevation constraint loss
+def elevation_constraint_loss(mu_xyz: Tensor, r_sonar_per_gaussian: Tensor,
+                               cam_center: Tensor = None) -> Tensor:
+    """L_e = mean_n(||mu_n - cam_center|| - r_sonar_n)^2
+    cam_center: sensor/camera position in world space (must be detached).
+    Defaults to world origin — ONLY correct if scene is centred at origin AND
+    camera is at origin (never true for real sonar datasets; always pass cam_center).
+    """
+    if cam_center is None:
+        cam_center = torch.zeros(3, device=mu_xyz.device)
+    # Camera-relative slant range — sonar measures range FROM the sensor, not from world origin
+    predicted_range = torch.sqrt(((mu_xyz - cam_center) ** 2).sum(dim=-1).clamp(min=1e-12))
+    return torch.mean((predicted_range - r_sonar_per_gaussian) ** 2)
+
+
+# Change 6: Reflectivity regularizer (H1 smoothness + mean-reversion)
+def reflectivity_regularizer_loss(
+    r_n: Tensor,          # (M, 1) subset
+    r_neighbors: Tensor,  # (M, k, 1)
+    lambda_reg: float = 0.01,
+) -> Tensor:
+    smoothness = torch.mean((r_n.unsqueeze(1) - r_neighbors) ** 2)
+    r_bar = r_n.mean().detach()
+    mean_reversion = lambda_reg * torch.mean((r_n - r_bar) ** 2)
+    return smoothness + mean_reversion
 
 
 class Runner:
@@ -421,6 +554,13 @@ class Runner:
         self.scene_scale = self.parser.scene_scale * 1.1 * cfg.global_scale
         print("Scene scale:", self.scene_scale)
 
+        # Change 1: fixed hardware constant for range resolution
+        self.sigma_r = cfg.speed_of_sound / (4.0 * cfg.bandwidth)  # ~0.0125 m
+        print(f"sigma_r = {self.sigma_r*100:.2f} cm")
+
+        # Change 2: wavelength for beam pattern
+        self.wavelength = cfg.speed_of_sound / cfg.center_frequency
+
         # Model
         self.splats, self.optimizers = create_splats_with_optimizers(
             self.parser,
@@ -437,6 +577,7 @@ class Runner:
             device=self.device,
             world_rank=world_rank,
             world_size=world_size,
+            reflectivity_lr=cfg.reflectivity_lr,  # Change 3
         )
         print("Model initialized. Number of GS:", len(self.splats["means"]))
 
@@ -503,6 +644,12 @@ class Runner:
         else:
             raise ValueError(f"Unknown LPIPS network: {cfg.lpips_net}")
 
+        # patch_4/5: current training step for rasterize_splats (beam anneal, r_floor)
+        self._current_step: int = 0
+        # patch_8: best structure-aware checkpoint tracking
+        self._best_score: float = -float("inf")
+        self._best_step: int = -1
+
         # Viewer
         if not self.cfg.disable_viewer:
             self.server = viser.ViserServer(port=cfg.port, verbose=False)
@@ -535,7 +682,38 @@ class Runner:
         sat_probability = torch.nn.functional.sigmoid(self.splats["sat_probability"]) # [N,]
         image_ids = kwargs.pop("image_ids", None)
         colors = torch.cat([self.splats["sh0"], self.splats["shN"]], 1)  # [N, K, 3]
-    
+
+        # Change 3: per-Gaussian reflectivity
+        r_n = torch.sigmoid(self.splats["r_tilde"]).squeeze(-1)  # (N,)
+
+        # patch_4: reflectivity floor annealing — prevents collapse to zero early in training
+        # r_eff = r_floor + (1-r_floor)*r_n, where r_floor decays from floor_start→0.0
+        cfg = self.cfg
+        if cfg.reflectivity_floor_start > 0.0 and cfg.reflectivity_floor_anneal_end_step > 0:
+            t = min(self._current_step, cfg.reflectivity_floor_anneal_end_step) / float(cfg.reflectivity_floor_anneal_end_step)
+            r_floor = cfg.reflectivity_floor_start * (1.0 - t)
+        else:
+            r_floor = 0.0
+        r_n = r_floor + (1.0 - r_floor) * r_n
+
+        # Change 2: ULA beam pattern attenuation
+        viewmat = torch.linalg.inv(camtoworlds).squeeze(0)   # (4,4) world→camera
+        beam_weight = compute_beam_pattern(
+            means, viewmat,
+            self.cfg.n_array_elements,
+            self.cfg.element_spacing,
+            self.wavelength,
+        )
+
+        # patch_5: beam pattern anneal — start isotropic (alpha=0), ramp to full beam physics
+        if cfg.beam_anneal_end_step > 0:
+            alpha = min(self._current_step, cfg.beam_anneal_end_step) / float(cfg.beam_anneal_end_step)
+        else:
+            alpha = 1.0
+        beam_weight = (1.0 - alpha) + alpha * beam_weight
+
+        # Combine reflectivity and beam pattern into opacities
+        opacities = opacities * r_n * beam_weight
 
         rasterize_mode = "antialiased" if self.cfg.antialiased else "classic"
         render_powers, info = _sonar_rasterization(
@@ -564,7 +742,8 @@ class Runner:
             **kwargs,
         )
 
-        assert render_powers.max() <= 1.0
+        if render_powers.max() > 1.0:
+            render_powers = render_powers.clamp(max=1.0)
         if masks is not None:
             render_powers[~masks] = 0
         return render_powers, info
@@ -709,10 +888,28 @@ class Runner:
 
         
 
+        # patch_3: Print reflectivity warmup schedule at start
+        if cfg.reflectivity_warmup_steps > 0:
+            print(f"[patch_3] Reflectivity LR frozen for first {cfg.reflectivity_warmup_steps} steps", flush=True)
+        # patch_4: Print r_floor schedule
+        if cfg.reflectivity_floor_start > 0.0 and cfg.reflectivity_floor_anneal_end_step > 0:
+            print(f"[patch_4] r_floor annealing: {cfg.reflectivity_floor_start:.2f}→0.0 over {cfg.reflectivity_floor_anneal_end_step} steps", flush=True)
+        # patch_5: Print beam anneal schedule
+        if cfg.beam_anneal_end_step > 0:
+            print(f"[patch_5] Beam anneal: isotropic→full over {cfg.beam_anneal_end_step} steps", flush=True)
+        # patch_6: Print reg ramp-in schedule
+        if cfg.reflectivity_reg_start_step > 0:
+            print(f"[patch_6] Refl-reg ramp-in: 0@{cfg.reflectivity_reg_start_step}→1.0@{cfg.reflectivity_reg_full_step}", flush=True)
+        # patch_2: Print energy loss
+        if cfg.energy_loss_weight > 0.0:
+            print(f"[patch_2] Energy preservation loss weight: {cfg.energy_loss_weight}", flush=True)
+
         # Training loop.
         global_tic = time.time()
         pbar = tqdm.tqdm(range(init_step, max_steps))
         for step in pbar:
+            self._current_step = step  # patch_4/5: expose step to rasterize_splats
+
             if not cfg.disable_viewer:
                 while self.viewer.state.status == "paused":
                     time.sleep(0.01)
@@ -757,9 +954,9 @@ class Runner:
                 Ks=Ks,
                 width=width,
                 height=height,
-                sh_degree=sh_degree_to_use, # TODO: keep this for future use
-                near_plane=near_plane, # TODO: check if this is needed
-                far_plane=far_plane, # TODO: check if this is needed
+                sh_degree=sh_degree_to_use,
+                near_plane=near_plane,
+                far_plane=far_plane,
                 image_ids=image_ids,
                 masks=masks,
                 batch_per_iter=2000,
@@ -804,8 +1001,8 @@ class Runner:
             pred_for_loss_l1 = pred_for_loss
             pixels_for_loss_l1 = pixels_for_loss
 
-            #visualize the selected indices 
-            if cfg.viz_samples: 
+            #visualize the selected indices
+            if cfg.viz_samples:
                 matplotlib.use("TkAgg")
                 canvas = np.zeros((pixels.shape[0], pixels.shape[1], 3))
                 #set the pixels to red for selected_indices and blue for random_indices
@@ -816,7 +1013,12 @@ class Runner:
 
             free_space_mask = pixels_for_loss < 0.1
 
-            l1loss = F.l1_loss(pred_for_loss_l1, pixels_for_loss_l1)
+            # Change 4: Gamma NLL replaces L1 for multiplicative sonar speckle noise
+            # z_loss_weight=0 reverts to L1 (diagnostic ablation / baseline comparison)
+            if cfg.z_loss_weight == 0.0:
+                sonar_loss = torch.abs(pred_for_loss - pixels_for_loss).mean()
+            else:
+                sonar_loss = gamma_nll_loss(pixels_for_loss, pred_for_loss)
             
             ############################################################################## max size loss ##############################################################################
             max_size_loss = torch.mean(torch.relu(torch.exp(self.splats['scales']) - cfg.init_scale))
@@ -870,11 +1072,98 @@ class Runner:
                 pred_for_loss[None, None].repeat(1,3,1,1), pixels[None, None].repeat(1,3,1,1), padding="valid"
             )
 
-            ############################################################################## max size loss ##############################################################################
-            
-            loss = l1loss * (1.0 - cfg.ssim_lambda) + ssimloss * cfg.ssim_lambda \
+            # Change 5: elevation constraint loss
+            means_for_elev = self.splats["means"]            # (N,3)
+            width_bins = data["image"].shape[2]              # range bin axis (original image)
+
+            # Camera centre in world space — sonar measures slant range FROM the sensor.
+            # camtoworlds is C2W (4×4); its translation column [:3,3] is the camera position.
+            cam_center_w = camtoworlds[0, :3, 3].detach()   # (3,) world-space sensor position
+
+            # 1-D range profile: mean over batch and azimuth dims → (W,)
+            # pixels here is already squeezed to (H, W) so use data["image"] for clean shape
+            raw_pixels = data["image"].to(device)            # [1, H, W, C]
+            range_profile = raw_pixels.mean(dim=[0, 1]).squeeze()  # (W,) for C=1; add .mean(-1) if C>1
+            if range_profile.dim() > 1:
+                range_profile = range_profile.mean(dim=-1)
+
+            w_bins = max(1, int(3 * self.sigma_r / self.parser.max_range * width_bins))
+            with torch.no_grad():
+                # Camera-relative slant range for bin indexing (non-differentiable lookup).
+                # Bug fix: was torch.norm(means, dim=-1) (distance from origin), which
+                # does not match sonar range when the sensor is not at the world origin.
+                r_bin_center = (
+                    torch.norm(means_for_elev.detach() - cam_center_w, dim=-1)
+                    / self.parser.max_range * width_bins
+                ).long().clamp(0, width_bins - 1)
+                offsets = torch.arange(-w_bins, w_bins + 1, device=means_for_elev.device)  # (2w+1,)
+                window_idx = (r_bin_center.unsqueeze(1) + offsets.unsqueeze(0)).clamp(0, width_bins - 1)  # (N, 2w+1)
+                windows = range_profile[window_idx]              # (N, 2w+1)
+                peak_offset = windows.argmax(dim=1) - w_bins     # (N,)
+                peak_bin = (r_bin_center + peak_offset).clamp(0, width_bins - 1).float()
+                r_sonar_per_gaussian = peak_bin / width_bins * self.parser.max_range  # metres (target, no grad)
+
+            elevation_loss = elevation_constraint_loss(means_for_elev, r_sonar_per_gaussian, cam_center_w)
+
+            w_e_current = cfg.w_e * (cfg.w_e_final / cfg.w_e) ** (
+                min(step, cfg.w_e_anneal_steps) / cfg.w_e_anneal_steps
+            )
+
+            # Change 6: reflectivity regularizer (cached k-NN, recomputed every N steps)
+            if step % cfg.reflectivity_reg_every == 0:
+                with torch.no_grad():
+                    pts = self.splats["means"].detach()
+                    N_gs = pts.shape[0]
+                    max_pts = min(N_gs, 4096)
+                    perm = torch.randperm(N_gs, device=pts.device)[:max_pts]
+                    subset = pts[perm]
+                    dists = torch.cdist(subset, subset)             # (max_pts, max_pts)
+                    k_nn = min(8, max_pts - 1)
+                    _, idx = dists.topk(k_nn + 1, dim=-1, largest=False)
+                    self._knn_indices = perm[idx[:, 1:]]            # (max_pts, k)
+                    self._knn_source  = perm                        # (max_pts,)
+
+            N_current = self.splats["r_tilde"].shape[0]
+            if hasattr(self, '_knn_source') and self._knn_source.max() < N_current:
+                r_n_all  = torch.sigmoid(self.splats["r_tilde"])       # (N,1)
+                r_n_sub  = r_n_all[self._knn_source]                   # (max_pts,1)
+                r_n_nbrs = r_n_all[self._knn_indices]                  # (max_pts,k,1)
+                reflectivity_reg = reflectivity_regularizer_loss(r_n_sub, r_n_nbrs, cfg.lambda_reg)
+                _r_smoothness = torch.mean((r_n_sub.unsqueeze(1) - r_n_nbrs) ** 2)
+                _r_meanrev = cfg.lambda_reg * torch.mean((r_n_sub - r_n_sub.mean().detach()) ** 2)
+            else:
+                reflectivity_reg = torch.tensor(0.0, device=device)
+                _r_smoothness = torch.tensor(0.0, device=device)
+                _r_meanrev = torch.tensor(0.0, device=device)
+
+            # patch_6: delayed reflectivity regularizer ramp-in
+            # w_r_eff ramps from 0→base_w_r linearly between reg_start_step and reg_full_step.
+            # When both are 0 (default) the full weight applies immediately (backward-compatible).
+            _reg_start = cfg.reflectivity_reg_start_step
+            _reg_full  = cfg.reflectivity_reg_full_step
+            if _reg_full > _reg_start and step <= _reg_start:
+                w_r_eff = 0.0
+            elif _reg_full > _reg_start and step < _reg_full:
+                w_r_eff = ((step - _reg_start) / float(_reg_full - _reg_start)) * cfg.reflectivity_reg_weight
+            else:
+                w_r_eff = cfg.reflectivity_reg_weight
+
+            # patch_2: sonar energy preservation loss
+            # Penalises global energy collapse: L = ((Σpred - Σgt) / (Σgt + ε))²
+            if cfg.energy_loss_weight > 0.0:
+                L_energy = sonar_energy_loss(pred_for_loss, pixels_for_loss)
+            else:
+                L_energy = torch.tensor(0.0, device=device)
+
+            ############################################################################## final loss ##############################################################################
+
+            _zlw = cfg.z_loss_weight
+            loss = sonar_loss * (1.0 - cfg.ssim_lambda) + ssimloss * cfg.ssim_lambda \
                                 + cfg.max_size_prior_weight * max_size_loss \
-                                + cfg.opacity_supervision_weight * opacity_supervision_loss
+                                + cfg.opacity_supervision_weight * opacity_supervision_loss \
+                                + _zlw * w_e_current * elevation_loss \
+                                + _zlw * w_r_eff * reflectivity_reg \
+                                + _zlw * cfg.energy_loss_weight * L_energy
             
             
     
@@ -891,7 +1180,31 @@ class Runner:
                     + cfg.scale_reg * torch.abs(torch.exp(self.splats["scales"])).mean()
                 )
 
-            loss.backward()
+            # Skip backward entirely when loss is NaN/Inf.
+            # nan_to_num on the scalar is insufficient because 0*NaN=NaN propagates
+            # through intermediate tensors in the computation graph.
+            # Create explicit zero-grad tensors so period-B masking (grad *= 0.0)
+            # doesn't crash on None grads.
+            if torch.isnan(loss) or torch.isinf(loss):
+                print(f"[WARNING] NaN/Inf loss={loss.item():.3f} at step {step}, "
+                      f"skipping backward", flush=True)
+                for param in self.splats.values():
+                    if param.grad is None:
+                        param.grad = torch.zeros_like(param.data)
+                    else:
+                        param.grad.zero_()
+            else:
+                loss.backward()
+                # NaN guard: zero out any residual NaN gradients before clipping/stepping
+                nan_grad_found = False
+                for name, param in self.splats.items():
+                    if param.grad is not None and torch.isnan(param.grad).any():
+                        param.grad.zero_()
+                        nan_grad_found = True
+                if nan_grad_found:
+                    print(f"[WARNING] NaN gradient zeroed at step {step}", flush=True)
+                # Clip gradients to prevent large spikes from gamma NLL early in training
+                torch.nn.utils.clip_grad_norm_(self.splats.parameters(), max_norm=1.0)
             # Average gradients across GPUs so Gaussian updates are consistent
             if world_size > 1:
                 import torch.distributed as dist
@@ -960,27 +1273,64 @@ class Runner:
                     wandb.log({"train/color_histogram": wandb.Image(fig)})
                     plt.close(fig)
 
-                    wandb.log({"train/loss": loss.item(), 
-                               "train/l1loss": l1loss.item() * (1.0 - cfg.ssim_lambda), 
+                    wandb.log({"train/loss": loss.item(),
+                               "train/sonar_loss": sonar_loss.item() * (1.0 - cfg.ssim_lambda),
                                "train/pose_err": pose_err.item() if cfg.pose_opt and cfg.pose_noise else 0.0,
                                "train/opacity_supervision_loss": cfg.opacity_supervision_weight * opacity_supervision_loss.item(),
                                "train/sat_sparsity_prior": sat_sparsity_prior.mean() * cfg.sat_sparsity_prior_weight,
                                "train/ssimloss": ssimloss.item() * cfg.ssim_lambda,
                                "train/max_size_loss": max_size_loss.item() * cfg.max_size_prior_weight,
-                               "train/num_GS": len(self.splats["means"]), 
-                               "train/average_max_scale": torch.exp(self.splats['scales']).max(dim=1).values.mean(), 
-                               "train/average_opacity": torch.sigmoid(self.splats["opacities"]).mean(), 
-                               "train/average_dist": torch.norm(self.splats["means"][:,:2],dim=1).mean(), 
+                               "train/elevation_loss": w_e_current * elevation_loss.item(),
+                               "train/reflectivity_reg": cfg.reflectivity_reg_weight * reflectivity_reg.item(),
+                               "train/num_GS": len(self.splats["means"]),
+                               "train/average_max_scale": torch.exp(self.splats['scales']).max(dim=1).values.mean(),
+                               "train/average_opacity": torch.sigmoid(self.splats["opacities"]).mean(),
+                               "train/average_reflectivity": torch.sigmoid(self.splats["r_tilde"]).mean(),
+                               "train/average_dist": torch.norm(self.splats["means"][:,:2],dim=1).mean(),
                                "train/mem": mem})
-                    
+
                 self.writer.add_scalar("train/loss", loss.item(), step)
-                self.writer.add_scalar("train/l1loss", l1loss.item(), step)
+                self.writer.add_scalar("train/sonar_loss", sonar_loss.item(), step)
                 # self.writer.add_scalar("train/ssimloss", ssimloss.item(), step)
                 self.writer.add_scalar("train/num_GS", len(self.splats["means"]), step)
                 self.writer.add_scalar("train/average_max_scale", torch.exp(self.splats['scales']).max(dim=1).values.mean(), step)
                 self.writer.add_scalar("train/average_opacity", torch.sigmoid(self.splats["opacities"]).mean(), step)
                 self.writer.add_scalar("train/average_dist", torch.norm(self.splats["means"][:,:2],dim=1).mean(), step)
                 self.writer.add_scalar("train/mem", mem, step)
+
+                # --- structured diagnostics for blank-collapse monitoring ---
+                _r_vals = torch.sigmoid(self.splats["r_tilde"])
+                _r_min, _r_mean, _r_max = _r_vals.min().item(), _r_vals.mean().item(), _r_vals.max().item()
+                _beam_alpha = (min(step, cfg.beam_anneal_end_step) / float(cfg.beam_anneal_end_step)
+                               if cfg.beam_anneal_end_step > 0 else 1.0)
+                _r_floor_val = (cfg.reflectivity_floor_start * (1.0 - min(step, cfg.reflectivity_floor_anneal_end_step) / float(cfg.reflectivity_floor_anneal_end_step))
+                                if cfg.reflectivity_floor_start > 0.0 and cfg.reflectivity_floor_anneal_end_step > 0 else 0.0)
+                _train_energy_ratio = pred_for_loss.sum().item() / (pixels_for_loss.sum().item() + 1e-8)
+                # Show the LR that patch_3 will apply this step (runs after this block)
+                _r_tilde_lr_now = (0.0 if cfg.reflectivity_warmup_steps > 0 and step < cfg.reflectivity_warmup_steps
+                                   else self.optimizers["r_tilde"].param_groups[0]["lr"])
+                print(
+                    f"\n[Train iter {step}] "
+                    f"L_sonar={sonar_loss.item():.4f} | "
+                    f"L_energy={L_energy.item():.5f} (w={cfg.energy_loss_weight:.3f}) | "
+                    f"L_elev={elevation_loss.item():.5f} (w_e={w_e_current:.4f}) | "
+                    f"L_reg={reflectivity_reg.item():.5f} (w_r_eff={w_r_eff:.4f}, "
+                    f"smooth={_r_smoothness.item():.5f}, meanrev={_r_meanrev.item():.5f}) | "
+                    f"L_total={loss.item():.4f}\n"
+                    f"  energy_ratio={_train_energy_ratio:.3f} | "
+                    f"r=[{_r_min:.3f},{_r_mean:.3f},{_r_max:.3f}] | "
+                    f"beam_alpha={_beam_alpha:.3f} | r_floor={_r_floor_val:.3f} | "
+                    f"r_tilde_lr={_r_tilde_lr_now:.6f} | w_e_eff={w_e_current:.4f}",
+                    flush=True
+                )
+                self.writer.add_scalar("train/energy_ratio", _train_energy_ratio, step)
+                self.writer.add_scalar("train/L_energy", L_energy.item(), step)
+                self.writer.add_scalar("train/L_elevation", elevation_loss.item(), step)
+                self.writer.add_scalar("train/w_e_eff", w_e_current, step)
+                self.writer.add_scalar("train/w_r_eff", w_r_eff, step)
+                self.writer.add_scalar("train/r_tilde_mean", _r_mean, step)
+                self.writer.add_scalar("train/beam_alpha", _beam_alpha, step)
+                self.writer.add_scalar("train/r_floor", _r_floor_val, step)
                 if cfg.tb_save_image:
                     canvas = torch.cat([pixels, out_img.squeeze()], dim=0).detach().cpu().numpy()
                     canvas = np.expand_dims(canvas, axis=0)
@@ -1038,6 +1388,14 @@ class Runner:
                 else:
                     visibility_mask = (info["radii"] > 0).any(0)
 
+            # patch_3: reflectivity warmup — freeze r_tilde optimizer during early steps
+            # Preferred approach: set lr to 0 until warmup ends, then restore configured lr.
+            if cfg.reflectivity_warmup_steps > 0:
+                _r_lr = (0.0 if step < cfg.reflectivity_warmup_steps
+                         else cfg.reflectivity_lr * math.sqrt(cfg.batch_size * world_size))
+                for _pg in self.optimizers["r_tilde"].param_groups:
+                    _pg["lr"] = _r_lr
+
             # optimize
             for optimizer in self.optimizers.values():
                 if cfg.visible_adam:
@@ -1053,6 +1411,21 @@ class Runner:
                 optimizer.zero_grad(set_to_none=True)
             for scheduler in schedulers:
                 scheduler.step()
+
+            # NaN/Inf guard: replace bad parameters AND clean Adam state to break
+            # the corruption cycle (corrupted exp_avg/exp_avg_sq re-produce NaN next step)
+            for name, param in self.splats.items():
+                if torch.isnan(param.data).any() or torch.isinf(param.data).any():
+                    param.data = torch.nan_to_num(param.data, nan=0.0, posinf=0.0, neginf=0.0)
+                    print(f"[WARNING] NaN/Inf in '{name}' at step {step}, "
+                          f"params+Adam state cleaned", flush=True)
+                    for opt in self.optimizers.values():
+                        if param in opt.state:
+                            st = opt.state[param]
+                            if 'exp_avg' in st:
+                                st['exp_avg'].nan_to_num_(nan=0.0, posinf=0.0, neginf=0.0)
+                            if 'exp_avg_sq' in st:
+                                st['exp_avg_sq'].nan_to_num_(nan=0.0, posinf=0.0, neginf=0.0)
 
             # Run post-backward steps after backward and optimizer
             #check if gradients are not none: 
@@ -1118,6 +1491,9 @@ class Runner:
                                 new_p = new_means
                             elif name == "quats":
                                 new_p = new_quats
+                            elif name == "r_tilde":
+                                # init new Gaussians at 4.0 → sigmoid(4.0)≈0.98, matching startup init
+                                new_p = torch.full((total_new_gaussians, 1), 4.0).float().to(device)
                             else:
                                 new_p = p[sampled_idxs]
                             p_new = torch.cat([p, new_p])
@@ -1279,9 +1655,43 @@ class Runner:
                     metrics["tv_nvs"].append(torch.tensor(total_variation(colors_p[0].cpu().numpy().squeeze())))
                     metrics["tv_removed"].append(torch.tensor(total_variation(unsaturated_returns_p[0].cpu().numpy().squeeze())))
                    
+                    # Guard against NaN renders from degenerate Gaussians — prevents
+                    # LPIPS/PSNR crash; NaN pixels are replaced with 0 for metrics.
+                    if torch.isnan(colors_p).any() or torch.isinf(colors_p).any():
+                        print(f"[WARNING] NaN/Inf in render at eval step {step} "
+                              f"frame {i}, clamping for metrics", flush=True)
+                        colors_p = colors_p.nan_to_num(nan=0.0, posinf=1.0, neginf=0.0)
                     metrics["psnr"].append(self.psnr(colors_p, pixels_p))
                     metrics["ssim"].append(self.ssim(colors_p, pixels_p))
                     metrics["lpips"].append(self.lpips(colors_p.repeat(1,3,1,1), pixels_p.repeat(1,3,1,1)))
+
+                    # patch_1: foreground-masked evaluation metrics
+                    # Use first channel (sonar intensity); shape [H, W]
+                    _eval_pred = colors_p[0, 0]        # [H, W]
+                    _eval_gt   = pixels_p[0, 0]        # [H, W]
+                    _eval_eps  = 1e-8
+                    _eval_mask = (_eval_gt > cfg.mask_threshold).float()
+                    _eval_num_fg = _eval_mask.sum().clamp(min=1.0)
+                    _eval_fg_l1  = (torch.abs(_eval_pred - _eval_gt) * _eval_mask).sum() / _eval_num_fg
+                    _eval_fg_mse = (((_eval_pred - _eval_gt) ** 2) * _eval_mask).sum() / _eval_num_fg
+                    _eval_fg_psnr = -10.0 * torch.log10(_eval_fg_mse.clamp(min=1e-8))
+                    _eval_pred_e  = _eval_pred.sum()
+                    _eval_gt_e    = _eval_gt.sum()
+                    _eval_energy_ratio = _eval_pred_e / (_eval_gt_e + _eval_eps)
+                    # Total variation: mean absolute finite differences over H and W
+                    _eval_pred_tv_h = torch.abs(_eval_pred[1:, :] - _eval_pred[:-1, :]).mean() if _eval_pred.shape[0] > 1 else _eval_pred.new_zeros(1)
+                    _eval_pred_tv_w = torch.abs(_eval_pred[:, 1:] - _eval_pred[:, :-1]).mean() if _eval_pred.shape[1] > 1 else _eval_pred.new_zeros(1)
+                    _eval_pred_tv   = _eval_pred_tv_h + _eval_pred_tv_w
+                    _eval_gt_tv_h   = torch.abs(_eval_gt[1:, :] - _eval_gt[:-1, :]).mean() if _eval_gt.shape[0] > 1 else _eval_gt.new_zeros(1)
+                    _eval_gt_tv_w   = torch.abs(_eval_gt[:, 1:] - _eval_gt[:, :-1]).mean() if _eval_gt.shape[1] > 1 else _eval_gt.new_zeros(1)
+                    _eval_gt_tv     = _eval_gt_tv_h + _eval_gt_tv_w
+                    metrics["fg_psnr"].append(_eval_fg_psnr)
+                    metrics["fg_l1"].append(_eval_fg_l1)
+                    metrics["pred_total_energy"].append(_eval_pred_e)
+                    metrics["gt_total_energy"].append(_eval_gt_e)
+                    metrics["energy_ratio"].append(_eval_energy_ratio)
+                    metrics["pred_tv"].append(_eval_pred_tv)
+                    metrics["gt_tv"].append(_eval_gt_tv)
 
                     #save the gt and colors to two separate folders
                     gt_pil.save(f"{cfg.result_dir}/test/gt_sonar_images/{i:04d}.png")
@@ -1302,23 +1712,81 @@ class Runner:
                 }
             )
             if cfg.render_eval:
+                # Current schedule diagnostics (read-only at eval time)
+                _eval_beam_alpha = (min(self._current_step, cfg.beam_anneal_end_step) / float(cfg.beam_anneal_end_step)
+                                    if cfg.beam_anneal_end_step > 0 else 1.0)
+                _eval_r_floor = (cfg.reflectivity_floor_start * (1.0 - min(self._current_step, cfg.reflectivity_floor_anneal_end_step) / float(cfg.reflectivity_floor_anneal_end_step))
+                                 if cfg.reflectivity_floor_start > 0.0 and cfg.reflectivity_floor_anneal_end_step > 0 else 0.0)
+                _eval_reg_start = cfg.reflectivity_reg_start_step
+                _eval_reg_full  = cfg.reflectivity_reg_full_step
+                if _eval_reg_full > _eval_reg_start and self._current_step <= _eval_reg_start:
+                    _eval_w_r_eff = 0.0
+                elif _eval_reg_full > _eval_reg_start and self._current_step < _eval_reg_full:
+                    _eval_w_r_eff = ((self._current_step - _eval_reg_start) / float(_eval_reg_full - _eval_reg_start)) * cfg.reflectivity_reg_weight
+                else:
+                    _eval_w_r_eff = cfg.reflectivity_reg_weight
+                _eval_w_e_eff = cfg.w_e * (cfg.w_e_final / cfg.w_e) ** (min(self._current_step, cfg.w_e_anneal_steps) / cfg.w_e_anneal_steps)
+                _eval_r_vals = torch.sigmoid(self.splats["r_tilde"])
+                _eval_r_tilde_lr = self.optimizers["r_tilde"].param_groups[0]["lr"]
+
                 print(
-                    f"PSNR: {stats['psnr']:.3f}, SSIM: {stats['ssim']:.4f}, LPIPS: {stats['lpips']:.4f}"
-                    f"ICV GT: {stats['icv_gt']:.3f},  ICV NVS: {stats['icv_nvs']:.3f},  ICV REMOVED: {stats['icv_removed']:.3f}"
-                    f"TV GT: {stats['tv_gt']:.3f},  TV NVS: {stats['tv_nvs']:.3f},  TV REMOVED: {stats['tv_removed']:.3f}"
-                    f"Time: {stats['ellipse_time']:.3f}s/image "
-                    f"Number of GS: {stats['num_GS']}"
-            )
-                #log to wandb 
+                    f"\n{'='*80}\n"
+                    f"[Eval iter {step}]\n"
+                    f"  full_frame_psnr={stats.get('psnr', float('nan')):.3f} | "
+                    f"SSIM={stats.get('ssim', float('nan')):.4f} | "
+                    f"LPIPS={stats.get('lpips', float('nan')):.4f}\n"
+                    f"  fg_psnr={stats.get('fg_psnr', float('nan')):.3f} | "
+                    f"fg_l1={stats.get('fg_l1', float('nan')):.5f}\n"
+                    f"  pred_total_energy={stats.get('pred_total_energy', float('nan')):.2f} | "
+                    f"gt_total_energy={stats.get('gt_total_energy', float('nan')):.2f} | "
+                    f"energy_ratio={stats.get('energy_ratio', float('nan')):.3f}\n"
+                    f"  pred_tv={stats.get('pred_tv', float('nan')):.5f} | "
+                    f"gt_tv={stats.get('gt_tv', float('nan')):.5f}\n"
+                    f"  r_tilde=[min={_eval_r_vals.min():.3f}, mean={_eval_r_vals.mean():.3f}, max={_eval_r_vals.max():.3f}]\n"
+                    f"  beam_alpha={_eval_beam_alpha:.3f} | r_floor={_eval_r_floor:.3f} | "
+                    f"w_r_eff={_eval_w_r_eff:.4f} | w_e_eff={_eval_w_e_eff:.4f} | "
+                    f"r_tilde_lr={_eval_r_tilde_lr:.6f}\n"
+                    f"  Time={stats['ellipse_time']:.3f}s/image | #GS={stats['num_GS']}\n"
+                    f"{'='*80}",
+                    flush=True
+                )
+                #log to wandb
                 if cfg.wandb:
-                    wandb.log({"val/psnr": stats["psnr"], 
-                            "val/ssim": stats["ssim"], 
-                            "val/lpips": stats["lpips"], 
-                            "val/ellipse_time": stats["ellipse_time"], 
+                    wandb.log({"val/psnr": stats["psnr"],
+                            "val/fg_psnr": stats.get("fg_psnr", 0.0),
+                            "val/fg_l1": stats.get("fg_l1", 0.0),
+                            "val/energy_ratio": stats.get("energy_ratio", 0.0),
+                            "val/pred_tv": stats.get("pred_tv", 0.0),
+                            "val/ssim": stats["ssim"],
+                            "val/lpips": stats["lpips"],
+                            "val/ellipse_time": stats["ellipse_time"],
                             "val/num_GS": stats["num_GS"]}, step=step)
+
+                # patch_8: structure-aware best checkpoint selection
+                # score = fg_psnr - 0.5*fg_l1 - 0.2*|log(energy_ratio)|
+                # Only valid if 0.5 <= energy_ratio <= 1.5 (not blank/exploded)
+                if "fg_psnr" in stats and "fg_l1" in stats and "energy_ratio" in stats:
+                    _er = stats["energy_ratio"]
+                    _valid = (cfg.best_ckpt_min_energy_ratio <= _er <= cfg.best_ckpt_max_energy_ratio)
+                    _score = (stats["fg_psnr"]
+                              - 0.5 * stats["fg_l1"]
+                              - 0.2 * abs(math.log(max(_er, 1e-8))))
+                    print(f"  best_ckpt: score={_score:.4f} | best_so_far={self._best_score:.4f} | "
+                          f"energy_ratio={_er:.3f} | valid={_valid}", flush=True)
+                    if _valid and _score > self._best_score:
+                        self._best_score = _score
+                        self._best_step  = step
+                        _best_path = f"{self.ckpt_dir}/best_ckpt_rank{self.world_rank}.pt"
+                        torch.save({"step": step, "score": _score, "splats": self.splats.state_dict()}, _best_path)
+                        print(f"  *** NEW BEST checkpoint saved: step={step}, score={_score:.4f} → {_best_path}", flush=True)
+
             # save stats as json
             with open(f"{self.stats_dir}/{stage}_step{step:04d}.json", "w") as f:
                 json.dump(stats, f)
+            # append a line to a running JSONL metrics log (patch_1 required format)
+            _jsonl_path = f"{self.stats_dir}/{stage}_metrics.jsonl"
+            with open(_jsonl_path, "a") as _jf:
+                _jf.write(json.dumps({"step": step, **stats}) + "\n")
             # save stats to tensorboard
             for k, v in stats.items():
                 self.writer.add_scalar(f"{stage}/{k}", v, step)
